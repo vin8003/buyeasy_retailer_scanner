@@ -5,8 +5,13 @@ import 'providers/product_provider.dart';
 import 'screens/login_screen.dart';
 import 'screens/scan_gateway_screen.dart';
 
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'utils/constants.dart';
+
 void main() async {
-  // await dotenv.load(fileName: ".env"); // Uncomment when .env is ready
+  WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
+  await ApiConstants.loadServerUrl();
   runApp(const MyApp());
 }
 

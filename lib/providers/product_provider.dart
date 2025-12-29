@@ -4,7 +4,7 @@ import '../services/product_service.dart';
 
 class ProductProvider with ChangeNotifier {
   final ProductService _productService = ProductService();
-  List<Product> _products = [];
+  final List<Product> _products = [];
   List<Map<String, dynamic>> _categories = [];
   List<Map<String, dynamic>> _brands = [];
   bool _isLoading = false;
