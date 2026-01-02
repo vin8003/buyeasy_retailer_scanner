@@ -39,4 +39,10 @@ class ApiConstants {
   static String updateProduct(int id) => '$baseUrl/products/$id/update/';
   static String deleteProduct(int id) => '$baseUrl/products/$id/delete/';
   static String get masterProductSearch => '$baseUrl/products/master/search/';
+
+  // Visual Bulk Upload
+  static String get createUploadSession =>
+      '$baseUrl/products/upload/session/create/';
+  static String get addSessionItem =>
+      '$baseUrl/products/upload/session/add-item/';
 }

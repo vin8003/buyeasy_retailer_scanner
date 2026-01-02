@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import '../utils/constants.dart';
 import '../models/product_model.dart';
+import '../models/upload_session_model.dart';
 
 class ProductService {
   Future<List<Product>> getProducts(String token) async {
@@ -115,6 +117,56 @@ class ProductService {
       throw Exception('Product not found in master catalog');
     } else {
       throw Exception('Failed to search product');
+    }
+  }
+
+  // ... (inside class)
+  Future<ProductUploadSession> createUploadSession(String token) async {
+    final response = await http.post(
+      Uri.parse(ApiConstants.createUploadSession),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 201) {
+      return ProductUploadSession.fromJson(jsonDecode(response.body));
+    } else {
+      final errorData = jsonDecode(response.body);
+      throw Exception(errorData['error'] ?? 'Failed to create session');
+    }
+  }
+
+  Future<UploadSessionItem> addSessionItem(
+    String token,
+    int sessionId,
+    String barcode,
+    File?
+    image, // Optional? Plan said photo required but model says blank=True. Let's make it optional but usually present.
+  ) async {
+    var request = http.MultipartRequest(
+      'POST',
+      Uri.parse(ApiConstants.addSessionItem),
+    );
+
+    request.headers['Authorization'] = 'Bearer $token';
+    request.fields['session_id'] = sessionId.toString();
+    request.fields['barcode'] = barcode;
+
+    if (image != null) {
+      var pic = await http.MultipartFile.fromPath('image', image.path);
+      request.files.add(pic);
+    }
+
+    var streamedResponse = await request.send();
+    var response = await http.Response.fromStream(streamedResponse);
+
+    if (response.statusCode == 201) {
+      return UploadSessionItem.fromJson(jsonDecode(response.body));
+    } else {
+      final errorData = jsonDecode(response.body);
+      throw Exception(errorData['error'] ?? 'Failed to add item');
     }
   }
 }
