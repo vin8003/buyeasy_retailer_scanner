@@ -5,6 +5,8 @@ import '../providers/scanner_provider.dart';
 import 'capture_session_screen.dart';
 // import 'product_lookup_screen.dart'; // To be implemented
 
+import '../utils/url_config_dialog.dart';
+
 class ScanGatewayScreen extends StatelessWidget {
   const ScanGatewayScreen({super.key});
 
@@ -16,6 +18,10 @@ class ScanGatewayScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Retailer Scanner'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () => showServerUrlDialog(context),
+          ),
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () => context.read<AuthProvider>().logout(),
