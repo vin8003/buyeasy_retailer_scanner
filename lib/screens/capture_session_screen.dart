@@ -66,7 +66,9 @@ class _CaptureSessionScreenState extends State<CaptureSessionScreen>
       final XFile? photo = await _picker.pickImage(
         source: ImageSource.camera,
         preferredCameraDevice: CameraDevice.rear,
-        imageQuality: 80, // Optimize size
+        maxWidth: 800, // Optimize size: Resize strictly
+        maxHeight: 800,
+        imageQuality: 85, // Good quality, low size
       );
 
       if (photo != null) {
@@ -90,41 +92,30 @@ class _CaptureSessionScreenState extends State<CaptureSessionScreen>
     });
   }
 
-  Future<void> _uploadItem() async {
+  void _addCurrentItemToQueue() {
     if (_scannedBarcode == null || _capturedImage == null) return;
 
-    setState(() {
-      _isUploading = true;
-    });
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final scannerProvider = Provider.of<ScannerProvider>(
+      context,
+      listen: false,
+    );
 
+    // Instant UI update
     try {
-      final authProvider = Provider.of<AuthProvider>(context, listen: false);
-      final scannerProvider = Provider.of<ScannerProvider>(
-        context,
-        listen: false,
-      );
-
-      await scannerProvider.addItem(
+      scannerProvider.addItemToQueue(
         authProvider.token!,
         _scannedBarcode!,
         _capturedImage!,
       );
 
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Item Added!')));
-
-      _resetFlow(); // Auto reset for next item
+      // Removed blocking SnackBar for speed.
+      // Instant reset is key for "Rapid Scan".
+      _resetFlow();
     } catch (e) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Upload Failed: $e')));
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isUploading = false;
-        });
-      }
+      ).showSnackBar(SnackBar(content: Text('Queue Error: $e')));
     }
   }
 
@@ -132,6 +123,7 @@ class _CaptureSessionScreenState extends State<CaptureSessionScreen>
   Widget build(BuildContext context) {
     final scannerProvider = Provider.of<ScannerProvider>(context);
     final session = scannerProvider.currentSession;
+    final pendingCount = scannerProvider.pendingCount;
 
     // If no session active, show error or auto-start?
     // Usually Gateway should have started it.
@@ -144,12 +136,37 @@ class _CaptureSessionScreenState extends State<CaptureSessionScreen>
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Scan & Snap (${session?.items.length ?? 0})'),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Scan & Snap (${session?.items.length ?? 0})',
+              style: const TextStyle(fontSize: 16),
+            ),
+            if (pendingCount > 0)
+              Text(
+                'Syncing $pendingCount items...',
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontStyle: FontStyle.italic,
+                  color: Colors.white70,
+                ),
+              ),
+          ],
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.check),
             onPressed: () {
               // Finish Session
+              if (pendingCount > 0) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Please wait for uploads to finish'),
+                  ),
+                );
+                return;
+              }
               Navigator.of(context).pop(); // Go back to Gateway
             },
           ),
@@ -203,10 +220,16 @@ class _CaptureSessionScreenState extends State<CaptureSessionScreen>
                           child: const Text("Retake"),
                         ),
                         ElevatedButton(
-                          onPressed: _isUploading ? null : _uploadItem,
-                          child: _isUploading
-                              ? const CircularProgressIndicator()
-                              : const Text("Upload Item"),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 30,
+                              vertical: 15,
+                            ),
+                          ),
+                          onPressed: _addCurrentItemToQueue,
+                          child: const Text("Submit & Next"),
                         ),
                       ],
                     ),
@@ -229,10 +252,10 @@ class _CaptureSessionScreenState extends State<CaptureSessionScreen>
                         ? "Point camera at barcode"
                         : (_capturedImage == null
                               ? "Take a photo of the product front"
-                              : "Confirm upload"),
+                              : "Tap 'Submit & Next' to continue instantly"),
                   ),
                 ),
-                if (!_isScanning && !_isUploading)
+                if (!_isScanning)
                   TextButton(
                     onPressed: _resetFlow,
                     child: const Text("Cancel"),

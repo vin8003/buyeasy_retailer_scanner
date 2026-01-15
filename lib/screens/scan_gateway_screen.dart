@@ -7,8 +7,44 @@ import 'capture_session_screen.dart';
 
 import '../utils/url_config_dialog.dart';
 
-class ScanGatewayScreen extends StatelessWidget {
+class ScanGatewayScreen extends StatefulWidget {
   const ScanGatewayScreen({super.key});
+
+  @override
+  State<ScanGatewayScreen> createState() => _ScanGatewayScreenState();
+}
+
+class _ScanGatewayScreenState extends State<ScanGatewayScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkAndResumeSession();
+    });
+  }
+
+  Future<void> _checkAndResumeSession() async {
+    final auth = Provider.of<AuthProvider>(context, listen: false);
+    final scannerProvider = Provider.of<ScannerProvider>(
+      context,
+      listen: false,
+    );
+
+    // Attempt restore
+    if (auth.token != null) {
+      final restored = await scannerProvider.restoreSession(auth.token!);
+      if (restored && mounted) {
+        // Auto-navigate to capture screen
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const CaptureSessionScreen()),
+        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Session Resumed')));
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -138,6 +138,34 @@ class ProductService {
     }
   }
 
+  Future<ProductUploadSession> getSessionDetails(
+    String token,
+    int sessionId,
+  ) async {
+    final response = await http.get(
+      Uri.parse(
+        '${ApiConstants.getSessionDetails}/$sessionId',
+      ), // Verify URL structure
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      // Backend returns {'session': {...}, 'matched_var': ..., 'unmatched_var': ...}
+      // But ProductUploadSession.fromJson expects just the session object usually.
+      // Let's check backend view structure or model.
+      // Based on typical serializers, let's assume 'session' key or flat structure?
+      // Re-reading GetSessionDetailsView in 1600-1843 of views.py (Step 162/163).
+      // Response: {'session': serializer.data, 'matched_items': ..., 'unmatched_items': ...}
+      return ProductUploadSession.fromJson(data['session']);
+    } else {
+      throw Exception('Failed to load session details');
+    }
+  }
+
   Future<UploadSessionItem> addSessionItem(
     String token,
     int sessionId,
