@@ -86,12 +86,27 @@ class ScannerProvider with ChangeNotifier {
   }
 
   // Add item to queue (Instant Return)
-  void addItemToQueue(String token, String barcode, File image) {
+  void addItemToQueue(
+    String token,
+    String barcode,
+    File image, {
+    String? name,
+    double? price,
+    double? mrp,
+    int? quantity,
+  }) {
     if (_currentSession == null) {
       throw Exception("No active session");
     }
 
-    final item = QueueItem(barcode: barcode, image: image);
+    final item = QueueItem(
+      barcode: barcode,
+      image: image,
+      name: name,
+      price: price,
+      mrp: mrp,
+      quantity: quantity,
+    );
     _pendingQueue.add(item);
     notifyListeners();
 
@@ -119,6 +134,12 @@ class ScannerProvider with ChangeNotifier {
             _currentSession!.id,
             item.barcode,
             item.image,
+            details: {
+              'name': item.name,
+              'price': item.price,
+              'mrp': item.mrp,
+              'quantity': item.quantity,
+            },
           );
 
           // Success

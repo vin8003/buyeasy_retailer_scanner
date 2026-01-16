@@ -25,6 +25,26 @@ class _CaptureSessionScreenState extends State<CaptureSessionScreen>
   File? _capturedImage;
   bool _isUploading = false;
 
+  // Form Controllers
+  final _nameController = TextEditingController();
+  final _mrpController = TextEditingController();
+  final _priceController = TextEditingController();
+  final _qtyController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    // Auto-fill Selling Price from MRP if Price is empty
+    _mrpController.addListener(() {
+      if (_priceController.text.isEmpty) {
+        // We don't force update to avoid fighting user,
+        // but we can set it when MRP changes if Price is blank.
+        // Or strictly on submit? The prompt said: "If ... leaves ... empty, automatically set ... by default"
+        // Let's do it on submit to keep UI simple/stable.
+      }
+    });
+  }
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (!_scannerController.value.isInitialized) return;
@@ -44,6 +64,10 @@ class _CaptureSessionScreenState extends State<CaptureSessionScreen>
   @override
   void dispose() {
     _scannerController.dispose();
+    _nameController.dispose();
+    _mrpController.dispose();
+    _priceController.dispose();
+    _qtyController.dispose();
     super.dispose();
   }
 
@@ -89,6 +113,12 @@ class _CaptureSessionScreenState extends State<CaptureSessionScreen>
       _capturedImage = null;
       _isScanning = true;
       _scannerController.start();
+
+      // Clear Form
+      _nameController.clear();
+      _mrpController.clear();
+      _priceController.clear();
+      _qtyController.clear();
     });
   }
 
@@ -103,10 +133,27 @@ class _CaptureSessionScreenState extends State<CaptureSessionScreen>
 
     // Instant UI update
     try {
+      // Parse Details
+      String? name = _nameController.text.trim();
+      if (name.isEmpty) name = null;
+
+      double? mrp = double.tryParse(_mrpController.text.trim());
+      double? price = double.tryParse(_priceController.text.trim());
+      int? qty = int.tryParse(_qtyController.text.trim());
+
+      // Auto-Fill Price Logic: If MRP exists but Price is missing, Price = MRP
+      if (mrp != null && price == null) {
+        price = mrp;
+      }
+
       scannerProvider.addItemToQueue(
         authProvider.token!,
         _scannedBarcode!,
         _capturedImage!,
+        name: name,
+        price: price,
+        mrp: mrp,
+        quantity: qty,
       );
 
       // Removed blocking SnackBar for speed.
@@ -189,52 +236,105 @@ class _CaptureSessionScreenState extends State<CaptureSessionScreen>
           if (!_isScanning)
             Expanded(
               flex: 3,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "Barcode: $_scannedBarcode",
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  if (_capturedImage == null)
-                    ElevatedButton.icon(
-                      icon: const Icon(Icons.camera_alt, size: 40),
-                      label: const Text("Take Photo"),
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.all(20),
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Barcode: $_scannedBarcode",
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                       ),
-                      onPressed: _takePhoto,
-                    )
-                  else ...[
-                    Image.file(_capturedImage!, height: 300),
-                    const SizedBox(height: 20),
+                    ),
+                    const SizedBox(height: 16),
+                    // Product Details Form
+                    TextField(
+                      controller: _nameController,
+                      decoration: const InputDecoration(
+                        labelText: 'Product Name (Optional)',
+                        border: OutlineInputBorder(),
+                        isDense: true,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        OutlinedButton(
-                          onPressed: _resetFlow,
-                          child: const Text("Retake"),
-                        ),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 30,
-                              vertical: 15,
+                        Expanded(
+                          child: TextField(
+                            controller: _mrpController,
+                            keyboardType: TextInputType.number,
+                            decoration: const InputDecoration(
+                              labelText: 'MRP',
+                              border: OutlineInputBorder(),
+                              isDense: true,
                             ),
                           ),
-                          onPressed: _addCurrentItemToQueue,
-                          child: const Text("Submit & Next"),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: TextField(
+                            controller: _priceController,
+                            keyboardType: TextInputType.number,
+                            decoration: const InputDecoration(
+                              labelText: 'Selling Price',
+                              hintText: 'Same as MRP',
+                              border: OutlineInputBorder(),
+                              isDense: true,
+                            ),
+                          ),
                         ),
                       ],
                     ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: _qtyController,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(
+                        labelText: 'Stock Qty',
+                        border: OutlineInputBorder(),
+                        isDense: true,
+                      ),
+                    ),
+
+                    const SizedBox(height: 20),
+                    if (_capturedImage == null)
+                      ElevatedButton.icon(
+                        icon: const Icon(Icons.camera_alt, size: 40),
+                        label: const Text("Take Photo"),
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.all(20),
+                        ),
+                        onPressed: _takePhoto,
+                      )
+                    else ...[
+                      Image.file(_capturedImage!, height: 200),
+                      const SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          OutlinedButton(
+                            onPressed: _resetFlow,
+                            child: const Text("Retake"),
+                          ),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 30,
+                                vertical: 15,
+                              ),
+                            ),
+                            onPressed: _addCurrentItemToQueue,
+                            child: const Text("Submit & Next"),
+                          ),
+                        ],
+                      ),
+                    ],
                   ],
-                ],
+                ),
               ),
             ),
 

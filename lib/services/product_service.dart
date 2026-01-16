@@ -170,9 +170,9 @@ class ProductService {
     String token,
     int sessionId,
     String barcode,
-    File?
-    image, // Optional? Plan said photo required but model says blank=True. Let's make it optional but usually present.
-  ) async {
+    File? image, {
+    Map<String, dynamic>? details, // Name, Price, MRP, Qty
+  }) async {
     var request = http.MultipartRequest(
       'POST',
       Uri.parse(ApiConstants.addSessionItem),
@@ -181,6 +181,19 @@ class ProductService {
     request.headers['Authorization'] = 'Bearer $token';
     request.fields['session_id'] = sessionId.toString();
     request.fields['barcode'] = barcode;
+
+    // Add optional details
+    if (details != null) {
+      if (details['name'] != null && details['name'].isNotEmpty) {
+        request.fields['name'] = details['name'];
+      }
+      if (details['price'] != null)
+        request.fields['price'] = details['price'].toString();
+      if (details['mrp'] != null)
+        request.fields['mrp'] = details['mrp'].toString();
+      if (details['quantity'] != null)
+        request.fields['qty'] = details['quantity'].toString();
+    }
 
     if (image != null) {
       var pic = await http.MultipartFile.fromPath('image', image.path);

@@ -6,10 +6,20 @@ class QueueItem {
   bool isUploading;
   bool isFailed;
 
+  // Optional Details
+  final String? name;
+  final double? price;
+  final double? mrp;
+  final int? quantity;
+
   QueueItem({
     required this.barcode,
     required this.image,
     this.isUploading = false,
     this.isFailed = false,
+    this.name,
+    this.price,
+    this.mrp,
+    this.quantity,
   });
 }
