@@ -183,16 +183,27 @@ class ProductService {
     request.fields['barcode'] = barcode;
 
     // Add optional details
+    // Add optional details
     if (details != null) {
+      // Send as JSON data to preserve types (e.g. double vs string)
+      final dataMap = <String, dynamic>{};
+
       if (details['name'] != null && details['name'].isNotEmpty) {
-        request.fields['name'] = details['name'];
+        dataMap['name'] = details['name'];
       }
-      if (details['price'] != null)
-        request.fields['price'] = details['price'].toString();
-      if (details['mrp'] != null)
-        request.fields['mrp'] = details['mrp'].toString();
-      if (details['quantity'] != null)
-        request.fields['qty'] = details['quantity'].toString();
+      if (details['price'] != null) {
+        dataMap['price'] = details['price'];
+      }
+      if (details['mrp'] != null) {
+        dataMap['mrp'] = details['mrp'];
+      }
+      if (details['quantity'] != null) {
+        dataMap['qty'] = details['quantity'];
+      }
+
+      if (dataMap.isNotEmpty) {
+        request.fields['data'] = jsonEncode(dataMap);
+      }
     }
 
     if (image != null) {
