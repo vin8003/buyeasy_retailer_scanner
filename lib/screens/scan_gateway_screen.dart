@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
-import '../providers/scanner_provider.dart';
-import 'capture_session_screen.dart';
+import 'session_selection_screen.dart';
 // import 'product_lookup_screen.dart'; // To be implemented
 
 import '../utils/url_config_dialog.dart';
@@ -18,32 +17,7 @@ class _ScanGatewayScreenState extends State<ScanGatewayScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _checkAndResumeSession();
-    });
-  }
-
-  Future<void> _checkAndResumeSession() async {
-    final auth = Provider.of<AuthProvider>(context, listen: false);
-    final scannerProvider = Provider.of<ScannerProvider>(
-      context,
-      listen: false,
-    );
-
-    // Attempt restore
-    if (auth.token != null) {
-      final restored = await scannerProvider.restoreSession(auth.token!);
-      if (restored && mounted) {
-        // Auto-navigate to capture screen
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const CaptureSessionScreen()),
-        );
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Session Resumed')));
-      }
-    }
+    // Removed auto-resume to allow user choice
   }
 
   @override
@@ -78,43 +52,21 @@ class _ScanGatewayScreenState extends State<ScanGatewayScreen> {
             const SizedBox(height: 48),
 
             // Visual Bulk Upload Button
-            Consumer<ScannerProvider>(
-              builder: (context, scannerProvider, _) {
-                if (scannerProvider.isLoading) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                return ElevatedButton.icon(
-                  onPressed: () async {
-                    final auth = Provider.of<AuthProvider>(
-                      context,
-                      listen: false,
-                    );
-                    try {
-                      await scannerProvider.startSession(auth.token!);
-                      if (context.mounted) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const CaptureSessionScreen(),
-                          ),
-                        );
-                      }
-                    } catch (e) {
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(
-                          context,
-                        ).showSnackBar(SnackBar(content: Text('Error: $e')));
-                      }
-                    }
-                  },
-                  icon: const Icon(Icons.add_a_photo, size: 32),
-                  label: const Text('Start Bulk Upload Session'),
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.all(24),
-                    textStyle: const TextStyle(fontSize: 18),
+            ElevatedButton.icon(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const SessionSelectionScreen(),
                   ),
                 );
               },
+              icon: const Icon(Icons.photo_library, size: 32),
+              label: const Text('Manage Upload Sessions'),
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.all(24),
+                textStyle: const TextStyle(fontSize: 18),
+              ),
             ),
 
             const SizedBox(height: 24),

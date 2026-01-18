@@ -47,4 +47,6 @@ class ApiConstants {
       '$baseUrl/products/upload/session/add-item/';
   static String get getSessionDetails =>
       '$baseUrl/products/upload/session/details';
+  static String get activeSessions =>
+      '$baseUrl/products/upload/session/active/';
 }

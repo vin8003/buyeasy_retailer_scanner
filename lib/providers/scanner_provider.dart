@@ -11,6 +11,7 @@ class ScannerProvider with ChangeNotifier {
   final ProductService _productService = ProductService();
 
   ProductUploadSession? _currentSession;
+  List<ProductUploadSession> _sessions = [];
   bool _isLoading = false;
   String? _error;
 
@@ -20,6 +21,7 @@ class ScannerProvider with ChangeNotifier {
   bool _isProcessingQueue = false;
 
   ProductUploadSession? get currentSession => _currentSession;
+  List<ProductUploadSession> get sessions => UnmodifiableListView(_sessions);
   bool get isLoading => _isLoading;
   String? get error => _error;
 
@@ -27,14 +29,33 @@ class ScannerProvider with ChangeNotifier {
   List<QueueItem> get failedQueue => UnmodifiableListView(_failedQueue);
   int get pendingCount => _pendingQueue.length;
 
-  // Start a new session
-  Future<void> startSession(String token) async {
+  // Fetch active sessions
+  Future<void> fetchActiveSessions(String token) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
 
     try {
-      _currentSession = await _productService.createUploadSession(token);
+      _sessions = await _productService.getActiveSessions(token);
+    } catch (e) {
+      _error = e.toString();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  // Start a new session
+  Future<void> startSession(String token, {String? name}) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      _currentSession = await _productService.createUploadSession(
+        token,
+        name: name,
+      );
       print("Session Started: ${_currentSession?.id}");
       await _saveSessionId(_currentSession!.id);
     } catch (e) {
@@ -58,6 +79,9 @@ class ScannerProvider with ChangeNotifier {
 
       if (sessionId != null) {
         print("Restoring Session: $sessionId");
+        // We need to fetch details. getSessionDetails gets a single session details.
+        // But ideally we should also fetch list of active sessions if we are going to fallback to list?
+        // For now, if ID exists, try to restore it.
         _currentSession = await _productService.getSessionDetails(
           token,
           sessionId,
@@ -83,6 +107,28 @@ class ScannerProvider with ChangeNotifier {
   Future<void> _clearSessionId() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('active_upload_session_id');
+  }
+
+  // Resume a specific session
+  Future<void> resumeSession(String token, int sessionId) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      print("Resuming Session: $sessionId");
+      _currentSession = await _productService.getSessionDetails(
+        token,
+        sessionId,
+      );
+      await _saveSessionId(sessionId);
+    } catch (e) {
+      _error = "Failed to resume: $e";
+      rethrow;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 
   // Add item to queue (Instant Return)

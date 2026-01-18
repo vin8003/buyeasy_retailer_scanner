@@ -121,13 +121,17 @@ class ProductService {
   }
 
   // ... (inside class)
-  Future<ProductUploadSession> createUploadSession(String token) async {
+  Future<ProductUploadSession> createUploadSession(
+    String token, {
+    String? name,
+  }) async {
     final response = await http.post(
       Uri.parse(ApiConstants.createUploadSession),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
       },
+      body: jsonEncode({'name': name}),
     );
 
     if (response.statusCode == 201) {
@@ -135,6 +139,23 @@ class ProductService {
     } else {
       final errorData = jsonDecode(response.body);
       throw Exception(errorData['error'] ?? 'Failed to create session');
+    }
+  }
+
+  Future<List<ProductUploadSession>> getActiveSessions(String token) async {
+    final response = await http.get(
+      Uri.parse(ApiConstants.activeSessions),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body);
+      return data.map((json) => ProductUploadSession.fromJson(json)).toList();
+    } else {
+      throw Exception('Failed to load active sessions');
     }
   }
 

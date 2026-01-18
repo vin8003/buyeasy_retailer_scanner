@@ -26,12 +26,14 @@ class UploadSessionItem {
 
 class ProductUploadSession {
   final int id;
+  final String? name;
   final String status;
   final DateTime createdAt;
   final List<UploadSessionItem> items;
 
   ProductUploadSession({
     required this.id,
+    this.name,
     required this.status,
     required this.createdAt,
     this.items = const [],
@@ -47,6 +49,7 @@ class ProductUploadSession {
 
     return ProductUploadSession(
       id: json['id'],
+      name: json['name'],
       status: json['status'],
       createdAt: DateTime.parse(json['created_at']),
       items: itemsList,
