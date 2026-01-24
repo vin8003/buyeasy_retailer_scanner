@@ -164,9 +164,7 @@ class ProductService {
     int sessionId,
   ) async {
     final response = await http.get(
-      Uri.parse(
-        '${ApiConstants.getSessionDetails}/$sessionId',
-      ), // Verify URL structure
+      Uri.parse(ApiConstants.sessionDetails(sessionId)),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
