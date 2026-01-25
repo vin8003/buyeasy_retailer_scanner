@@ -1,7 +1,9 @@
 import 'dart:io';
+import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:mobile_scanner/mobile_scanner.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:camera/camera.dart';
+import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
+import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
 import '../providers/scanner_provider.dart';
 import '../providers/auth_provider.dart';
@@ -17,53 +19,109 @@ class CaptureSessionScreen extends StatefulWidget {
 
 class _CaptureSessionScreenState extends State<CaptureSessionScreen>
     with WidgetsBindingObserver {
-  final MobileScannerController _scannerController = MobileScannerController();
-  final ImagePicker _picker = ImagePicker();
+  CameraController? _cameraController;
+  final BarcodeScanner _barcodeScanner = BarcodeScanner();
 
-  bool _isScanning = true;
-  String? _scannedBarcode;
+  // State Management
+  bool _isCameraInitialized = false;
+  bool _isProcessingFrame = false; // Throttle frame processing
+  bool _isEditing = false; // "Form Mode" vs "Scan Mode"
+  bool _isLookingUp = false;
   File? _capturedImage;
-  bool _isUploading = false;
+  String? _lookupInfoText;
 
   // Form Controllers
+  final _barcodeController = TextEditingController();
   final _nameController = TextEditingController();
   final _mrpController = TextEditingController();
   final _priceController = TextEditingController();
   final _qtyController = TextEditingController();
 
+  List<CameraDescription> _cameras = [];
+
   @override
   void initState() {
     super.initState();
-    // Auto-fill Selling Price from MRP if Price is empty
+    WidgetsBinding.instance.addObserver(this);
+    _initializeCamera();
+
+    // Auto-fill Selling Price from MRP
     _mrpController.addListener(() {
-      if (_priceController.text.isEmpty) {
-        // We don't force update to avoid fighting user,
-        // but we can set it when MRP changes if Price is blank.
-        // Or strictly on submit? The prompt said: "If ... leaves ... empty, automatically set ... by default"
-        // Let's do it on submit to keep UI simple/stable.
-      }
+      // Logic if needed
     });
+  }
+
+  Future<void> _initializeCamera() async {
+    try {
+      _cameras = await availableCameras();
+      if (_cameras.isEmpty) {
+        if (mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('No camera found')));
+        }
+        return;
+      }
+
+      // Pick first rear camera
+      final camera = _cameras.firstWhere(
+        (camera) => camera.lensDirection == CameraLensDirection.back,
+        orElse: () => _cameras.first,
+      );
+
+      _cameraController = CameraController(
+        camera,
+        ResolutionPreset.high, // Good for both preview and photo
+        enableAudio: false,
+        imageFormatGroup: Platform.isAndroid
+            ? ImageFormatGroup.nv21
+            : ImageFormatGroup.bgra8888,
+      );
+
+      await _cameraController!.initialize();
+      if (!mounted) return;
+
+      // Start Image Stream for Scanning
+      await _cameraController!.startImageStream(_processCameraImage);
+
+      setState(() {
+        _isCameraInitialized = true;
+      });
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Camera Error: $e')));
+      }
+    }
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (!_scannerController.value.isInitialized) return;
-    switch (state) {
-      case AppLifecycleState.detached:
-      case AppLifecycleState.hidden:
-      case AppLifecycleState.paused:
-        return;
-      case AppLifecycleState.resumed:
-        _scannerController.start();
-      case AppLifecycleState.inactive:
-        _scannerController.stop();
+    // Re-initialize camera on resume if needed (usually handled by plugin, but good practice to check)
+    if (_cameraController == null || !_cameraController!.value.isInitialized) {
+      return;
     }
-    super.didChangeAppLifecycleState(state);
+
+    if (state == AppLifecycleState.inactive) {
+      // _cameraController?.dispose();
+      // We might not want to fully dispose if we want fast resume, but standard practice is to dispose to release resource.
+      // However, for this specific "Stay Open" requirement, we just let it be handled or pause stream?
+      // CameraController usually needs to be re-initialized after resume.
+    } else if (state == AppLifecycleState.resumed) {
+      if (_cameraController != null) {
+        // onResume logic
+      }
+    }
   }
 
   @override
   void dispose() {
-    _scannerController.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+    _cameraController?.dispose();
+    _barcodeScanner.close();
+
+    _barcodeController.dispose();
     _nameController.dispose();
     _mrpController.dispose();
     _priceController.dispose();
@@ -71,69 +129,199 @@ class _CaptureSessionScreenState extends State<CaptureSessionScreen>
     super.dispose();
   }
 
-  void _onBarcodeDetect(BarcodeCapture capture) {
-    if (!_isScanning || _isUploading) return;
+  // --- Scanning Logic ---
 
-    final List<Barcode> barcodes = capture.barcodes;
-    if (barcodes.isNotEmpty && barcodes.first.rawValue != null) {
-      setState(() {
-        _scannedBarcode = barcodes.first.rawValue;
-        _isScanning = false; // Stop scanning, move to photo
-      });
-      // Optionally pause scanner to save battery/cpu
-      _scannerController.stop();
-    }
-  }
+  Future<void> _processCameraImage(CameraImage image) async {
+    if (_isProcessingFrame || _isEditing || !_isCameraInitialized) return;
+    _isProcessingFrame = true;
 
-  Future<void> _takePhoto() async {
     try {
-      final XFile? photo = await _picker.pickImage(
-        source: ImageSource.camera,
-        preferredCameraDevice: CameraDevice.rear,
-        maxWidth: 800, // Optimize size: Resize strictly
-        maxHeight: 800,
-        imageQuality: 85, // Good quality, low size
-      );
+      final inputImage = _inputImageFromCameraImage(image);
+      if (inputImage == null) return;
 
-      if (photo != null) {
-        setState(() {
-          _capturedImage = File(photo.path);
-        });
+      final barcodes = await _barcodeScanner.processImage(inputImage);
+      if (barcodes.isNotEmpty && barcodes.first.rawValue != null) {
+        // Found barcode!
+        final code = barcodes.first.rawValue!;
+        // Pause stream processing effectively by setting _isEditing (or stop stream explicitly?)
+        // To keep camera preview running, we DON'T stop stream, just ignore frames in valid state.
+        if (mounted) {
+          _startEditing(code);
+        }
       }
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error taking photo: $e')));
+      print("Scan Error: $e");
+    } finally {
+      if (mounted) {
+        // Add small delay to prevent CPU burn if no barcode found?
+        // await Future.delayed(const Duration(milliseconds: 100)); // Optional throttle
+        _isProcessingFrame = false;
+      }
     }
   }
 
-  void _resetFlow() {
-    setState(() {
-      _scannedBarcode = null;
-      _capturedImage = null;
-      _isScanning = true;
-      _scannerController.start();
+  InputImage? _inputImageFromCameraImage(CameraImage image) {
+    if (_cameraController == null) return null;
 
-      // Clear Form
+    final camera = _cameraController!.description;
+    final sensorOrientation = camera.sensorOrientation;
+
+    // TODO: Handle rotation properly based on device orientation
+    // For now assuming standard portrait mode
+
+    final InputImageRotation rotation =
+        InputImageRotationValue.fromRawValue(sensorOrientation) ??
+        InputImageRotation.rotation0deg;
+
+    // Valid format checks
+    final format = InputImageFormatValue.fromRawValue(image.format.raw);
+    if (format == null ||
+        (Platform.isAndroid && format != InputImageFormat.nv21) ||
+        (Platform.isIOS && format != InputImageFormat.bgra8888)) {
+      // On iOS usually bgra8888. On Android nv21.
+      // return null;
+      // Note: CameraController with ImageFormatGroup usually handles this but let's be safe.
+    }
+
+    // Since we can't easily convert planes to bytes manually without heavy boilerplate,
+    // we use the helper logic often found in ML Kit examples.
+    // For simplicity in this generated code, we assume standard NV21/BGRA.
+
+    // For simplicity in this generated code, we assume standard NV21/BGRA.
+
+    return InputImage.fromBytes(
+      bytes: _concatenatePlanes(image.planes),
+      metadata: InputImageMetadata(
+        size: Size(image.width.toDouble(), image.height.toDouble()),
+        rotation: rotation, // used to be rotation, now specific enum
+        format: format ?? InputImageFormat.nv21, // fallback
+        bytesPerRow: image.planes[0].bytesPerRow, // Main plane
+      ),
+    );
+  }
+
+  Uint8List _concatenatePlanes(List<Plane> planes) {
+    final WriteBuffer allBytes = WriteBuffer();
+    for (Plane plane in planes) {
+      allBytes.putUint8List(plane.bytes);
+    }
+    return allBytes.done().buffer.asUint8List();
+  }
+
+  // --- Actions ---
+
+  void _startEditing(String? barcode) {
+    setState(() {
+      _isEditing = true;
+      _barcodeController.text = barcode ?? '';
       _nameController.clear();
       _mrpController.clear();
       _priceController.clear();
       _qtyController.clear();
+      _capturedImage = null;
+      _isLookingUp = false;
+      _lookupInfoText = null;
     });
+
+    if (barcode != null && barcode.isNotEmpty) {
+      _performLookup(barcode);
+    }
   }
 
-  void _addCurrentItemToQueue() {
-    if (_scannedBarcode == null || _capturedImage == null) return;
+  Future<void> _performLookup(String barcode) async {
+    setState(() {
+      _isLookingUp = true;
+      _lookupInfoText = "Searching...";
+    });
 
+    try {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final scannerProvider = Provider.of<ScannerProvider>(
+        context,
+        listen: false,
+      );
+
+      final data = await scannerProvider.lookupProduct(
+        authProvider.token!,
+        barcode,
+      );
+
+      if (mounted) {
+        setState(() {
+          _isLookingUp = false;
+          if (data != null) {
+            print("Product Found: $data");
+            _lookupInfoText = "Found in Master Catalog";
+            _nameController.text = data['name'] ?? '';
+            _mrpController.text = (data['mrp'] ?? '').toString();
+            // Price is often same as MRP initially
+            _priceController.text = (data['mrp'] ?? '').toString();
+          } else {
+            _lookupInfoText = "New Product (Not found)";
+          }
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLookingUp = false;
+          _lookupInfoText = "Lookup error";
+        });
+      }
+    }
+  }
+
+  void _cancelEditing() {
+    setState(() {
+      _isEditing = false;
+      _capturedImage = null;
+    });
+    // Stream continues running but now _isEditing is false, so it will pick up frames again.
+  }
+
+  Future<void> _takePhoto() async {
+    if (_cameraController == null || !_cameraController!.value.isInitialized)
+      return;
+    if (_cameraController!.value.isTakingPicture) return;
+
+    try {
+      final XFile photo = await _cameraController!.takePicture();
+      setState(() {
+        _capturedImage = File(photo.path);
+      });
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Capture Error: $e')));
+      }
+    }
+  }
+
+  Future<void> _submitItem() async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final scannerProvider = Provider.of<ScannerProvider>(
       context,
       listen: false,
     );
 
-    // Instant UI update
+    // Validate
+    final barcode = _barcodeController.text.trim();
+    if (barcode.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Barcode is required')));
+      return;
+    }
+
+    if (_capturedImage == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Please take a photo')));
+      return;
+    }
+
     try {
-      // Parse Details
       String? name = _nameController.text.trim();
       if (name.isEmpty) name = null;
 
@@ -141,14 +329,13 @@ class _CaptureSessionScreenState extends State<CaptureSessionScreen>
       double? price = double.tryParse(_priceController.text.trim());
       int? qty = int.tryParse(_qtyController.text.trim());
 
-      // Auto-Fill Price Logic: If MRP exists but Price is missing, Price = MRP
       if (mrp != null && price == null) {
         price = mrp;
       }
 
       scannerProvider.addItemToQueue(
         authProvider.token!,
-        _scannedBarcode!,
+        barcode,
         _capturedImage!,
         name: name,
         price: price,
@@ -156,9 +343,7 @@ class _CaptureSessionScreenState extends State<CaptureSessionScreen>
         quantity: qty,
       );
 
-      // Removed blocking SnackBar for speed.
-      // Instant reset is key for "Rapid Scan".
-      _resetFlow();
+      _cancelEditing(); // Reset immediately
     } catch (e) {
       ScaffoldMessenger.of(
         context,
@@ -172,22 +357,17 @@ class _CaptureSessionScreenState extends State<CaptureSessionScreen>
     final session = scannerProvider.currentSession;
     final pendingCount = scannerProvider.pendingCount;
 
-    // If no session active, show error or auto-start?
-    // Usually Gateway should have started it.
-    if (session == null && !scannerProvider.isLoading) {
-      return Scaffold(
-        appBar: AppBar(title: const Text('Session Error')),
-        body: Center(child: Text("No active session")),
-      );
-    }
-
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
+        backgroundColor: Colors.black45,
+        foregroundColor: Colors.white,
+        elevation: 0,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Scan & Snap (${session?.items.length ?? 0})',
+              'Session: ${session?.name ?? "Unititled"}',
               style: const TextStyle(fontSize: 16),
             ),
             if (pendingCount > 0)
@@ -203,9 +383,38 @@ class _CaptureSessionScreenState extends State<CaptureSessionScreen>
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.check),
+            icon:
+                _cameraController != null &&
+                    _cameraController!.value.isInitialized
+                ? ValueListenableBuilder(
+                    valueListenable: _cameraController!,
+                    builder: (context, value, child) {
+                      return Icon(
+                        value.flashMode == FlashMode.torch
+                            ? Icons.flash_on
+                            : Icons.flash_off,
+                        color: value.flashMode == FlashMode.torch
+                            ? Colors.yellow
+                            : Colors.grey,
+                      );
+                    },
+                  )
+                : const Icon(Icons.flash_off, color: Colors.grey),
+            onPressed: () async {
+              if (_cameraController != null &&
+                  _cameraController!.value.isInitialized) {
+                final newMode =
+                    _cameraController!.value.flashMode == FlashMode.torch
+                    ? FlashMode.off
+                    : FlashMode.torch;
+                await _cameraController!.setFlashMode(newMode);
+                setState(() {}); // refresh icon
+              }
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.check_circle_outline),
             onPressed: () {
-              // Finish Session
               if (pendingCount > 0) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
@@ -214,156 +423,242 @@ class _CaptureSessionScreenState extends State<CaptureSessionScreen>
                 );
                 return;
               }
-              Navigator.of(context).pop(); // Go back to Gateway
+              Navigator.of(context).pop();
             },
           ),
         ],
       ),
-      body: Column(
+      body: Stack(
         children: [
-          // Step 1: Scanner View
-          if (_isScanning)
-            Expanded(
-              flex: 2,
-              child: MobileScanner(
-                controller: _scannerController,
-                onDetect: _onBarcodeDetect,
-                fit: BoxFit.cover,
-              ),
-            ),
+          // 1. Full Screen Camera
+          if (_isCameraInitialized && _cameraController != null)
+            SizedBox.expand(child: CameraPreview(_cameraController!))
+          else
+            const Center(child: CircularProgressIndicator()),
 
-          // Step 2: Photo & Confirm View
-          if (!_isScanning)
-            Expanded(
-              flex: 3,
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Barcode: $_scannedBarcode",
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+          // 2. Overlay UI
+          Align(alignment: Alignment.bottomCenter, child: _buildBottomPanel()),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBottomPanel() {
+    if (!_isEditing) {
+      return Container(
+        padding: const EdgeInsets.all(20),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 10)],
+        ),
+        child: SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                "Scan or Enter Manually",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      icon: const Icon(Icons.keyboard),
+                      label: const Text("Enter Manually"),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.all(16),
                       ),
+                      onPressed: () => _startEditing(null),
                     ),
-                    const SizedBox(height: 16),
-                    // Product Details Form
-                    TextField(
-                      controller: _nameController,
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    // Form
+    return Container(
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 10)],
+      ),
+      child: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Header
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    "Product Details",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  if (_isLookingUp)
+                    const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: _cancelEditing,
+                  ),
+                ],
+              ),
+              if (_lookupInfoText != null)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: Text(
+                    _lookupInfoText!,
+                    style: TextStyle(
+                      color: _lookupInfoText!.contains("Found")
+                          ? Colors.green
+                          : Colors.orange,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                ),
+              const Divider(),
+
+              TextField(
+                controller: _barcodeController,
+                decoration: const InputDecoration(
+                  labelText: 'Barcode',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.qr_code),
+                  isDense: true,
+                ),
+                textInputAction: TextInputAction.next,
+              ),
+              const SizedBox(height: 12),
+
+              TextField(
+                controller: _nameController,
+                decoration: const InputDecoration(
+                  labelText: 'Product Name',
+                  border: OutlineInputBorder(),
+                  isDense: true,
+                ),
+                textInputAction: TextInputAction.next,
+              ),
+              const SizedBox(height: 12),
+
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _mrpController,
+                      keyboardType: TextInputType.number,
                       decoration: const InputDecoration(
-                        labelText: 'Product Name (Optional)',
+                        labelText: 'MRP',
                         border: OutlineInputBorder(),
                         isDense: true,
                       ),
+                      textInputAction: TextInputAction.next,
                     ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            controller: _mrpController,
-                            keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(
-                              labelText: 'MRP',
-                              border: OutlineInputBorder(),
-                              isDense: true,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: TextField(
-                            controller: _priceController,
-                            keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(
-                              labelText: 'Selling Price',
-                              hintText: 'Same as MRP',
-                              border: OutlineInputBorder(),
-                              isDense: true,
-                            ),
-                          ),
-                        ),
-                      ],
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: TextField(
+                      controller: _priceController,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(
+                        labelText: 'Price',
+                        hintText: 'Same as MRP',
+                        border: OutlineInputBorder(),
+                        isDense: true,
+                      ),
+                      textInputAction: TextInputAction.next,
                     ),
-                    const SizedBox(height: 12),
-                    TextField(
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: TextField(
                       controller: _qtyController,
                       keyboardType: TextInputType.number,
                       decoration: const InputDecoration(
-                        labelText: 'Stock Qty',
+                        labelText: 'Qty',
                         border: OutlineInputBorder(),
                         isDense: true,
                       ),
                     ),
-
-                    const SizedBox(height: 20),
-                    if (_capturedImage == null)
-                      ElevatedButton.icon(
-                        icon: const Icon(Icons.camera_alt, size: 40),
-                        label: const Text("Take Photo"),
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.all(20),
-                        ),
-                        onPressed: _takePhoto,
-                      )
-                    else ...[
-                      Image.file(_capturedImage!, height: 200),
-                      const SizedBox(height: 20),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          OutlinedButton(
-                            onPressed: _resetFlow,
-                            child: const Text("Retake"),
-                          ),
-                          ElevatedButton(
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    flex: 2,
+                    child: _capturedImage == null
+                        ? ElevatedButton.icon(
+                            icon: const Icon(Icons.camera_alt),
+                            label: const Text("Capture"),
+                            onPressed: _takePhoto,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green,
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 30,
-                                vertical: 15,
-                              ),
+                              padding: const EdgeInsets.symmetric(vertical: 12),
                             ),
-                            onPressed: _addCurrentItemToQueue,
-                            child: const Text("Submit & Next"),
+                          )
+                        : OutlinedButton.icon(
+                            icon: const Icon(Icons.check, color: Colors.green),
+                            label: const Text("Retake"),
+                            onPressed: _takePhoto,
+                            style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                            ),
                           ),
-                        ],
-                      ),
-                    ],
-                  ],
+                  ),
+                ],
+              ),
+
+              if (_capturedImage != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: Container(
+                    height: 100,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey.shade300),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.file(_capturedImage!, fit: BoxFit.cover),
+                    ),
+                  ),
+                ),
+
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: _submitItem,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blueAccent,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  textStyle: const TextStyle(fontSize: 18),
+                ),
+                child: const Text("SAVE & NEXT"),
+              ),
+              Padding(
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom,
                 ),
               ),
-            ),
-
-          // Instructions / Footer
-          Container(
-            padding: const EdgeInsets.all(16),
-            color: Colors.grey[200],
-            child: Row(
-              children: [
-                const Icon(Icons.info_outline),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    _isScanning
-                        ? "Point camera at barcode"
-                        : (_capturedImage == null
-                              ? "Take a photo of the product front"
-                              : "Tap 'Submit & Next' to continue instantly"),
-                  ),
-                ),
-                if (!_isScanning)
-                  TextButton(
-                    onPressed: _resetFlow,
-                    child: const Text("Cancel"),
-                  ),
-              ],
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

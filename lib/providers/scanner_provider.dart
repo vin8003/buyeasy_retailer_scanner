@@ -131,6 +131,20 @@ class ScannerProvider with ChangeNotifier {
     }
   }
 
+  // Lookup Product details
+  Future<Map<String, dynamic>?> lookupProduct(
+    String token,
+    String barcode,
+  ) async {
+    try {
+      final data = await _productService.searchMasterProduct(token, barcode);
+      return data;
+    } catch (e) {
+      print("Lookup failed: $e");
+      return null;
+    }
+  }
+
   // Add item to queue (Instant Return)
   void addItemToQueue(
     String token,
