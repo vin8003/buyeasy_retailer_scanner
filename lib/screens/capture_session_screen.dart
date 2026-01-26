@@ -27,6 +27,8 @@ class _CaptureSessionScreenState extends State<CaptureSessionScreen>
   bool _isProcessingFrame = false; // Throttle frame processing
   bool _isEditing = false; // "Form Mode" vs "Scan Mode"
   bool _isLookingUp = false;
+  bool _isTakingProductPhoto =
+      false; // When true, shows camera preview with OK/Cancel
   File? _capturedImage;
   String? _lookupInfoText;
 
@@ -36,6 +38,7 @@ class _CaptureSessionScreenState extends State<CaptureSessionScreen>
   final _mrpController = TextEditingController();
   final _priceController = TextEditingController();
   final _qtyController = TextEditingController();
+  final _groupController = TextEditingController();
 
   List<CameraDescription> _cameras = [];
 
@@ -81,8 +84,10 @@ class _CaptureSessionScreenState extends State<CaptureSessionScreen>
       await _cameraController!.initialize();
       if (!mounted) return;
 
-      // Start Image Stream for Scanning
-      await _cameraController!.startImageStream(_processCameraImage);
+      // Only start image stream if not already streaming
+      if (!_cameraController!.value.isStreamingImages) {
+        await _cameraController!.startImageStream(_processCameraImage);
+      }
 
       setState(() {
         _isCameraInitialized = true;
@@ -126,6 +131,7 @@ class _CaptureSessionScreenState extends State<CaptureSessionScreen>
     _mrpController.dispose();
     _priceController.dispose();
     _qtyController.dispose();
+    _groupController.dispose();
     super.dispose();
   }
 
@@ -150,7 +156,7 @@ class _CaptureSessionScreenState extends State<CaptureSessionScreen>
         }
       }
     } catch (e) {
-      print("Scan Error: $e");
+      // Silently ignore scan errors
     } finally {
       if (mounted) {
         // Add small delay to prevent CPU burn if no barcode found?
@@ -218,6 +224,7 @@ class _CaptureSessionScreenState extends State<CaptureSessionScreen>
       _mrpController.clear();
       _priceController.clear();
       _qtyController.clear();
+      _groupController.clear();
       _capturedImage = null;
       _isLookingUp = false;
       _lookupInfoText = null;
@@ -241,6 +248,17 @@ class _CaptureSessionScreenState extends State<CaptureSessionScreen>
         listen: false,
       );
 
+      // Check if token is available
+      if (authProvider.token == null) {
+        if (mounted) {
+          setState(() {
+            _isLookingUp = false;
+            _lookupInfoText = "Authentication error";
+          });
+        }
+        return;
+      }
+
       final data = await scannerProvider.lookupProduct(
         authProvider.token!,
         barcode,
@@ -250,12 +268,16 @@ class _CaptureSessionScreenState extends State<CaptureSessionScreen>
         setState(() {
           _isLookingUp = false;
           if (data != null) {
-            print("Product Found: $data");
             _lookupInfoText = "Found in Master Catalog";
             _nameController.text = data['name'] ?? '';
-            _mrpController.text = (data['mrp'] ?? '').toString();
+            final mrpValue = data['mrp'];
+            _mrpController.text = mrpValue != null ? mrpValue.toString() : '';
             // Price is often same as MRP initially
-            _priceController.text = (data['mrp'] ?? '').toString();
+            _priceController.text = mrpValue != null ? mrpValue.toString() : '';
+            final productGroup = data['product_group'];
+            _groupController.text = productGroup != null
+                ? productGroup.toString()
+                : '';
           } else {
             _lookupInfoText = "New Product (Not found)";
           }
@@ -279,15 +301,29 @@ class _CaptureSessionScreenState extends State<CaptureSessionScreen>
     // Stream continues running but now _isEditing is false, so it will pick up frames again.
   }
 
+  void _startPhotoMode() {
+    setState(() {
+      _isTakingProductPhoto = true;
+    });
+  }
+
+  void _cancelPhotoMode() {
+    setState(() {
+      _isTakingProductPhoto = false;
+    });
+  }
+
   Future<void> _takePhoto() async {
-    if (_cameraController == null || !_cameraController!.value.isInitialized)
+    if (_cameraController == null || !_cameraController!.value.isInitialized) {
       return;
+    }
     if (_cameraController!.value.isTakingPicture) return;
 
     try {
       final XFile photo = await _cameraController!.takePicture();
       setState(() {
         _capturedImage = File(photo.path);
+        _isTakingProductPhoto = false; // Return to form after taking photo
       });
     } catch (e) {
       if (mounted) {
@@ -299,29 +335,62 @@ class _CaptureSessionScreenState extends State<CaptureSessionScreen>
   }
 
   Future<void> _submitItem() async {
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final scannerProvider = Provider.of<ScannerProvider>(
-      context,
-      listen: false,
-    );
-
-    // Validate
-    final barcode = _barcodeController.text.trim();
-    if (barcode.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Barcode is required')));
-      return;
-    }
-
-    if (_capturedImage == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Please take a photo')));
-      return;
-    }
-
     try {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final scannerProvider = Provider.of<ScannerProvider>(
+        context,
+        listen: false,
+      );
+
+      // Check if token is available
+      if (authProvider.token == null) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Authentication error. Please login again.'),
+            ),
+          );
+        }
+        return;
+      }
+
+      // Check if session is active
+      if (scannerProvider.currentSession == null) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('No active session. Please restart.')),
+          );
+        }
+        return;
+      }
+
+      // Validate
+      final barcode = _barcodeController.text.trim();
+      if (barcode.isEmpty) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Barcode is required')));
+        return;
+      }
+
+      if (_capturedImage == null) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Please take a photo')));
+        return;
+      }
+
+      // Verify image file exists
+      if (!await _capturedImage!.exists()) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Image file not found. Please retake photo.'),
+            ),
+          );
+        }
+        return;
+      }
       String? name = _nameController.text.trim();
       if (name.isEmpty) name = null;
 
@@ -341,13 +410,18 @@ class _CaptureSessionScreenState extends State<CaptureSessionScreen>
         price: price,
         mrp: mrp,
         quantity: qty,
+        productGroup: _groupController.text.trim().isEmpty
+            ? null
+            : _groupController.text.trim(),
       );
 
       _cancelEditing(); // Reset immediately
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Queue Error: $e')));
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
+      }
     }
   }
 
@@ -444,6 +518,51 @@ class _CaptureSessionScreenState extends State<CaptureSessionScreen>
   }
 
   Widget _buildBottomPanel() {
+    // Photo capture mode - show camera with OK/Cancel buttons
+    if (_isTakingProductPhoto) {
+      return Container(
+        padding: const EdgeInsets.all(20),
+        decoration: const BoxDecoration(
+          color: Colors.black54,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: SafeArea(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  icon: const Icon(Icons.close, color: Colors.white),
+                  label: const Text(
+                    "Cancel",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: Colors.white),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                  onPressed: _cancelPhotoMode,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: ElevatedButton.icon(
+                  icon: const Icon(Icons.camera_alt),
+                  label: const Text("OK"),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                  onPressed: _takePhoto,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     if (!_isEditing) {
       return Container(
         padding: const EdgeInsets.all(20),
@@ -553,6 +672,17 @@ class _CaptureSessionScreenState extends State<CaptureSessionScreen>
               ),
               const SizedBox(height: 12),
 
+              TextField(
+                controller: _groupController,
+                decoration: const InputDecoration(
+                  labelText: 'Product Group',
+                  border: OutlineInputBorder(),
+                  isDense: true,
+                ),
+                textInputAction: TextInputAction.next,
+              ),
+              const SizedBox(height: 12),
+
               Row(
                 children: [
                   Expanded(
@@ -607,7 +737,7 @@ class _CaptureSessionScreenState extends State<CaptureSessionScreen>
                         ? ElevatedButton.icon(
                             icon: const Icon(Icons.camera_alt),
                             label: const Text("Capture"),
-                            onPressed: _takePhoto,
+                            onPressed: _startPhotoMode,
                             style: ElevatedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(vertical: 12),
                             ),

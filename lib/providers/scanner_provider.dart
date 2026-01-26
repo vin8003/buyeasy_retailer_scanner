@@ -56,7 +56,7 @@ class ScannerProvider with ChangeNotifier {
         token,
         name: name,
       );
-      print("Session Started: ${_currentSession?.id}");
+
       await _saveSessionId(_currentSession!.id);
     } catch (e) {
       _error = e.toString();
@@ -78,7 +78,6 @@ class ScannerProvider with ChangeNotifier {
       final sessionId = prefs.getInt('active_upload_session_id');
 
       if (sessionId != null) {
-        print("Restoring Session: $sessionId");
         // We need to fetch details. getSessionDetails gets a single session details.
         // But ideally we should also fetch list of active sessions if we are going to fallback to list?
         // For now, if ID exists, try to restore it.
@@ -89,7 +88,6 @@ class ScannerProvider with ChangeNotifier {
         return true;
       }
     } catch (e) {
-      print("Failed to restore session: $e");
       // If restore fails (e.g. 404), clear it
       await _clearSessionId();
     } finally {
@@ -116,7 +114,6 @@ class ScannerProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      print("Resuming Session: $sessionId");
       _currentSession = await _productService.getSessionDetails(
         token,
         sessionId,
@@ -140,7 +137,6 @@ class ScannerProvider with ChangeNotifier {
       final data = await _productService.searchMasterProduct(token, barcode);
       return data;
     } catch (e) {
-      print("Lookup failed: $e");
       return null;
     }
   }
@@ -154,6 +150,7 @@ class ScannerProvider with ChangeNotifier {
     double? price,
     double? mrp,
     int? quantity,
+    String? productGroup,
   }) {
     if (_currentSession == null) {
       throw Exception("No active session");
@@ -166,6 +163,7 @@ class ScannerProvider with ChangeNotifier {
       price: price,
       mrp: mrp,
       quantity: quantity,
+      productGroup: productGroup,
     );
     _pendingQueue.add(item);
     notifyListeners();
@@ -199,15 +197,14 @@ class ScannerProvider with ChangeNotifier {
               'price': item.price,
               'mrp': item.mrp,
               'quantity': item.quantity,
+              'product_group': item.productGroup,
             },
           );
 
           // Success
           _currentSession!.items.insert(0, newItem);
           _pendingQueue.remove(item);
-          print("Uploaded Item: ${item.barcode}");
         } catch (e) {
-          print("Upload Failed for ${item.barcode}: $e");
           item.isUploading = false;
           item.isFailed = true;
           _pendingQueue.remove(item);

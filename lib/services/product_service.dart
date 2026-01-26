@@ -103,20 +103,37 @@ class ProductService {
     String token,
     String barcode,
   ) async {
-    final response = await http.get(
-      Uri.parse('${ApiConstants.masterProductSearch}?barcode=$barcode'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-    );
+    try {
+      final response = await http
+          .get(
+            Uri.parse('${ApiConstants.masterProductSearch}?barcode=$barcode'),
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer $token',
+            },
+          )
+          .timeout(
+            const Duration(seconds: 10),
+            onTimeout: () {
+              throw Exception('Request timed out');
+            },
+          );
 
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
-    } else if (response.statusCode == 404) {
-      throw Exception('Product not found in master catalog');
-    } else {
-      throw Exception('Failed to search product');
+      if (response.statusCode == 200) {
+        final decoded = jsonDecode(response.body);
+        if (decoded is! Map<String, dynamic>) {
+          throw Exception('Invalid response format');
+        }
+        return decoded;
+      } else if (response.statusCode == 404) {
+        throw Exception('Product not found in master catalog');
+      } else {
+        throw Exception('Failed to search product: ${response.statusCode}');
+      }
+    } on FormatException {
+      throw Exception('Invalid response from server');
+    } catch (e) {
+      rethrow;
     }
   }
 
@@ -219,6 +236,10 @@ class ProductService {
       if (details['quantity'] != null) {
         dataMap['qty'] = details['quantity'];
       }
+      if (details['product_group'] != null &&
+          details['product_group'].isNotEmpty) {
+        dataMap['product_group'] = details['product_group'];
+      }
 
       if (dataMap.isNotEmpty) {
         request.fields['data'] = jsonEncode(dataMap);
@@ -230,14 +251,27 @@ class ProductService {
       request.files.add(pic);
     }
 
-    var streamedResponse = await request.send();
+    var streamedResponse = await request.send().timeout(
+      const Duration(seconds: 30),
+      onTimeout: () {
+        throw Exception('Upload timed out');
+      },
+    );
     var response = await http.Response.fromStream(streamedResponse);
 
     if (response.statusCode == 201) {
-      return UploadSessionItem.fromJson(jsonDecode(response.body));
+      try {
+        return UploadSessionItem.fromJson(jsonDecode(response.body));
+      } on FormatException {
+        throw Exception('Invalid response format from server');
+      }
     } else {
-      final errorData = jsonDecode(response.body);
-      throw Exception(errorData['error'] ?? 'Failed to add item');
+      try {
+        final errorData = jsonDecode(response.body);
+        throw Exception(errorData['error'] ?? 'Failed to add item');
+      } catch (e) {
+        throw Exception('Failed to add item: ${response.statusCode}');
+      }
     }
   }
 }

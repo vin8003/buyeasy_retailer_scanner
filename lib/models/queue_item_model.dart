@@ -11,6 +11,7 @@ class QueueItem {
   final double? price;
   final double? mrp;
   final int? quantity;
+  final String? productGroup;
 
   QueueItem({
     required this.barcode,
@@ -21,5 +22,6 @@ class QueueItem {
     this.price,
     this.mrp,
     this.quantity,
+    this.productGroup,
   });
 }
