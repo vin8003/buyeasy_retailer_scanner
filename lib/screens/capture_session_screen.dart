@@ -357,15 +357,9 @@ class _CaptureSessionScreenState extends State<CaptureSessionScreen>
     final session = scannerProvider.currentSession;
     final pendingCount = scannerProvider.pendingCount;
 
-    final size = MediaQuery.of(context).size;
-    final double halfHeight = size.height * 0.5;
-
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        // Keep transparent to float over camera if needed, or black for distinct look?
-        // User requested "Top Half -> Live Camera Preview". AppBar usually floats or sits above.
-        // I will make it semi-transparent black to ensure visibility over camera.
         backgroundColor: Colors.black45,
         foregroundColor: Colors.white,
         elevation: 0,
@@ -434,267 +428,237 @@ class _CaptureSessionScreenState extends State<CaptureSessionScreen>
           ),
         ],
       ),
-      // Use a Column for the split layout
-      body: Column(
+      body: Stack(
         children: [
-          // 1. Top Half: Camera Preview (Square)
-          SizedBox(
-            height: halfHeight,
-            width: double.infinity,
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                Container(color: Colors.black), // Background for padding
-                if (_isCameraInitialized && _cameraController != null)
-                  Center(
-                    // Enforce 1:1 Square
-                    child: AspectRatio(
-                      aspectRatio: 1,
-                      child: ClipRect(
-                        child: OverflowBox(
-                          alignment: Alignment.center,
-                          child: FittedBox(
-                            fit: BoxFit.cover,
-                            child: SizedBox(
-                              width: size.width,
-                              // Calculate height based on aspect ratio to ensure full coverage
-                              // Usually camera aspect ratio is 4/3 or 16/9.
-                              // We just need it to be big enough to cover the square.
-                              height:
-                                  size.width *
-                                  (_cameraController!.value.aspectRatio < 1
-                                      ? 1 / _cameraController!.value.aspectRatio
-                                      : _cameraController!.value.aspectRatio),
-                              child: CameraPreview(_cameraController!),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  )
-                else
-                  const Center(child: CircularProgressIndicator()),
-              ],
-            ),
-          ),
+          // 1. Full Screen Camera
+          if (_isCameraInitialized && _cameraController != null)
+            SizedBox.expand(child: CameraPreview(_cameraController!))
+          else
+            const Center(child: CircularProgressIndicator()),
 
-          // 2. Bottom Half: Form or Scan Prompt
-          Expanded(
-            child: Container(
-              color: Colors.white,
-              width: double.infinity,
-              child: _buildBottomPanel(),
-            ),
-          ),
+          // 2. Overlay UI
+          Align(alignment: Alignment.bottomCenter, child: _buildBottomPanel()),
         ],
       ),
     );
   }
 
   Widget _buildBottomPanel() {
-    // Shared text styles
-    // Logic: If not editing, show "Ready to Scan". If editing, show Form.
-
     if (!_isEditing) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.qr_code_scanner, size: 64, color: Colors.grey),
-            const SizedBox(height: 16),
-            const Text(
-              "Point camera at barcode",
-              style: TextStyle(fontSize: 18, color: Colors.grey),
-            ),
-            const SizedBox(height: 24),
-            OutlinedButton.icon(
-              icon: const Icon(Icons.keyboard),
-              label: const Text("Enter Manually"),
-              style: OutlinedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 32,
-                  vertical: 16,
-                ),
+      return Container(
+        padding: const EdgeInsets.all(20),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 10)],
+        ),
+        child: SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                "Scan or Enter Manually",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
-              onPressed: () => _startEditing(null),
-            ),
-          ],
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      icon: const Icon(Icons.keyboard),
+                      label: const Text("Enter Manually"),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.all(16),
+                      ),
+                      onPressed: () => _startEditing(null),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       );
     }
 
     // Form
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // Header
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Container(
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 10)],
+      ),
+      child: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Text(
-                "Product Details",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              if (_isLookingUp)
-                const SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                ),
-              IconButton(
-                icon: const Icon(Icons.close),
-                onPressed: _cancelEditing,
-              ),
-            ],
-          ),
-          if (_lookupInfoText != null)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8.0),
-              child: Text(
-                _lookupInfoText!,
-                style: TextStyle(
-                  color: _lookupInfoText!.contains("Found")
-                      ? Colors.green
-                      : Colors.orange,
-                  fontStyle: FontStyle.italic,
-                ),
-              ),
-            ),
-          const Divider(),
-
-          TextField(
-            controller: _barcodeController,
-            decoration: const InputDecoration(
-              labelText: 'Barcode',
-              border: OutlineInputBorder(),
-              prefixIcon: Icon(Icons.qr_code),
-              isDense: true,
-            ),
-            textInputAction: TextInputAction.next,
-          ),
-          const SizedBox(height: 12),
-
-          TextField(
-            controller: _nameController,
-            decoration: const InputDecoration(
-              labelText: 'Product Name',
-              border: OutlineInputBorder(),
-              isDense: true,
-            ),
-            textInputAction: TextInputAction.next,
-          ),
-          const SizedBox(height: 12),
-
-          Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: _mrpController,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                    labelText: 'MRP',
-                    border: OutlineInputBorder(),
-                    isDense: true,
+              // Header
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    "Product Details",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
-                  textInputAction: TextInputAction.next,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: TextField(
-                  controller: _priceController,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                    labelText: 'Price',
-                    hintText: 'Same as MRP',
-                    border: OutlineInputBorder(),
-                    isDense: true,
+                  if (_isLookingUp)
+                    const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: _cancelEditing,
                   ),
-                  textInputAction: TextInputAction.next,
-                ),
+                ],
               ),
-            ],
-          ),
-          const SizedBox(height: 12),
-
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Expanded(
-                flex: 1,
-                child: TextField(
-                  controller: _qtyController,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                    labelText: 'Qty',
-                    border: OutlineInputBorder(),
-                    isDense: true,
+              if (_lookupInfoText != null)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: Text(
+                    _lookupInfoText!,
+                    style: TextStyle(
+                      color: _lookupInfoText!.contains("Found")
+                          ? Colors.green
+                          : Colors.orange,
+                      fontStyle: FontStyle.italic,
+                    ),
                   ),
                 ),
+              const Divider(),
+
+              TextField(
+                controller: _barcodeController,
+                decoration: const InputDecoration(
+                  labelText: 'Barcode',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.qr_code),
+                  isDense: true,
+                ),
+                textInputAction: TextInputAction.next,
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                flex: 2,
-                child: _capturedImage == null
-                    ? ElevatedButton.icon(
-                        icon: const Icon(Icons.camera_alt),
-                        label: const Text("Capture"),
-                        onPressed: _takePhoto,
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          backgroundColor: Colors.deepPurple.shade50,
-                          foregroundColor: Colors.deepPurple,
-                        ),
-                      )
-                    : OutlinedButton.icon(
-                        icon: const Icon(Icons.check, color: Colors.green),
-                        label: const Text("Retake"),
-                        onPressed: _takePhoto,
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                        ),
+              const SizedBox(height: 12),
+
+              TextField(
+                controller: _nameController,
+                decoration: const InputDecoration(
+                  labelText: 'Product Name',
+                  border: OutlineInputBorder(),
+                  isDense: true,
+                ),
+                textInputAction: TextInputAction.next,
+              ),
+              const SizedBox(height: 12),
+
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _mrpController,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(
+                        labelText: 'MRP',
+                        border: OutlineInputBorder(),
+                        isDense: true,
                       ),
+                      textInputAction: TextInputAction.next,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: TextField(
+                      controller: _priceController,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(
+                        labelText: 'Price',
+                        hintText: 'Same as MRP',
+                        border: OutlineInputBorder(),
+                        isDense: true,
+                      ),
+                      textInputAction: TextInputAction.next,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: TextField(
+                      controller: _qtyController,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(
+                        labelText: 'Qty',
+                        border: OutlineInputBorder(),
+                        isDense: true,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    flex: 2,
+                    child: _capturedImage == null
+                        ? ElevatedButton.icon(
+                            icon: const Icon(Icons.camera_alt),
+                            label: const Text("Capture"),
+                            onPressed: _takePhoto,
+                            style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                            ),
+                          )
+                        : OutlinedButton.icon(
+                            icon: const Icon(Icons.check, color: Colors.green),
+                            label: const Text("Retake"),
+                            onPressed: _takePhoto,
+                            style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                            ),
+                          ),
+                  ),
+                ],
+              ),
+
+              if (_capturedImage != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: Container(
+                    height: 100,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey.shade300),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.file(_capturedImage!, fit: BoxFit.cover),
+                    ),
+                  ),
+                ),
+
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: _submitItem,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blueAccent,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  textStyle: const TextStyle(fontSize: 18),
+                ),
+                child: const Text("SAVE & NEXT"),
+              ),
+              Padding(
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom,
+                ),
               ),
             ],
           ),
-
-          if (_capturedImage != null)
-            Padding(
-              padding: const EdgeInsets.only(top: 8.0),
-              child: Container(
-                height: 100,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey.shade300),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: Image.file(_capturedImage!, fit: BoxFit.cover),
-                ),
-              ),
-            ),
-
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: _submitItem,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blueAccent,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              textStyle: const TextStyle(fontSize: 18),
-            ),
-            child: const Text("SAVE & NEXT"),
-          ),
-          // Add padding for keyboard if needed, mostly handled by Scaffold resize but good to have safety
-          Padding(
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).viewInsets.bottom,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
