@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
 import '../providers/scanner_provider.dart';
 import '../providers/auth_provider.dart';
+import '../utils/app_logger.dart';
 
 class CaptureSessionScreen extends StatefulWidget {
   static const routeName = '/capture-session';
@@ -92,7 +93,13 @@ class _CaptureSessionScreenState extends State<CaptureSessionScreen>
       setState(() {
         _isCameraInitialized = true;
       });
-    } catch (e) {
+    } catch (e, st) {
+      AppLogger.error(
+        'Camera initialization failed',
+        error: e,
+        stackTrace: st,
+        tag: 'CaptureSessionScreen',
+      );
       if (mounted) {
         ScaffoldMessenger.of(
           context,
@@ -155,8 +162,13 @@ class _CaptureSessionScreenState extends State<CaptureSessionScreen>
           _startEditing(code);
         }
       }
-    } catch (e) {
-      // Silently ignore scan errors
+    } catch (e, st) {
+      AppLogger.error(
+        'Barcode frame processing failed',
+        error: e,
+        stackTrace: st,
+        tag: 'CaptureSessionScreen',
+      );
     } finally {
       if (mounted) {
         // Add small delay to prevent CPU burn if no barcode found?
@@ -283,7 +295,13 @@ class _CaptureSessionScreenState extends State<CaptureSessionScreen>
           }
         });
       }
-    } catch (e) {
+    } catch (e, st) {
+      AppLogger.error(
+        'Product lookup UI failed for barcode=$barcode',
+        error: e,
+        stackTrace: st,
+        tag: 'CaptureSessionScreen',
+      );
       if (mounted) {
         setState(() {
           _isLookingUp = false;
@@ -325,7 +343,13 @@ class _CaptureSessionScreenState extends State<CaptureSessionScreen>
         _capturedImage = File(photo.path);
         _isTakingProductPhoto = false; // Return to form after taking photo
       });
-    } catch (e) {
+    } catch (e, st) {
+      AppLogger.error(
+        'Product photo capture failed',
+        error: e,
+        stackTrace: st,
+        tag: 'CaptureSessionScreen',
+      );
       if (mounted) {
         ScaffoldMessenger.of(
           context,
@@ -416,7 +440,13 @@ class _CaptureSessionScreenState extends State<CaptureSessionScreen>
       );
 
       _cancelEditing(); // Reset immediately
-    } catch (e) {
+    } catch (e, st) {
+      AppLogger.error(
+        'Submit item to upload queue failed',
+        error: e,
+        stackTrace: st,
+        tag: 'CaptureSessionScreen',
+      );
       if (mounted) {
         ScaffoldMessenger.of(
           context,

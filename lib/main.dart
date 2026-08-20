@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'providers/auth_provider.dart';
@@ -7,12 +9,46 @@ import 'screens/login_screen.dart';
 import 'screens/scan_gateway_screen.dart';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'utils/app_logger.dart';
 import 'utils/constants.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: ".env");
-  await ApiConstants.loadServerUrl();
+
+  FlutterError.onError = (FlutterErrorDetails details) {
+    AppLogger.error(
+      'Flutter framework error',
+      error: details.exception,
+      stackTrace: details.stack,
+      tag: 'FlutterError',
+    );
+    FlutterError.presentError(details);
+  };
+
+  PlatformDispatcher.instance.onError = (Object error, StackTrace stack) {
+    AppLogger.error(
+      'Uncaught async/platform error',
+      error: error,
+      stackTrace: stack,
+      tag: 'PlatformDispatcher',
+    );
+    // Return false so the error still propagates (logging only; do not swallow).
+    return false;
+  };
+
+  try {
+    await dotenv.load(fileName: ".env");
+    await ApiConstants.loadServerUrl();
+  } catch (e, st) {
+    AppLogger.error(
+      'Startup configuration failed',
+      error: e,
+      stackTrace: st,
+      tag: 'main',
+    );
+    rethrow;
+  }
+
   runApp(const MyApp());
 }
 

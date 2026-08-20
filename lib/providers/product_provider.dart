@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/product_model.dart';
 import '../services/product_service.dart';
+import '../utils/app_logger.dart';
 
 class ProductProvider with ChangeNotifier {
   final ProductService _productService = ProductService();
@@ -25,8 +26,13 @@ class ProductProvider with ChangeNotifier {
       _categories = results[0];
       _brands = results[1];
       notifyListeners();
-    } catch (e) {
-      debugPrint('Error fetching metadata: $e');
+    } catch (e, st) {
+      AppLogger.error(
+        'Failed to fetch product metadata',
+        error: e,
+        stackTrace: st,
+        tag: 'ProductProvider',
+      );
     }
   }
 
@@ -40,7 +46,13 @@ class ProductProvider with ChangeNotifier {
     try {
       final result = await _productService.searchMasterProduct(token, barcode);
       return result;
-    } catch (e) {
+    } catch (e, st) {
+      AppLogger.error(
+        'searchMasterProduct failed for barcode=$barcode',
+        error: e,
+        stackTrace: st,
+        tag: 'ProductProvider',
+      );
       _error = e.toString();
       rethrow;
     } finally {
@@ -59,7 +71,13 @@ class ProductProvider with ChangeNotifier {
     try {
       final newProduct = await _productService.addProduct(token, productData);
       _products.insert(0, newProduct);
-    } catch (e) {
+    } catch (e, st) {
+      AppLogger.error(
+        'Failed to add product',
+        error: e,
+        stackTrace: st,
+        tag: 'ProductProvider',
+      );
       _error = e.toString();
       rethrow;
     } finally {

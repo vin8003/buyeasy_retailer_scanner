@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user_model.dart';
 import '../services/auth_service.dart';
+import '../utils/app_logger.dart';
 
 class AuthProvider with ChangeNotifier {
   final AuthService _authService = AuthService();
@@ -24,7 +25,13 @@ class AuthProvider with ChangeNotifier {
     if (_token != null) {
       try {
         await fetchProfile();
-      } catch (e) {
+      } catch (e, st) {
+        AppLogger.error(
+          'Token restore / profile fetch failed; logging out',
+          error: e,
+          stackTrace: st,
+          tag: 'AuthProvider',
+        );
         logout();
       }
     }

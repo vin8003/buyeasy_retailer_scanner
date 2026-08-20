@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../models/upload_session_model.dart';
 import '../models/queue_item_model.dart';
 import '../services/product_service.dart';
+import '../utils/app_logger.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -37,7 +38,13 @@ class ScannerProvider with ChangeNotifier {
 
     try {
       _sessions = await _productService.getActiveSessions(token);
-    } catch (e) {
+    } catch (e, st) {
+      AppLogger.error(
+        'Failed to fetch active sessions',
+        error: e,
+        stackTrace: st,
+        tag: 'ScannerProvider',
+      );
       _error = e.toString();
     } finally {
       _isLoading = false;
@@ -58,7 +65,13 @@ class ScannerProvider with ChangeNotifier {
       );
 
       await _saveSessionId(_currentSession!.id);
-    } catch (e) {
+    } catch (e, st) {
+      AppLogger.error(
+        'Failed to start upload session',
+        error: e,
+        stackTrace: st,
+        tag: 'ScannerProvider',
+      );
       _error = e.toString();
       _currentSession = null;
       rethrow;
@@ -87,7 +100,13 @@ class ScannerProvider with ChangeNotifier {
         );
         return true;
       }
-    } catch (e) {
+    } catch (e, st) {
+      AppLogger.error(
+        'Failed to restore upload session',
+        error: e,
+        stackTrace: st,
+        tag: 'ScannerProvider',
+      );
       // If restore fails (e.g. 404), clear it
       await _clearSessionId();
     } finally {
@@ -119,7 +138,13 @@ class ScannerProvider with ChangeNotifier {
         sessionId,
       );
       await _saveSessionId(sessionId);
-    } catch (e) {
+    } catch (e, st) {
+      AppLogger.error(
+        'Failed to resume session $sessionId',
+        error: e,
+        stackTrace: st,
+        tag: 'ScannerProvider',
+      );
       _error = "Failed to resume: $e";
       rethrow;
     } finally {
@@ -136,7 +161,13 @@ class ScannerProvider with ChangeNotifier {
     try {
       final data = await _productService.searchMasterProduct(token, barcode);
       return data;
-    } catch (e) {
+    } catch (e, st) {
+      AppLogger.error(
+        'Master product lookup failed for barcode=$barcode',
+        error: e,
+        stackTrace: st,
+        tag: 'ScannerProvider',
+      );
       return null;
     }
   }
@@ -204,7 +235,13 @@ class ScannerProvider with ChangeNotifier {
           // Success
           _currentSession!.items.insert(0, newItem);
           _pendingQueue.remove(item);
-        } catch (e) {
+        } catch (e, st) {
+          AppLogger.error(
+            'Queue upload failed for barcode=${item.barcode}',
+            error: e,
+            stackTrace: st,
+            tag: 'ScannerProvider',
+          );
           item.isUploading = false;
           item.isFailed = true;
           _pendingQueue.remove(item);

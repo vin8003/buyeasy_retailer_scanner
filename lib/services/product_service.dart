@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import '../utils/app_logger.dart';
 import '../utils/constants.dart';
 import '../models/product_model.dart';
 import '../models/upload_session_model.dart';
@@ -130,7 +131,13 @@ class ProductService {
       } else {
         throw Exception('Failed to search product: ${response.statusCode}');
       }
-    } on FormatException {
+    } on FormatException catch (e, st) {
+      AppLogger.error(
+        'Master product search returned invalid JSON',
+        error: e,
+        stackTrace: st,
+        tag: 'ProductService',
+      );
       throw Exception('Invalid response from server');
     } catch (e) {
       rethrow;
@@ -262,14 +269,26 @@ class ProductService {
     if (response.statusCode == 201) {
       try {
         return UploadSessionItem.fromJson(jsonDecode(response.body));
-      } on FormatException {
+      } on FormatException catch (e, st) {
+        AppLogger.error(
+          'addSessionItem success response was not valid JSON',
+          error: e,
+          stackTrace: st,
+          tag: 'ProductService',
+        );
         throw Exception('Invalid response format from server');
       }
     } else {
       try {
         final errorData = jsonDecode(response.body);
         throw Exception(errorData['error'] ?? 'Failed to add item');
-      } catch (e) {
+      } catch (e, st) {
+        AppLogger.error(
+          'addSessionItem failed with status ${response.statusCode}',
+          error: e,
+          stackTrace: st,
+          tag: 'ProductService',
+        );
         throw Exception('Failed to add item: ${response.statusCode}');
       }
     }
