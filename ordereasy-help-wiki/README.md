@@ -56,17 +56,16 @@ These already exist on the agent checkout of `RetailerCustomerPlatform` `feature
 - `docs: add Django API surface and correct scanner capture path`
 
 
-## Apply with `git am` (preferred)
-
-On a machine with push access to `RetailerCustomerPlatform`:
+## Apply with the helper script (preferred)
 
 ```bash
 git clone git@github.com:vin8003/RetailerCustomerPlatform.git
-cd RetailerCustomerPlatform
-git checkout -b feature/wiki-content-update-2c2e origin/main
-git am /path/to/buyeasy_retailer_scanner/ordereasy-help-wiki/patches/*.patch
+./ordereasy-help-wiki/apply-to-rcp.sh ./RetailerCustomerPlatform
+# then, from that clone:
 git push -u origin feature/wiki-content-update-2c2e
 ```
+
+Or `git am patches/*.patch` on `origin/main`, or `git fetch patches/wiki-content-update-2c2e.bundle HEAD && git checkout -b feature/wiki-content-update-2c2e FETCH_HEAD`.
 
 Then open a PR into `main`. That is the lasting edit. Confluence and this scanner folder are copies.
 
