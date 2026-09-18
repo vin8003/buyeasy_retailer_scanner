@@ -1,0 +1,55 @@
+# Publishes the Sep 2026 help wiki as a GitHub Pages preview from this scanner repo.
+# Canonical SOT remains RetailerCustomerPlatform/wiki on main (KAN-275 / issue 137).
+# cursor[bot] cannot enable Pages via REST (403) but Actions GITHUB_TOKEN may
+# create the site on first deploy-pages.
+name: Publish OrderEasy help wiki preview
+
+on:
+  workflow_dispatch:
+  repository_dispatch:
+    types: [publish-ordereasy-wiki-pages]
+  push:
+    branches: [feature/wiki-content-update-2c2e]
+    paths:
+      - "ordereasy-help-wiki/wiki/**"
+      - "ordereasy-help-wiki/build-static-site.py"
+      - ".github/workflows/publish-wiki-pages.yml"
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout wiki snapshot
+        uses: actions/checkout@v4
+        with:
+          ref: feature/wiki-content-update-2c2e
+
+      - name: Build static HTML
+        run: python3 ordereasy-help-wiki/build-static-site.py
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ordereasy-help-wiki/_site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
