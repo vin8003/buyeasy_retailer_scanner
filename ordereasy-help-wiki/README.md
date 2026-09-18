@@ -8,8 +8,11 @@ Last reviewed against live apps on GitHub `main`: **18 Sep 2026**.
 
 - Jira: [KAN-275](https://vin8003.atlassian.net/browse/KAN-275) (Dev In Progress)
 - GitHub apply ticket: https://github.com/vin8003/RetailerCustomerPlatform/issues/132
+- Curl-from-release ticket: https://github.com/vin8003/RetailerCustomerPlatform/issues/134
 - Patch download (no clone): https://github.com/vin8003/buyeasy_retailer_scanner/releases/tag/wiki-sep-2026-2c2e
 - Confluence copy: https://vin8003.atlassian.net/wiki/spaces/OrderEasy/pages/40271873 (child pages now match the git wiki; still a copy, not SOT)
+
+Gmail rejected the `.tgz` of these patches (policy on archives). Use the Release, `curl-apply-from-release.sh`, or the five `.patch` files — not a tarball.
 
 ## What this is
 
@@ -38,9 +41,24 @@ User-facing help centre plus the technical pages that changed with this refresh:
 ## Fastest land path (GitHub Action)
 
 1. In this scanner repo, add secret **`RCP_PUSH_TOKEN`**: a PAT with `contents` + `pull requests` on `vin8003/RetailerCustomerPlatform`.
-2. Actions → **Apply OrderEasy help wiki to RCP** → Run workflow (branch `feature/wiki-content-update-2c2e`).
+2. Actions → **Apply OrderEasy help wiki to RCP** → Run workflow (branch **`master`** or `feature/wiki-content-update-2c2e`).
 
 That applies `ordereasy-help-wiki/patches/*.patch` onto RCP `origin/main` and opens a PR into `main`.
+
+## Fastest land path (no scanner clone)
+
+On a machine with push access to `RetailerCustomerPlatform`:
+
+```bash
+git clone git@github.com:vin8003/RetailerCustomerPlatform.git
+./curl-apply-from-release.sh ./RetailerCustomerPlatform
+# or, from this folder after clone:
+#   ./ordereasy-help-wiki/curl-apply-from-release.sh /path/to/RetailerCustomerPlatform
+cd RetailerCustomerPlatform
+git push -u origin feature/wiki-content-update-2c2e
+```
+
+If you do not have this script, copy the curl commands from GitHub issue 134.
 
 ## How to land this on the canonical repo (local)
 

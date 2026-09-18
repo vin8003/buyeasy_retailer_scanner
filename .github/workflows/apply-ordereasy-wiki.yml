@@ -3,7 +3,7 @@
 # (a PAT or fine-grained token with contents + pull-requests on RetailerCustomerPlatform).
 #
 # Actions → Apply OrderEasy help wiki to RCP → Run workflow
-# (select branch feature/wiki-content-update-2c2e).
+# (branch master or feature/wiki-content-update-2c2e; workflow is on both).
 name: Apply OrderEasy help wiki to RCP
 
 on:
