@@ -3,7 +3,7 @@
 # (a PAT or fine-grained token with contents + pull-requests on RetailerCustomerPlatform).
 #
 # Trigger: Actions UI (workflow_dispatch) on master, repository_dispatch
-# event_type apply-ordereasy-wiki, or schedule every 20 minutes so a newly added
+# event_type apply-ordereasy-wiki, or schedule at :05/:25/:45 UTC so a newly added
 # RCP_PUSH_TOKEN can land without another manual dispatch.
 # Patches are downloaded from Release wiki-sep-2026-2c2e (not from this checkout).
 #
@@ -14,7 +14,7 @@ name: Apply OrderEasy help wiki to RCP
 
 on:
   schedule:
-    - cron: "*/20 * * * *"
+    - cron: "5,25,45 * * * *"
   workflow_dispatch:
     inputs:
       dry_run:
