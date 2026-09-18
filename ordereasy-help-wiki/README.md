@@ -51,6 +51,22 @@ GitHub Action **Publish OrderEasy help wiki preview** builds `wiki/` to HTML (`r
 
 That preview does **not** replace Git `RetailerCustomerPlatform/wiki/` on `main`.
 
+## Fastest land path (git bundle, no decode)
+
+On a machine with push access to `RetailerCustomerPlatform` (`origin/main` at `e9420db`):
+
+```bash
+git clone git@github.com:vin8003/RetailerCustomerPlatform.git
+cd RetailerCustomerPlatform
+git checkout -B feature/wiki-content-update-2c2e origin/main
+curl -L -O https://github.com/vin8003/buyeasy_retailer_scanner/releases/download/wiki-sep-2026-2c2e/rcp-wiki-commits.bundle
+git fetch rcp-wiki-commits.bundle
+git merge --ff-only FETCH_HEAD
+git push -u origin feature/wiki-content-update-2c2e
+```
+
+Verified: that fast-forward lands `wiki/whats-new.md`, `wiki/project/apis.md`, `wiki/retailer-guide/print-labels.md`, and `docs/05-API-SURFACE.md` (HEAD `959b8f1`). Copy-tree zip: [`rcp-wiki-applied.zip`](https://github.com/vin8003/buyeasy_retailer_scanner/releases/download/wiki-sep-2026-2c2e/rcp-wiki-applied.zip).
+
 ## Fastest land path (GitHub Action)
 
 1. In this scanner repo, add secret **`RCP_PUSH_TOKEN`**: a PAT with `contents` + `pull requests` on `vin8003/RetailerCustomerPlatform` ([issue 3](https://github.com/vin8003/buyeasy_retailer_scanner/issues/3)).
