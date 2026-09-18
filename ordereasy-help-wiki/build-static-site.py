@@ -262,7 +262,7 @@ hr {{ border:0; border-top:1px solid var(--line); }}
 </head>
 <body>
 <div class="banner">Canonical Git wiki on <code>RetailerCustomerPlatform</code> <code>main</code> is still August 2026.
-Land via <a href="https://github.com/vin8003/RetailerCustomerPlatform/issues/137">issue 137</a> (KAN-275). This Pages site is a preview, not the lasting edit.</div>
+Land via <a href="https://github.com/vin8003/RetailerCustomerPlatform/issues/178">issue 178</a> (KAN-275). This Pages site is a preview, not the lasting edit.</div>
 <div class="layout">
 <nav>
 <h1>OrderEasy help</h1>

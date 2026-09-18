@@ -85,7 +85,7 @@ jobs:
             exit 0
           fi
           if [ -z "$RCP_PUSH_TOKEN" ]; then
-            echo "::error::Patches applied cleanly onto origin/main (artifact rcp-wiki-applied). Add repository secret RCP_PUSH_TOKEN (contents + pull requests on vin8003/RetailerCustomerPlatform), then re-run. See https://github.com/vin8003/buyeasy_retailer_scanner/issues/3 and KAN-275 / https://github.com/vin8003/RetailerCustomerPlatform/issues/137"
+            echo "::error::Patches applied cleanly onto origin/main (artifact rcp-wiki-applied). Add repository secret RCP_PUSH_TOKEN (contents + pull requests on vin8003/RetailerCustomerPlatform), then re-run. See https://github.com/vin8003/buyeasy_retailer_scanner/issues/3 and KAN-275 / https://github.com/vin8003/RetailerCustomerPlatform/issues/178 (fetch-apply-from-scanner.sh)"
             exit 1
           fi
           cd rcp
@@ -99,7 +99,7 @@ jobs:
               --base main \
               --head feature/wiki-content-update-2c2e \
               --title "docs: refresh help wiki for Sep 2026 product" \
-              --body "KAN-275 / https://github.com/vin8003/RetailerCustomerPlatform/issues/137
+              --body "KAN-275 / https://github.com/vin8003/RetailerCustomerPlatform/issues/178
 
           Applies the 18 Sep 2026 OrderEasy help wiki (\`wiki/\` + \`docs/05-API-SURFACE.md\`) onto \`main\`.
 
