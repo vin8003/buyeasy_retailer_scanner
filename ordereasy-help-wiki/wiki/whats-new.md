@@ -9,7 +9,7 @@ Older pages in this wiki have been updated to match. Technical ticket snapshots 
 | Change | Where you use it |
 |--------|------------------|
 | **Print Labels** — barcode stickers (50×25 or 38×25 mm) from Products, POS cart, or the Print Labels screen | Retailer sidebar → Print Labels |
-| **Display Labels** — larger rack/shelf price tags (thermal rolls or A4 sheet) | Retailer sidebar → Display Labels |
+| **Display Labels** — larger rack/shelf price tags, including square **1:1** (75×75) and strip **3:1** (75×25) | Retailer sidebar → Display Labels |
 | **Exact-amount UPI QR on POS** — customer scans a QR for this bill (or the UPI part of a split bill) | POS → pay with UPI or Split |
 | **UPI QR on thermal receipts** — optional; turn on in Profile | Profile → receipt settings |
 | **Unknown barcode at POS** — create a new SKU or **link** the scan to an existing product | POS search / scan |

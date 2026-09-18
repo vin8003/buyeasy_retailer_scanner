@@ -54,3 +54,26 @@ These already exist on the agent checkout of `RetailerCustomerPlatform` `feature
 - `docs: point knowledge-base index at wiki what’s-new and labels`
 - `docs(wiki): add API map, Unmet Demand, and remaining Sep 2026 pages`
 - `docs: add Django API surface and correct scanner capture path`
+
+
+## Apply with `git am` (preferred)
+
+On a machine with push access to `RetailerCustomerPlatform`:
+
+```bash
+git clone git@github.com:vin8003/RetailerCustomerPlatform.git
+cd RetailerCustomerPlatform
+git checkout -b feature/wiki-content-update-2c2e origin/main
+git am /path/to/buyeasy_retailer_scanner/ordereasy-help-wiki/patches/*.patch
+git push -u origin feature/wiki-content-update-2c2e
+```
+
+Then open a PR into `main`. That is the lasting edit. Confluence and this scanner folder are copies.
+
+Local RCP commits on this agent (cannot push):
+
+- docs(wiki): refresh help centre for Sep 2026 product
+- docs: point knowledge-base index at wiki what’s-new and labels
+- docs(wiki): add API map, Unmet Demand, and remaining Sep 2026 pages
+- docs: add Django API surface and correct scanner capture path
+- docs(wiki): document display-label layouts and city/state picker

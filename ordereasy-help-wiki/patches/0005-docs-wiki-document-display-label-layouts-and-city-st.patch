@@ -1,0 +1,157 @@
+From f6f4528245e3a178b09ddb592bf6922b136c9b8a Mon Sep 17 00:00:00 2001
+From: Cursor Agent <cursoragent@cursor.com>
+Date: Fri, 18 Sep 2026 12:28:11 +0000
+Subject: [PATCH 5/5] docs(wiki): document display-label layouts and city/state
+ picker
+
+Match Display Labels 1:1 and 3:1 sizes, state-then-city plus IP guess,
+and Profile khata remaining (including over-limit) to live apps.
+
+Co-authored-by: Vineet Sharma <vin8003@gmail.com>
+---
+ wiki/customer-guide/cart-and-checkout.md    |  1 +
+ wiki/customer-guide/find-your-shop.md       | 11 +++++++----
+ wiki/customer-guide/your-account.md         |  4 ++--
+ wiki/getting-started/for-customers.md       |  2 +-
+ wiki/retailer-guide/customers-and-credit.md |  2 ++
+ wiki/retailer-guide/print-labels.md         | 19 ++++++++++++++-----
+ wiki/whats-new.md                           |  2 +-
+ 7 files changed, 28 insertions(+), 13 deletions(-)
+
+diff --git a/wiki/customer-guide/cart-and-checkout.md b/wiki/customer-guide/cart-and-checkout.md
+index 8607e0d..eb70d76 100644
+--- a/wiki/customer-guide/cart-and-checkout.md
++++ b/wiki/customer-guide/cart-and-checkout.md
+@@ -9,6 +9,7 @@ Open **Cart** from the bottom bar to review:
+ - Each product name, quantity, and line price
+ - Subtotal before offers and delivery
+ - Applied discounts or reward points (if any)
++- **Frequently bought together** suggestions for this shop (optional extras)
+ 
+ You can:
+ 
+diff --git a/wiki/customer-guide/find-your-shop.md b/wiki/customer-guide/find-your-shop.md
+index ff4ddbf..380c34a 100644
+--- a/wiki/customer-guide/find-your-shop.md
++++ b/wiki/customer-guide/find-your-shop.md
+@@ -14,9 +14,12 @@ Say **yes** to location if you are comfortable — this is the fastest way to se
+ 
+ If you decline location or GPS is unavailable:
+ 
+-1. You will be asked to **select your city**
+-2. The app shows shops registered in that area
+-3. You can still order — distance may be less precise
++1. You will be asked to **select your state, then city** (India list)
++2. The app may **guess city from your network** so you can confirm instead of typing
++3. The app shows shops registered in that area
++4. You can still order — distance may be less precise
++
++GPS without a city/pincode is not enough to list shops. Confirm the city even if the pin looks right.
+ 
+ ## The shop list
+ 
+@@ -56,7 +59,7 @@ To order from a different shop, go back to the shop list and switch — your car
+ 
+ | Problem | What to try |
+ |---------|-------------|
+-| No shops shown | Check city selection; shop may not be on OrderEasy yet in your area |
++| No shops shown | Confirm **state + city**; shop may not be on OrderEasy yet in your area |
+ | Shop too far | They may not deliver to you — try pickup or another shop |
+ | Cannot find my usual kirana | Ask the shop owner if they are on OrderEasy; they need to register |
+ 
+diff --git a/wiki/customer-guide/your-account.md b/wiki/customer-guide/your-account.md
+index 383e2a7..fdf2eeb 100644
+--- a/wiki/customer-guide/your-account.md
++++ b/wiki/customer-guide/your-account.md
+@@ -47,9 +47,9 @@ If you buy on **udhaar** from a shop, Profile shows a **Credit / Khata** section
+ 
+ - Credit limit the shop set
+ - Outstanding balance
+-- **Remaining** credit (limit minus outstanding)
++- **Remaining** credit (limit minus outstanding; can be negative if you owe more than the limit)
+ 
+-Balances appear after you have a credit account with that shop (usually after a credit sale at their counter). Loyalty points / cashback are listed separately on the same Profile screen.
++Balances appear after you have a credit account with that shop (usually after a credit sale at their counter). Remaining is on **Profile**, not on old order bills. Loyalty points / cashback are listed separately on the same Profile screen.
+ 
+ ## Saved addresses
+ 
+diff --git a/wiki/getting-started/for-customers.md b/wiki/getting-started/for-customers.md
+index b0f9121..67ed3c7 100644
+--- a/wiki/getting-started/for-customers.md
++++ b/wiki/getting-started/for-customers.md
+@@ -13,7 +13,7 @@ No install is required — it works in your browser.
+ When you first open the app you must **confirm location** before shopping:
+ 
+ 1. Allow location access if prompted — this helps show **shops near you**
+-2. If location is not available, **pick your city** from the list
++2. If location is not available, **pick state then city** (the app may guess from your network)
+ 
+ You will see shops for that city. You can change city later if you travel.
+ 
+diff --git a/wiki/retailer-guide/customers-and-credit.md b/wiki/retailer-guide/customers-and-credit.md
+index e1b154b..3da11c3 100644
+--- a/wiki/retailer-guide/customers-and-credit.md
++++ b/wiki/retailer-guide/customers-and-credit.md
+@@ -43,6 +43,8 @@ Trusted regulars often buy **on credit** and settle later — classic kirana kha
+ 
+ You can set a **maximum credit** per customer. POS blocks new credit sales above limit (unless you change policy).
+ 
++Customers see the same numbers on **their Profile** (limit, outstanding, remaining) after they have a credit account with your shop.
++
+ ### Recording payment
+ 
+ When customer pays off khata:
+diff --git a/wiki/retailer-guide/print-labels.md b/wiki/retailer-guide/print-labels.md
+index 78e7bd2..d5c9403 100644
+--- a/wiki/retailer-guide/print-labels.md
++++ b/wiki/retailer-guide/print-labels.md
+@@ -9,7 +9,7 @@ These screens are in the retailer sidebar as **Print Labels** and **Display Labe
+ | Kind | Menu | Typical use | Sizes |
+ |------|------|-------------|-------|
+ | **Barcode stickers** | Print Labels | Stick on the pack so POS can scan | 50×25 mm or 38×25 mm |
+-| **Display / rack tags** | Display Labels | Sit on the shelf so customers see price | Thermal rolls (100×75, 75×50, 75×75, 75×25 mm) or A4 sheet (21 labels) |
++| **Display / rack tags** | Display Labels | Sit on the shelf so customers see price | Thermal rolls: 100×75 (4:3), 75×50 (3:2), **75×75 (1:1)**, **75×25 (3:1)**, or A4 sheet (21 labels) |
+ 
+ Barcode stickers are for **staff and scanners**. Display labels are for **shoppers looking at the rack**.
+ 
+@@ -54,11 +54,20 @@ Works with common thermal label printers (for example TVS LP46NEO). If barcodes
+ 
+ 1. Open **Display Labels**
+ 2. Search and add products
+-3. Pick a **thermal roll** size or **A4 21-up** sheet
+-4. Optional: show savings (“Save ₹…”) and discount (“18% OFF”) from MRP vs selling price
+-5. Preview, then print
++3. Pick a size. Layout follows the paper:
+ 
+-Use these when you want a **large price** at eye level, not a tiny barcode on the pack.
++| Size | Shape |
++|------|--------|
++| 100×75 mm | Tall (4:3) |
++| 75×50 mm | Tall (3:2) — default |
++| 75×75 mm | Square (1:1) |
++| 75×25 mm | Wide strip (3:1) |
++| A4 21-up | 3 columns × 7 rows on A4 |
++
++4. Turn fields on or off: product name, MRP, selling price, savings (“Save ₹…”), discount (“18% OFF”), barcode (CODE128 or EAN13)
++5. Preview, then print. If a thermal tag looks stretched landscape, pick the matching roll size and do not “fit to page”
++
++Use these when you want a **large price** at eye level. You can still print a barcode on the rack tag; pack stickers remain the POS scan surface.
+ 
+ ## After a price change
+ 
+diff --git a/wiki/whats-new.md b/wiki/whats-new.md
+index 9ab7822..8e27a36 100644
+--- a/wiki/whats-new.md
++++ b/wiki/whats-new.md
+@@ -9,7 +9,7 @@ Older pages in this wiki have been updated to match. Technical ticket snapshots
+ | Change | Where you use it |
+ |--------|------------------|
+ | **Print Labels** — barcode stickers (50×25 or 38×25 mm) from Products, POS cart, or the Print Labels screen | Retailer sidebar → Print Labels |
+-| **Display Labels** — larger rack/shelf price tags (thermal rolls or A4 sheet) | Retailer sidebar → Display Labels |
++| **Display Labels** — larger rack/shelf price tags, including square **1:1** (75×75) and strip **3:1** (75×25) | Retailer sidebar → Display Labels |
+ | **Exact-amount UPI QR on POS** — customer scans a QR for this bill (or the UPI part of a split bill) | POS → pay with UPI or Split |
+ | **UPI QR on thermal receipts** — optional; turn on in Profile | Profile → receipt settings |
+ | **Unknown barcode at POS** — create a new SKU or **link** the scan to an existing product | POS search / scan |
+-- 
+2.43.0
+

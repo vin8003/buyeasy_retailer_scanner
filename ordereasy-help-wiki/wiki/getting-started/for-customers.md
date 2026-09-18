@@ -13,7 +13,7 @@ No install is required — it works in your browser.
 When you first open the app you must **confirm location** before shopping:
 
 1. Allow location access if prompted — this helps show **shops near you**
-2. If location is not available, **pick your city** from the list
+2. If location is not available, **pick state then city** (the app may guess from your network)
 
 You will see shops for that city. You can change city later if you travel.
 

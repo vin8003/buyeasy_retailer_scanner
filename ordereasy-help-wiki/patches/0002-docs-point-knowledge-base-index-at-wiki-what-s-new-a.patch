@@ -1,0 +1,33 @@
+From 8373e58a83b100349e0759794d7787839d510e7c Mon Sep 17 00:00:00 2001
+From: Cursor Agent <cursoragent@cursor.com>
+Date: Fri, 18 Sep 2026 12:06:54 +0000
+Subject: [PATCH 2/5] =?UTF-8?q?docs:=20point=20knowledge-base=20index=20at?=
+ =?UTF-8?q?=20wiki=20what=E2=80=99s-new=20and=20labels?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Co-authored-by: Vineet Sharma <vin8003@gmail.com>
+---
+ docs/00-INDEX.md | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/docs/00-INDEX.md b/docs/00-INDEX.md
+index f22edf6..6b5d2bc 100644
+--- a/docs/00-INDEX.md
++++ b/docs/00-INDEX.md
+@@ -11,9 +11,11 @@ The **[`wiki/`](../wiki/README.md)** folder is the plain-language help centre 
+ | Wiki section | Audience |
+ |--------------|----------|
+ | [Welcome](../wiki/welcome/what-is-ordereasy.md) | Everyone |
++| [What’s new](../wiki/whats-new.md) | Everyone (18 Sep 2026 refresh) |
+ | [Getting started](../wiki/getting-started/for-customers.md) | New users |
+ | [Customer guide](../wiki/customer-guide/README.md) | Shoppers |
+ | [Retailer guide](../wiki/retailer-guide/README.md) | Shop owners & staff |
++| [Print labels](../wiki/retailer-guide/print-labels.md) | Shop staff (stickers & rack tags) |
+ | [Scanner guide](../wiki/scanner-guide/README.md) | Bulk catalog capture |
+ | [FAQ](../wiki/faq/common-questions.md) | Quick answers |
+ | [Full project](../wiki/project/all-apps.md) | All apps end to end |
+-- 
+2.43.0
+

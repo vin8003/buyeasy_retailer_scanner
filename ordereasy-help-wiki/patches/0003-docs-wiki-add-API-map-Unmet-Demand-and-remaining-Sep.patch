@@ -1,0 +1,371 @@
+From 980beba7b728bb35a7e8780c859b94a9b8527e33 Mon Sep 17 00:00:00 2001
+From: Cursor Agent <cursoragent@cursor.com>
+Date: Fri, 18 Sep 2026 12:19:35 +0000
+Subject: [PATCH 3/5] docs(wiki): add API map, Unmet Demand, and remaining Sep
+ 2026 pages
+
+Document dashboard widgets from the live retailer Overview, add a
+plain-language API map, and point who-is-it-for / FAQ at labels,
+khata, and unmet demand.
+
+Co-authored-by: Vineet Sharma <vin8003@gmail.com>
+---
+ wiki/README.md                             |  2 +-
+ wiki/SUMMARY.md                            |  1 +
+ wiki/faq/common-questions.md               |  4 +
+ wiki/getting-started/apps-and-links.md     |  2 +-
+ wiki/project/all-apps.md                   |  6 +-
+ wiki/project/apis.md                       | 73 ++++++++++++++++++
+ wiki/project/how-it-works-together.md      |  2 +-
+ wiki/retailer-guide/dashboard.md           | 90 ++++++++++++++--------
+ wiki/retailer-guide/reports-and-reviews.md |  2 +
+ wiki/welcome/who-is-it-for.md              |  7 +-
+ wiki/whats-new.md                          |  1 +
+ 11 files changed, 152 insertions(+), 38 deletions(-)
+ create mode 100644 wiki/project/apis.md
+
+diff --git a/wiki/README.md b/wiki/README.md
+index ab6b71c..e83e640 100644
+--- a/wiki/README.md
++++ b/wiki/README.md
+@@ -31,7 +31,7 @@ Last reviewed against the live apps: **18 Sep 2026**. See [What’s new](whats-n
+ 5. **[Retailer guide](retailer-guide/README.md)** — POS, labels, online orders, stock, suppliers, credit, offers
+ 6. **[Scanner app guide](scanner-guide/README.md)** — Add products quickly with your phone camera
+ 7. **[Shared topics](shared/order-statuses.md)** — Order statuses, payments, delivery and pickup
+-8. **[The full project](project/all-apps.md)** — Every app and how they work together
++8. **[The full project](project/all-apps.md)** — Every app, how they fit, and [how they talk to the API](project/apis.md)
+ 9. **[FAQ](faq/common-questions.md)** — Common questions answered
+ 
+ ## For developers and agents
+diff --git a/wiki/SUMMARY.md b/wiki/SUMMARY.md
+index 3f1ae2d..e8c63fa 100644
+--- a/wiki/SUMMARY.md
++++ b/wiki/SUMMARY.md
+@@ -58,6 +58,7 @@ Last reviewed against live apps: **18 Sep 2026**.
+ 
+ * [All apps explained](project/all-apps.md)
+ * [How everything works together](project/how-it-works-together.md)
++* [How the apps talk to the API](project/apis.md)
+ 
+ ## FAQ
+ 
+diff --git a/wiki/faq/common-questions.md b/wiki/faq/common-questions.md
+index a703173..14bcf1c 100644
+--- a/wiki/faq/common-questions.md
++++ b/wiki/faq/common-questions.md
+@@ -114,6 +114,10 @@ Use **modify** in Orders. Customer must **approve** before you pack.
+ 
+ **Purchases** and **Supplier khata** in retailer app. Attach a **bill photo** when you record inward stock. [Purchases and suppliers](../retailer-guide/purchases-and-suppliers.md)
+ 
++### What is Unmet Demand on Overview?
++
++Customer searches in **your** shop that returned **zero products** in the last 30 days. Add the SKU or fix the product name. [Dashboard](../retailer-guide/dashboard.md)
++
+ ---
+ 
+ ## Troubleshooting
+diff --git a/wiki/getting-started/apps-and-links.md b/wiki/getting-started/apps-and-links.md
+index cee1dd5..4dccadd 100644
+--- a/wiki/getting-started/apps-and-links.md
++++ b/wiki/getting-started/apps-and-links.md
+@@ -43,4 +43,4 @@ That is why stock sold at the counter immediately affects what customers see onl
+ 
+ Customers and retailers do not need to know about repositories — this table is for anyone exploring the full project.
+ 
+-→ [Getting started for customers](for-customers.md) · [Getting started for retailers](for-retailers.md)
++→ [Getting started for customers](for-customers.md) · [Getting started for retailers](for-retailers.md) · [How the apps talk to the API](../project/apis.md)
+diff --git a/wiki/project/all-apps.md b/wiki/project/all-apps.md
+index 2ad57a9..3f4b823 100644
+--- a/wiki/project/all-apps.md
++++ b/wiki/project/all-apps.md
+@@ -57,7 +57,7 @@ Customers and retailers only need the first three URLs in daily life. Scanner is
+ **Who:** Kirana owner and counter staff
+ 
+ **What retailers do:**
+-- **Dashboard** — today’s numbers
++- **Dashboard** — period stats, cash vs digital, POS vs online, **Unmet Demand**
+ - **POS** — bill walk-in customers, exact-amount UPI QR, credit, receipts
+ - **Print Labels / Display Labels** — pack stickers and rack tags
+ - **Orders** — fulfil online orders (including **Returned**)
+@@ -106,7 +106,7 @@ Customers and retailers only need the first three URLs in daily life. Scanner is
+ 
+ This Git repo also holds **this wiki** (`wiki/`) and technical docs (`docs/`).
+ 
+-Developers and agents find technical docs in [`docs/`](../docs/DOCUMENTATION.md).
++Developers and agents: [How the apps talk to the API](apis.md) and [`docs/`](../docs/DOCUMENTATION.md).
+ 
+ ---
+ 
+@@ -121,4 +121,4 @@ Developers and agents find technical docs in [`docs/`](../docs/DOCUMENTATION.md)
+ | Scan 200 new products | Scanner app → then retailer Bulk Add |
+ | Learn what OrderEasy is | ordereasy.win |
+ 
+-→ [How everything works together](how-it-works-together.md) · [What’s new](../whats-new.md)
++→ [How everything works together](how-it-works-together.md) · [How the apps talk to the API](apis.md) · [What’s new](../whats-new.md)
+diff --git a/wiki/project/apis.md b/wiki/project/apis.md
+new file mode 100644
+index 0000000..419fb70
+--- /dev/null
++++ b/wiki/project/apis.md
+@@ -0,0 +1,73 @@
++# How the apps talk to the API
++
++This page is the **plain-language API map**. Engineers who need every path should read [`docs/05-API-SURFACE.md`](../../docs/05-API-SURFACE.md). Shop owners do not need this page to run the store.
++
++## One backend
++
++Every app talks to **the same Django API**:
++
++`https://api.ordereasy.win/api/`
++
++| App | Repo | How it authenticates |
++|-----|------|----------------------|
++| Customer web / Android | `customer_ordereasy_njs` | JWT after phone+password or Google |
++| Retailer web | `retailer_ordereasy_njs` | JWT after username+password |
++| Scanner | `buyeasy_retailer_scanner` | Same retailer login JWT |
++| Static prod sites | `customer_web_build`, `retailer_web_build` | Same API; they are exports of the njs apps |
++
++There is **no** separate marketplace API, delivery API, or payment-processor API. Images go through `images.ordereasy.win` (CORS proxy).
++
++```
++Customer app ──┐
++Retailer app ──┼── HTTPS + JWT ──► api.ordereasy.win ──► PostgreSQL
++Scanner app  ──┘                         │
++                                         └── Firebase FCM (push)
++```
++
++## Prefixes
++
++| Prefix | Used by | Job |
++|--------|---------|-----|
++| `/api/auth/` | Both | Login, signup, Google, OTP/email verify, JWT refresh, profile, password reset, FCM device |
++| `/api/retailer/` and `/api/retailers/` | Retailer + customer discovery | Shop profile, hours, rewards config, city list, geo estimate, public shop list |
++| `/api/customer/` | Customer + retailer CRM | Addresses, wishlist, loyalty, **credit/all**, retailer customer list, khata ledger |
++| `/api/products/` | Both + scanner | Catalog, search, batches, bulk/session upload, public shop catalog, FBT, POS checkout |
++| `/api/cart/` | Customer | Guest-capable cart |
++| `/api/orders/` | Both | Place, track, modify, chat, pay reference, stats, reviews |
++| `/api/offers/` | Both | Retailer CRUD + public offers for a shop |
++| `/api/returns/` | Retailer | Sales returns and purchase returns |
++
++ERP-style retailer paths live under `/api/products/erp/` (suppliers, purchase invoices, supplier ledger, POS checkout, POS customer search, inventory ledger, dashboard summary).
++
++## Flows that matter
++
++| What the user does | API (simplified) |
++|--------------------|------------------|
++| Customer logs in | `POST /api/auth/customer/login/` or `.../google-login/` |
++| Customer sees shops | `GET /api/retailers/` + `GET /api/retailers/cities/` |
++| Customer browses a shop | `GET /api/products/retailer/<id>/` (out-of-stock hidden when tracked) |
++| Frequently bought together | `GET /api/products/retailer/<id>/frequently-bought-together/` |
++| Checkout | cart endpoints then `POST /api/orders/place/` |
++| Remaining khata on Profile | `GET /api/customer/credit/all/` |
++| Retailer POS sale | `POST /api/products/erp/pos-checkout/` |
++| POS customer typeahead | `GET /api/products/erp/search-pos-customers/` |
++| Scanner capture | `POST /api/products/upload/session/create/` then `add-item/` then web `commit/` |
++| Supplier deactivate | `PATCH /api/products/erp/suppliers/<id>/` with `is_active` |
++
++Label printing and the POS UPI QR are **browser-side**. They do not add new payment APIs. The QR is built from the shop’s saved **UPI ID** on the retailer profile.
++
++## Auth rules of thumb
++
++- Access + refresh JWT (`/api/auth/token/refresh/`).
++- Customer Google may return `phone_required` / `otp_required` — bind mobile before treating login as complete.
++- Guest cart is local until login; then it syncs. Do not wipe it with an empty token.
++- Scanner uses **retailer** login, not a customer account.
++
++## What is not an API
++
++- Print Labels / Display Labels — print HTML in the retailer browser
++- Thermal receipts — same
++- Landing page — static HTML at ordereasy.win
++- Delivery dispatch — no rider service; status is just `Order` fields
++
++→ [All apps](all-apps.md) · [How everything works together](how-it-works-together.md) · [Architecture](../../docs/02-ARCHITECTURE.md)
+diff --git a/wiki/project/how-it-works-together.md b/wiki/project/how-it-works-together.md
+index c23ad7b..73c36ad 100644
+--- a/wiki/project/how-it-works-together.md
++++ b/wiki/project/how-it-works-together.md
+@@ -110,4 +110,4 @@ If shop is out of rice, they **modify** order → Priya gets **approval** reques
+ | Customer | [Getting started for customers](../getting-started/for-customers.md) |
+ | Retailer | [Getting started for retailers](../getting-started/for-retailers.md) |
+ | Either | [FAQ](../faq/common-questions.md) |
+-| Developer | [docs/DOCUMENTATION.md](../docs/DOCUMENTATION.md) |
++| Developer | [How the apps talk to the API](apis.md) · [docs/DOCUMENTATION.md](../docs/DOCUMENTATION.md) |
+diff --git a/wiki/retailer-guide/dashboard.md b/wiki/retailer-guide/dashboard.md
+index 1d0ce93..614762a 100644
+--- a/wiki/retailer-guide/dashboard.md
++++ b/wiki/retailer-guide/dashboard.md
+@@ -1,55 +1,83 @@
+ # Dashboard overview
+ 
+-The **Overview** (dashboard) is your home screen when you log into the retailer app. It gives a snapshot of how the shop is doing today and quick links to common tasks.
++The **Overview** screen is your home when you log into the retailer app. It is a snapshot of how the shop is doing — not a separate reports product.
+ 
+-## What you see
++Open it from the sidebar: **Overview**.
+ 
+-Typical dashboard widgets include:
++## Time range
+ 
+-| Section | What it shows |
+-|---------|---------------|
+-| **Revenue** | Sales for the selected period |
+-| **Order counts** | Online vs POS breakdown |
+-| **Payment split** | Cash vs digital (UPI, etc.) |
+-| **Recent orders** | Latest online orders needing attention |
+-| **Recent reviews** | What customers said recently |
+-| **Demand insights** | Popular products or trends (when available) |
++At the top right you can filter stats:
+ 
+-Exact layout may vary as features grow — the idea is **one glance, whole shop health**.
++| Filter | Meaning |
++|--------|---------|
++| **All Time** | Every recorded sale (default) |
++| **Today** | This calendar day |
++| **This Week** | Current week |
++| **This Month** | Current month |
++| **Custom Range** | Pick start and end dates |
+ 
+-## Quick actions
++Payment split, channel split, recent sales, and the four headline cards all follow this filter. **Unmet Demand** is always the last 30 days of customer searches — it does not follow the date picker.
+ 
+-From the dashboard you can usually jump directly to:
++## Headline cards
+ 
+-- **New POS bill** — start counter sale
+-- **Pending orders** — online orders waiting for confirmation
+-- **Add product** — quick catalog entry
+-- **Reports** — deeper analytics
++| Card | What it shows |
++|------|----------------|
++| **Total Orders** | How many orders in the selected period (POS + online) |
++| **Total Revenue** | Rupees taken in that period |
++| **Total Products** | Active products in your catalog (not filtered by date) |
++| **Avg Order Value** | Revenue ÷ orders for the period |
+ 
+-Use these shortcuts during busy hours instead of hunting through menus.
++## Payment breakdown
+ 
+-## POS vs online on one screen
++Cash vs digital (UPI and other non-cash) for the selected period, with a percentage bar. Use this at close of day to know how much should be in the till vs already in the bank.
+ 
+-A key benefit of OrderEasy: **walk-in and online sales share the same stock**.
++## Channel performance
+ 
+-The dashboard helps you see both channels:
++| Tile | What it is |
++|------|------------|
++| **POS Sales** | Walk-in bills from POS Billing |
++| **Online Store** | Orders placed on the customer app |
+ 
+-- High POS day? Online stock still accurate
+-- Many online orders? Plan counter staffing accordingly
++Walk-in and online share the **same stock**. A busy POS day still reduces what customers can order online.
++
++## Recent sales
++
++Latest transactions (both channels) with order number, customer name, amount, and status. Tap through **Orders** if you need to act on a pending online order.
++
++## Unmet Demand
++
++**Unmet Demand** lists search queries in your shop that returned **zero products** in the last 30 days, with how many times customers searched that term.
++
++Use it to:
++
++- Add a missing SKU (or a barcode/name customers actually type)
++- Fix spelling on a product title so search finds it
++- Decide what to stock next
++
++If the list is empty, customers found something for every recent search — not that the catalog is complete.
++
++## Recent reviews
++
++Latest customer ratings and comments. Full list is under **Reviews**.
++
++## Pending orders badge
++
++The **Orders** item in the sidebar shows a **PENDING** count when online orders are waiting. Check that before you rely on the dashboard snapshot — new orders also arrive as push notifications.
+ 
+ ## How often to check
+ 
+ | When | Why |
+ |------|-----|
+ | **Shop open** | Confirm pending online orders |
+-| **Mid-day** | Catch stuck orders or low-stock alerts |
+-| **Close** | Review revenue and payment split |
++| **Mid-day** | Catch stuck orders; glance at Unmet Demand |
++| **Close** | Review revenue, cash vs digital, POS vs online |
+ 
+ ## Tips for new shops
+ 
+-1. Complete **Profile** and **Operating hours** before promoting online ordering
+-2. Add at least your top 50 products before sharing customer link
+-3. Run one **test POS sale** to verify barcodes and prices
+-4. Place a **test online order** from customer app to see the full flow
++1. Complete **Profile** (including **map pin** and **UPI ID**) and **Operating hours** before promoting online ordering
++2. Add at least your top 50 products before sharing the customer link
++3. Run one **test POS sale** (and a UPI QR if you saved a UPI ID)
++4. Place a **test online order** from the customer app
++5. Print **barcode stickers** for items you sell at the counter
+ 
+-→ Next: [POS billing](pos-billing.md) · [Online orders](online-orders.md)
++→ Next: [POS billing](pos-billing.md) · [Online orders](online-orders.md) · [Reports and reviews](reports-and-reviews.md)
+diff --git a/wiki/retailer-guide/reports-and-reviews.md b/wiki/retailer-guide/reports-and-reviews.md
+index bfabbae..bb8262f 100644
+--- a/wiki/retailer-guide/reports-and-reviews.md
++++ b/wiki/retailer-guide/reports-and-reviews.md
+@@ -15,6 +15,8 @@ Typical insights:
+ | Channel split | POS vs online revenue |
+ | Payment mix | Cash vs UPI vs credit |
+ 
++On **Overview**, **Unmet Demand** is a different question: which searches in your shop returned nothing in the last 30 days. Use it to add missing SKUs or fix product names. See [Dashboard overview](dashboard.md).
++
+ Use reports for:
+ 
+ - Reordering stock
+diff --git a/wiki/welcome/who-is-it-for.md b/wiki/welcome/who-is-it-for.md
+index 114f96e..e10e51f 100644
+--- a/wiki/welcome/who-is-it-for.md
++++ b/wiki/welcome/who-is-it-for.md
+@@ -17,10 +17,14 @@ You do **not** need a big team or IT department. If you can use a smartphone and
+ | Task | Where in OrderEasy |
+ |------|-------------------|
+ | Bill a walk-in customer | POS Billing |
++| Show a pay-this-bill UPI QR | POS (after saving UPI ID in Profile) |
+ | Accept an online order | Orders |
+ | Add a new product | Products |
++| Print pack barcodes / rack tags | Print Labels / Display Labels |
+ | Record stock from a supplier | Purchases |
++| Stop using a supplier | Khata / Suppliers → Deactivate |
+ | Check what a customer owes | Customers → Credit |
++| See what customers searched but did not find | Overview → Unmet Demand |
+ | Run a discount or offer | Offers |
+ | Scan many products quickly | Scanner app + Bulk Add |
+ 
+@@ -44,9 +48,10 @@ You are **not** browsing hundreds of unknown shops. You pick **your** shop and o
+ 
+ | Task | Where in OrderEasy |
+ |------|-------------------|
+-| Find nearby shops | Home → shop list |
++| Find nearby shops | Home → shop list (after location / city) |
+ | Order groceries | Shop → Cart → Checkout |
+ | See where my order is | Orders |
++| See remaining khata | Profile → Credit |
+ | Save favourite items | Wishlist |
+ | Use reward points | Checkout or Rewards |
+ 
+diff --git a/wiki/whats-new.md b/wiki/whats-new.md
+index a5cdc34..9ab7822 100644
+--- a/wiki/whats-new.md
++++ b/wiki/whats-new.md
+@@ -19,6 +19,7 @@ Older pages in this wiki have been updated to match. Technical ticket snapshots
+ | **Show on customer app** per batch — sell a batch at the counter only | Product form → batches |
+ | **Shop map pin + GPS** — customers find you by location | Profile |
+ | **UPI ID** on Profile — required for the POS exact-amount QR | Profile → payments |
++| **Unmet Demand** on Overview — searches that found zero products (last 30 days) | Overview |
+ 
+ ## For customers
+ 
+-- 
+2.43.0
+

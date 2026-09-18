@@ -1,0 +1,1449 @@
+From 4606c1d0be86e590bf39f636f332cd732c73e873 Mon Sep 17 00:00:00 2001
+From: Cursor Agent <cursoragent@cursor.com>
+Date: Fri, 18 Sep 2026 12:06:47 +0000
+Subject: [PATCH 1/5] docs(wiki): refresh help centre for Sep 2026 product
+
+Align the user wiki with retailer/customer main: barcode and rack
+labels, POS exact-amount UPI QR, profile khata, FBT, login (phone +
+password), and scanner catalog lookup instead of live OCR.
+
+Co-authored-by: Vineet Sharma <vin8003@gmail.com>
+---
+ docs/00-INDEX.md                              |  2 +-
+ wiki/README.md                                | 21 ++---
+ wiki/SUMMARY.md                               |  4 +
+ wiki/customer-guide/README.md                 |  3 +-
+ wiki/customer-guide/browse-and-order.md       |  7 ++
+ wiki/customer-guide/cart-and-checkout.md      |  4 +-
+ wiki/customer-guide/find-your-shop.md         |  6 +-
+ wiki/customer-guide/your-account.md           | 44 +++++++---
+ wiki/faq/common-questions.md                  | 50 ++++++++++--
+ wiki/getting-started/apps-and-links.md        |  2 +-
+ wiki/getting-started/for-customers.md         | 11 +--
+ wiki/getting-started/for-retailers.md         |  5 +-
+ wiki/project/all-apps.md                      | 43 ++++++----
+ wiki/project/how-it-works-together.md         |  7 +-
+ wiki/retailer-guide/README.md                 | 19 +++--
+ wiki/retailer-guide/customers-and-credit.md   |  4 +-
+ wiki/retailer-guide/online-orders.md          |  1 +
+ wiki/retailer-guide/pos-billing.md            | 75 +++++++++++++----
+ wiki/retailer-guide/print-labels.md           | 80 +++++++++++++++++++
+ wiki/retailer-guide/products-and-stock.md     | 55 +++++++++----
+ wiki/retailer-guide/shop-settings.md          | 45 +++++++----
+ wiki/scanner-guide/README.md                  | 10 ++-
+ wiki/scanner-guide/adding-products-in-bulk.md |  2 +-
+ wiki/scanner-guide/using-the-scanner.md       | 40 ++++++----
+ wiki/shared/payments.md                       | 22 +++--
+ wiki/welcome/what-is-ordereasy.md             |  4 +-
+ wiki/welcome/what-it-is-not.md                |  2 +-
+ wiki/whats-new.md                             | 45 +++++++++++
+ 28 files changed, 462 insertions(+), 151 deletions(-)
+ create mode 100644 wiki/retailer-guide/print-labels.md
+ create mode 100644 wiki/whats-new.md
+
+diff --git a/docs/00-INDEX.md b/docs/00-INDEX.md
+index 5eb02a4..f22edf6 100644
+--- a/docs/00-INDEX.md
++++ b/docs/00-INDEX.md
+@@ -6,7 +6,7 @@ It is designed for both humans and AI agents. **Canonical copy is this Git tree*
+ 
+ ## User wiki (start here for retailers & customers)
+ 
+-The **[`wiki/`](../wiki/README.md)** folder is the plain-language help centre — getting started, customer guide, retailer guide, scanner, FAQ, and end-to-end project map. Use [`wiki/SUMMARY.md`](../wiki/SUMMARY.md) as the table of contents.
++The **[`wiki/`](../wiki/README.md)** folder is the plain-language help centre — getting started, customer guide, retailer guide, scanner, FAQ, and end-to-end project map. Use [`wiki/SUMMARY.md`](../wiki/SUMMARY.md) as the table of contents. Last reviewed **18 Sep 2026** — see [What’s new](../wiki/whats-new.md).
+ 
+ | Wiki section | Audience |
+ |--------------|----------|
+diff --git a/wiki/README.md b/wiki/README.md
+index 4fef892..ab6b71c 100644
+--- a/wiki/README.md
++++ b/wiki/README.md
+@@ -4,6 +4,8 @@ Welcome to the OrderEasy help centre. This wiki explains how the platform works
+ 
+ OrderEasy is software for a **single neighbourhood kirana or local shop** in India. It is **not** a marketplace and **not** a delivery company. One shop runs its counter, stock, supplier accounts, and online orders from customers who already know that shop.
+ 
++Last reviewed against the live apps: **18 Sep 2026**. See [What’s new](whats-new.md) for what changed since this wiki was first written.
++
+ ## Who are you?
+ 
+ | I am a… | Start here |
+@@ -22,15 +24,16 @@ OrderEasy is software for a **single neighbourhood kirana or local shop** in Ind
+ 
+ ## Wiki sections
+ 
+-1. **[Welcome](welcome/what-is-ordereasy.md)** — What OrderEasy is, who it is for, and what it is not
+-2. **[Getting started](getting-started/apps-and-links.md)** — Apps, links, and first steps
+-3. **[Customer guide](customer-guide/README.md)** — Find a shop, browse, order, track, rewards
+-4. **[Retailer guide](retailer-guide/README.md)** — POS, online orders, stock, suppliers, credit, offers
+-5. **[Scanner app guide](scanner-guide/README.md)** — Add products quickly with your phone camera
+-6. **[Shared topics](shared/order-statuses.md)** — Order statuses, payments, delivery and pickup
+-7. **[The full project](project/all-apps.md)** — Every app and how they work together
+-8. **[FAQ](faq/common-questions.md)** — Common questions answered
++1. **[What’s new](whats-new.md)** — Features added after August 2026
++2. **[Welcome](welcome/what-is-ordereasy.md)** — What OrderEasy is, who it is for, and what it is not
++3. **[Getting started](getting-started/apps-and-links.md)** — Apps, links, and first steps
++4. **[Customer guide](customer-guide/README.md)** — Find a shop, browse, order, track, rewards, khata
++5. **[Retailer guide](retailer-guide/README.md)** — POS, labels, online orders, stock, suppliers, credit, offers
++6. **[Scanner app guide](scanner-guide/README.md)** — Add products quickly with your phone camera
++7. **[Shared topics](shared/order-statuses.md)** — Order statuses, payments, delivery and pickup
++8. **[The full project](project/all-apps.md)** — Every app and how they work together
++9. **[FAQ](faq/common-questions.md)** — Common questions answered
+ 
+ ## For developers and agents
+ 
+-Technical architecture, requirements, and ticket snapshots live in [`docs/`](../docs/DOCUMENTATION.md). This wiki is the **human-friendly layer** on top of that knowledge base.
++Technical architecture, requirements, and ticket snapshots live in [`docs/`](../docs/DOCUMENTATION.md). This wiki is the **human-friendly layer** on top of that knowledge base. Canonical copy is this Git folder — not GitBook or Confluence.
+diff --git a/wiki/SUMMARY.md b/wiki/SUMMARY.md
+index 46fb565..3f1ae2d 100644
+--- a/wiki/SUMMARY.md
++++ b/wiki/SUMMARY.md
+@@ -2,9 +2,12 @@
+ 
+ Use this page to navigate the wiki. Pages are ordered from introduction → daily use → deeper topics.
+ 
++Last reviewed against live apps: **18 Sep 2026**.
++
+ ## Welcome
+ 
+ * [Home](README.md)
++* [What’s new](whats-new.md)
+ * [What is OrderEasy?](welcome/what-is-ordereasy.md)
+ * [Who is it for?](welcome/who-is-it-for.md)
+ * [What OrderEasy is not](welcome/what-it-is-not.md)
+@@ -32,6 +35,7 @@ Use this page to navigate the wiki. Pages are ordered from introduction → dail
+ * [POS billing (counter sales)](retailer-guide/pos-billing.md)
+ * [Online orders](retailer-guide/online-orders.md)
+ * [Products and stock](retailer-guide/products-and-stock.md)
++* [Print labels and rack tags](retailer-guide/print-labels.md)
+ * [Purchases and suppliers](retailer-guide/purchases-and-suppliers.md)
+ * [Customers and credit (khata)](retailer-guide/customers-and-credit.md)
+ * [Offers and promotions](retailer-guide/offers-and-promotions.md)
+diff --git a/wiki/customer-guide/README.md b/wiki/customer-guide/README.md
+index 3de6d3d..99425b4 100644
+--- a/wiki/customer-guide/README.md
++++ b/wiki/customer-guide/README.md
+@@ -11,7 +11,7 @@ Everything a **shopper** needs to use OrderEasy confidently — from finding a s
+ | [Cart and checkout](cart-and-checkout.md) | Delivery, pickup, payment, placing the order |
+ | [Track your order](track-your-order.md) | Status meanings, notifications, chat, approvals |
+ | [Rewards and referrals](rewards-and-referrals.md) | Points, referral codes, how to redeem |
+-| [Your account](your-account.md) | Login, profile, addresses, support |
++| [Your account](your-account.md) | Login, profile, addresses, credit/khata, support |
+ 
+ ## The customer journey at a glance
+ 
+@@ -29,6 +29,7 @@ Open app → Allow location → See nearby shops → Pick YOUR shop
+ - You need a smartphone or computer with internet
+ - You should know **which local shop** you want to order from (or be willing to pick one nearby)
+ - Payment is usually **Cash on Delivery** or **UPI** — have your method ready at checkout
++- Login is **phone + password** (or Google), not a one-time SMS every visit
+ 
+ ## Quick links
+ 
+diff --git a/wiki/customer-guide/browse-and-order.md b/wiki/customer-guide/browse-and-order.md
+index 490f82f..a3fb22d 100644
+--- a/wiki/customer-guide/browse-and-order.md
++++ b/wiki/customer-guide/browse-and-order.md
+@@ -38,8 +38,15 @@ Tap a product to see:
+ | Price | Current selling price set by the shop |
+ | Unit / pack size | 500g, 1L, pack of 6, etc. |
+ | Availability | In stock or not |
++| Pack size | Switch between linked packs (e.g. 1 kg vs 5 kg) when the shop set them up |
+ | Description | Extra info if the shop added it |
+ 
++Shops often **hide out-of-stock items** from the catalog so you mostly see what you can buy. If something is missing, it may be unsold online, not on the shelf, or not listed yet — ask the shop.
++
++## Frequently bought together
++
++On some product pages and on the cart, OrderEasy may suggest items **other customers often buy with** what you already picked. These are from **this shop only**. Add them if you want — they are never required.
++
+ ## Add to cart
+ 
+ Tap **Add to cart** to add the item. You can:
+diff --git a/wiki/customer-guide/cart-and-checkout.md b/wiki/customer-guide/cart-and-checkout.md
+index e5873df..8607e0d 100644
+--- a/wiki/customer-guide/cart-and-checkout.md
++++ b/wiki/customer-guide/cart-and-checkout.md
+@@ -48,7 +48,7 @@ Common options:
+ | **Cash on Delivery (COD)** | Pay the delivery person or at pickup in cash |
+ | **UPI** | Pay via UPI when you receive the order (shop’s UPI) |
+ 
+-The shop receives payment directly. OrderEasy records the payment type for the shop’s records.
++The shop receives payment directly. OrderEasy records the payment type for the shop’s records. On the **order detail** screen you may see the shop’s UPI ID / QR and a place to submit a UPI transaction reference if they asked you to pay that way.
+ 
+ ### 4. Reward points
+ 
+@@ -77,7 +77,7 @@ Check the final total including:
+ - Delivery charge (if any)
+ - Discounts / points applied
+ 
+-Tap **Place order**. You should see a confirmation screen with your order number.
++Tap **Place order**. The app opens that order’s **tracking** screen with your order number (Orders → that order).
+ 
+ ## After placing the order
+ 
+diff --git a/wiki/customer-guide/find-your-shop.md b/wiki/customer-guide/find-your-shop.md
+index a9117b8..ff4ddbf 100644
+--- a/wiki/customer-guide/find-your-shop.md
++++ b/wiki/customer-guide/find-your-shop.md
+@@ -4,9 +4,11 @@ OrderEasy shows you **local shops** you can order from. You pick one shop and sh
+ 
+ ## Allow location (recommended)
+ 
+-When you open the customer app, it asks for your location. Say **yes** if you are comfortable — this is the fastest way to see shops near you.
++When you open the customer app, it asks you to **confirm where you are** (GPS or city) before you shop. That keeps the shop list honest.
+ 
+-**What happens:** The app sorts shops by distance and shows delivery/pickup options for your area.
++Say **yes** to location if you are comfortable — this is the fastest way to see shops near you.
++
++**What happens:** The app matches you to a service city and shows shops there, with delivery/pickup options for your area.
+ 
+ ## Pick a city manually
+ 
+diff --git a/wiki/customer-guide/your-account.md b/wiki/customer-guide/your-account.md
+index 024942e..383e2a7 100644
+--- a/wiki/customer-guide/your-account.md
++++ b/wiki/customer-guide/your-account.md
+@@ -1,6 +1,6 @@
+ # Your account
+ 
+-Manage your login, profile, addresses, and get help when you need it.
++Manage your login, profile, addresses, credit, and get help when you need it.
+ 
+ ## Sign up and login
+ 
+@@ -8,15 +8,22 @@ Manage your login, profile, addresses, and get help when you need it.
+ 
+ 1. Open [customer.ordereasy.win](https://customer.ordereasy.win)
+ 2. Tap **Sign up**
+-3. Enter your phone number
+-4. Verify with **OTP** (one-time password sent by SMS)
++3. Enter **phone**, **email**, and a **password**
++4. Verify **email** with the OTP sent to your inbox
+ 5. Complete basic profile details
+ 
+-You can also sign up with **Google** on supported builds — same account rules apply.
++You can also continue with **Google**. If Google does not already have a verified mobile for this shop, the app asks for your **phone** and an **OTP** so the shop can call you.
++
++You can browse and fill a **guest cart** before you create an account. Signup is usually required at checkout, and you may need to **verify your phone** before the order is placed.
+ 
+ ### Returning customers
+ 
+-Tap **Log in** and verify with OTP or Google.
++Tap **Log in** with:
++
++- **Phone + password**, or
++- **Google** (same phone-bind step if the shop still needs a mobile number)
++
++Login is **not** passwordless SMS on every visit. If you forget the password, use **Forgot password** — that flow emails an OTP to reset it.
+ 
+ ### Guest cart
+ 
+@@ -30,16 +37,27 @@ Under **Profile** you can update:
+ |-------|---------|
+ | Name | How the shop sees you |
+ | Phone | Login and contact |
+-| Email | Optional; for receipts or verification |
++| Email | Verification and password reset |
+ 
+ Keep your phone number current — shops may call for delivery.
+ 
++### Credit / khata
++
++If you buy on **udhaar** from a shop, Profile shows a **Credit / Khata** section per shop:
++
++- Credit limit the shop set
++- Outstanding balance
++- **Remaining** credit (limit minus outstanding)
++
++Balances appear after you have a credit account with that shop (usually after a credit sale at their counter). Loyalty points / cashback are listed separately on the same Profile screen.
++
+ ## Saved addresses
+ 
+ **Addresses** lets you save delivery locations:
+ 
+ - Home, office, or other labels
+ - Full address with landmark
++- Pin on the map
+ - Pin code and contact phone
+ 
+ Adding addresses ahead of time makes checkout faster.
+@@ -48,7 +66,7 @@ To add or edit:
+ 
+ 1. Profile → **Addresses**
+ 2. Tap **Add new** or edit existing
+-3. Save
++3. Drop the map pin if you can, then save
+ 
+ ## Orders history
+ 
+@@ -66,7 +84,7 @@ Saved products per shop. Access from bottom navigation or profile.
+ 
+ If you need help with the app (not a specific order):
+ 
+-1. Go to **Support** in the profile menu
++1. Go to **Support** in the profile menu (or Help)
+ 2. Describe your issue
+ 3. Submit
+ 
+@@ -74,16 +92,16 @@ For order-specific problems, use **order chat** first — the shop can resolve f
+ 
+ ## Privacy and security
+ 
+-- Do not share your OTP with anyone
++- Do not share OTPs (email verify, Google phone bind, password reset, checkout phone verify) with anyone
+ - Log out on shared devices
+ - Your order history is visible only to you and the shop you ordered from
+ 
+ ## Forgot password / locked out
+ 
+-Phone-based login uses OTP — there is usually no separate password. If OTP does not arrive:
++1. On login, tap **Forgot password**
++2. Enter the email on your account
++3. Use the OTP from email to set a new password
+ 
+-- Check network signal
+-- Wait a minute and retry
+-- Contact support if repeated failures
++If the OTP does not arrive: check spam, wait a minute, retry, then contact support.
+ 
+ → [Getting started for customers](../getting-started/for-customers.md) · [FAQ](../faq/common-questions.md)
+diff --git a/wiki/faq/common-questions.md b/wiki/faq/common-questions.md
+index b475da8..a703173 100644
+--- a/wiki/faq/common-questions.md
++++ b/wiki/faq/common-questions.md
+@@ -22,13 +22,21 @@ Software for a **local kirana or shop** — counter billing, stock, supplier acc
+ **Retailers:** No — use [retailer.ordereasy.win](https://retailer.ordereasy.win).  
+ **Scanner:** Yes — Android app for bulk product capture.
+ 
++### What changed recently?
++
++See [What’s new](../whats-new.md) (last reviewed 18 Sep 2026).
++
+ ---
+ 
+ ## For customers
+ 
+ ### How do I find my shop?
+ 
+-Open the customer app, allow location (or pick city), and search the shop list. [Find your shop](../customer-guide/find-your-shop.md)
++Open the customer app, confirm location or pick a city, then search the shop list. [Find your shop](../customer-guide/find-your-shop.md)
++
++### How do I log in?
++
++Use **phone + password**, or **Google**. New accounts also verify **email**. Google may ask for phone + OTP once so the shop has a mobile number. This is not passwordless SMS login every time. [Your account](../customer-guide/your-account.md)
+ 
+ ### Can I order without signing up?
+ 
+@@ -40,12 +48,20 @@ The shop may be out of something. They modify the order and you must **approve**
+ 
+ ### How do I pay?
+ 
+-Usually **Cash on Delivery** or **UPI** when you receive the order. Payment goes to the shop, not to OrderEasy.
++Usually **Cash on Delivery** or **UPI** when you receive the order. Payment goes to the shop, not to OrderEasy. At the counter, the shop can show a QR for the **exact bill amount**.
++
++### Where do I see my khata / remaining credit?
++
++**Profile → Credit / Khata**, per shop (limit, outstanding, remaining). Loyalty points are a separate block on the same screen.
+ 
+ ### Can I use reward points at any shop?
+ 
+ **No.** Points are **per shop** — only at the shop where you earned them.
+ 
++### What is “frequently bought together”?
++
++Suggestions on the product page and cart of items other people at **this shop** often buy with yours. Optional.
++
+ ### My order says Pending for a long time
+ 
+ The shop may be busy or closed. Message them via **order chat** or call the shop phone on their profile.
+@@ -64,23 +80,39 @@ Go to [retailer.ordereasy.win](https://retailer.ordereasy.win) → Sign up with
+ 
+ ### How do I add many products quickly?
+ 
+-Use the **scanner app** to capture barcodes, then **Bulk Add** in retailer web to review and commit. [Scanner guide](../scanner-guide/README.md)
++Use the **scanner app** to capture barcodes and pack photos, then **Bulk Add** in retailer web to review and commit. [Scanner guide](../scanner-guide/README.md)
++
++### How do I print barcodes and rack prices?
++
++**Print Labels** for pack stickers, **Display Labels** for shelf tags. You can also start from Products or the POS cart. [Print labels](../retailer-guide/print-labels.md)
++
++### Why is there no UPI QR on POS?
++
++Save a **UPI ID** under Profile. POS then shows an exact-amount QR for UPI and split bills.
+ 
+ ### Can I sell on credit (udhaar)?
+ 
+-**Yes** at POS for customers you trust. Balance shows in **Customers → ledger**. [Customers and credit](../retailer-guide/customers-and-credit.md)
++**Yes** at POS for customers you trust. Balance shows in **Customers → ledger**. Customers see remaining credit on their Profile. [Customers and credit](../retailer-guide/customers-and-credit.md)
+ 
+ ### What if I need to change a customer’s order?
+ 
+ Use **modify** in Orders. Customer must **approve** before you pack.
+ 
++### Can I hide a pack from the customer app but still sell it at POS?
++
++**Yes** — turn off **Show on customer app** for that batch, or hide the parent bulk SKU while leaving child packs visible.
++
++### How do I stop using a supplier without losing khata?
++
++**Deactivate** them in Khata / Suppliers. Old bills stay; they disappear from new purchase pickers. You can still record payments.
++
+ ### Is there a rider app?
+ 
+ **No.** Your staff delivers or customer picks up. [Delivery and pickup](../shared/delivery-and-pickup.md)
+ 
+ ### How do I track what I owe suppliers?
+ 
+-**Purchases** and **Supplier khata** in retailer app. [Purchases and suppliers](../retailer-guide/purchases-and-suppliers.md)
++**Purchases** and **Supplier khata** in retailer app. Attach a **bill photo** when you record inward stock. [Purchases and suppliers](../retailer-guide/purchases-and-suppliers.md)
+ 
+ ---
+ 
+@@ -88,10 +120,12 @@ Use **modify** in Orders. Customer must **approve** before you pack.
+ 
+ | Problem | Try |
+ |---------|-----|
+-| Customer cannot see my shop | Check shop location pin and that you are active on platform |
+-| Barcode not scanning at POS | Add barcode on product; or search by name |
++| Customer cannot see my shop | Check shop **map pin**, that you are active, and that the customer confirmed the right city |
++| Barcode not scanning at POS | Add barcode on product; print a new sticker; or search by name |
++| POS UPI QR missing | Add UPI ID in Profile |
++| Label print looks stretched | Pick the sticker paper size in the print dialog; do not “fit to page” |
+ | Scanner session missing on web | Wait for sync; refresh Bulk Add page |
+-| OTP not arriving | Check signal; retry; contact support |
++| Email / reset OTP not arriving | Check spam; retry; contact support |
+ | Wrong stock count | Review recent sales, purchases, returns in product ledger |
+ 
+ ---
+diff --git a/wiki/getting-started/apps-and-links.md b/wiki/getting-started/apps-and-links.md
+index e34c0aa..cee1dd5 100644
+--- a/wiki/getting-started/apps-and-links.md
++++ b/wiki/getting-started/apps-and-links.md
+@@ -7,7 +7,7 @@ OrderEasy is made up of a few apps that work together. Here is what each one is
+ | App | Who uses it | Open it | What it does |
+ |-----|-------------|---------|--------------|
+ | **Customer app** | Shoppers | [customer.ordereasy.win](https://customer.ordereasy.win) | Browse a shop, order, track, rewards |
+-| **Retailer app** | Shop owners & staff | [retailer.ordereasy.win](https://retailer.ordereasy.win) | POS, orders, stock, suppliers, offers |
++| **Retailer app** | Shop owners & staff | [retailer.ordereasy.win](https://retailer.ordereasy.win) | POS, labels, orders, stock, suppliers, offers |
+ | **Scanner app** | Shop staff (phone) | Install on Android (from your shop) | Scan barcodes and photograph products for bulk catalog upload |
+ | **Website** | Everyone | [ordereasy.win](https://ordereasy.win) | Learn about OrderEasy and choose customer or retailer |
+ 
+diff --git a/wiki/getting-started/for-customers.md b/wiki/getting-started/for-customers.md
+index f0f1fa4..b0f9121 100644
+--- a/wiki/getting-started/for-customers.md
++++ b/wiki/getting-started/for-customers.md
+@@ -10,12 +10,12 @@ No install is required — it works in your browser.
+ 
+ ## Step 2: Share your location (or pick a city)
+ 
+-When you first open the app:
++When you first open the app you must **confirm location** before shopping:
+ 
+ 1. Allow location access if prompted — this helps show **shops near you**
+-2. If location is not available, you can **pick your city manually**
++2. If location is not available, **pick your city** from the list
+ 
+-You will see a list of shops in your area.
++You will see shops for that city. You can change city later if you travel.
+ 
+ ## Step 3: Choose your shop
+ 
+@@ -42,8 +42,9 @@ You can add items **before creating an account** — your cart is saved as a gue
+ 
+ When you go to checkout, you may need to:
+ 
+-- **Sign up** with your phone number (OTP verification)
+-- Or **log in** if you already have an account
++- **Sign up** with phone, email, and password (then verify email)
++- Or **log in** with phone + password, or **Google**
++- **Verify your phone** if the shop does not have a verified mobile for you yet
+ 
+ Your guest cart should carry over when you sign up — you should not lose items you already added.
+ 
+diff --git a/wiki/getting-started/for-retailers.md b/wiki/getting-started/for-retailers.md
+index 17318dd..c6d76ba 100644
+--- a/wiki/getting-started/for-retailers.md
++++ b/wiki/getting-started/for-retailers.md
+@@ -51,8 +51,9 @@ Open **POS Billing** and run a test sale:
+ 1. Search or scan a product barcode
+ 2. Add items to the bill
+ 3. Optionally attach a customer
+-4. Take payment (cash, UPI, credit, or split)
++4. Take payment (cash, UPI with exact-amount QR, credit, or split)
+ 5. Complete and print receipt
++6. Optional: print barcode stickers from **Print Labels**
+ 
+ This confirms your catalog and prices work before going live online.
+ 
+@@ -90,6 +91,8 @@ When an order comes in:
+ - Add **suppliers** and track **supplier khata** (what you owe them)
+ - Enable **customer credit** for trusted regulars
+ - Install the **scanner app** for faster catalog building
++- Print **barcode stickers** and **rack tags** once prices are stable
++- Save **UPI ID** in Profile so POS can show a pay-this-bill QR
+ 
+ ## Need more detail?
+ 
+diff --git a/wiki/project/all-apps.md b/wiki/project/all-apps.md
+index e9ff8e7..2ad57a9 100644
+--- a/wiki/project/all-apps.md
++++ b/wiki/project/all-apps.md
+@@ -7,8 +7,8 @@ OrderEasy is one product spread across **five apps**. Each has a clear job. Toge
+ | App | For whom | URL / platform | Main job |
+ |-----|----------|----------------|----------|
+ | **Marketing website** | Everyone | [ordereasy.win](https://ordereasy.win) | Explain product; link to customer or retailer app |
+-| **Customer app** | Shoppers | [customer.ordereasy.win](https://customer.ordereasy.win) | Browse one shop, order, track, rewards |
+-| **Retailer app** | Shop owners & staff | [retailer.ordereasy.win](https://retailer.ordereasy.win) | POS, orders, stock, suppliers, offers |
++| **Customer app** | Shoppers | [customer.ordereasy.win](https://customer.ordereasy.win) | Browse one shop, order, track, rewards, khata |
++| **Retailer app** | Shop owners & staff | [retailer.ordereasy.win](https://retailer.ordereasy.win) | POS, labels, orders, stock, suppliers, offers |
+ | **Scanner app** | Shop staff | Android install | Fast barcode/photo capture for catalog |
+ | **Backend** | (invisible to users) | api.ordereasy.win | Stores all data; powers every app |
+ 
+@@ -34,14 +34,19 @@ Customers and retailers only need the first three URLs in daily life. Scanner is
+ **Who:** Local shoppers ordering from a shop they know
+ 
+ **What customers do:**
+-- Share location → see nearby shops
+-- Pick **one shop** → browse catalog
++- Confirm location / city → see nearby shops
++- Pick **one shop** → browse catalog (out-of-stock items are usually hidden)
++- Switch pack sizes when the shop linked them
++- See **frequently bought together** suggestions
+ - Cart → checkout (delivery/pickup, COD/UPI)
+ - Track orders, chat, wishlist, rewards
++- See **credit / khata** per shop on Profile
+ 
+ **Works on:** Phone browser (web app); Android wrapper available
+ 
+-**Does not:** Show marketplace of unrelated sellers; provide OrderEasy delivery
++**Login:** Phone + password, or Google (phone bind if needed). Guest cart before signup.
++
++**Does not:** Show marketplace of unrelated sellers; provide OrderEasy delivery; take card/wallet checkout
+ 
+ → Full guide: [Customer guide](../customer-guide/README.md)
+ 
+@@ -53,16 +58,17 @@ Customers and retailers only need the first three URLs in daily life. Scanner is
+ 
+ **What retailers do:**
+ - **Dashboard** — today’s numbers
+-- **POS** — bill walk-in customers
+-- **Orders** — fulfil online orders
+-- **Products** — catalog and stock
+-- **Purchases** — stock from suppliers
+-- **Suppliers** — khata (what you owe)
++- **POS** — bill walk-in customers, exact-amount UPI QR, credit, receipts
++- **Print Labels / Display Labels** — pack stickers and rack tags
++- **Orders** — fulfil online orders (including **Returned**)
++- **Products** — catalog, batches, bulk add
++- **Purchases** — stock from suppliers, bill photo
++- **Suppliers** — khata (what you owe); edit / deactivate
+ - **Customers** — CRM and credit (what they owe you)
+ - **Offers** — promotions and loyalty
+-- **Reports & reviews**
++- **Profile** — map pin, UPI ID, hours, delivery rules
+ 
+-**Works on:** Browser on phone or computer
++**Works on:** Browser on phone or computer. Prod site is a static export of this app (`retailer_web_build`).
+ 
+ → Full guide: [Retailer guide](../retailer-guide/README.md)
+ 
+@@ -75,11 +81,11 @@ Customers and retailers only need the first three URLs in daily life. Scanner is
+ **What it does:**
+ - Login with retailer credentials
+ - Create **upload sessions**
+-- Scan barcodes + photograph labels
+-- OCR helps fill name and price
+-- Sync to cloud for manager review
++- Scan barcodes + photograph packs
++- Fill name/MRP from the master catalog when the barcode is known
++- Sync to cloud for manager review in Bulk Add
+ 
+-**Does not:** Replace retailer app for editing catalog or billing
++**Does not:** Replace retailer app for editing catalog, printing labels, or billing
+ 
+ → Full guide: [Scanner guide](../scanner-guide/README.md)
+ 
+@@ -98,6 +104,8 @@ Customers and retailers only need the first three URLs in daily life. Scanner is
+ 
+ **Why it matters to you:** One stock number everywhere. Sell at POS → online quantity drops. Customer orders → POS stock drops.
+ 
++This Git repo also holds **this wiki** (`wiki/`) and technical docs (`docs/`).
++
+ Developers and agents find technical docs in [`docs/`](../docs/DOCUMENTATION.md).
+ 
+ ---
+@@ -109,7 +117,8 @@ Developers and agents find technical docs in [`docs/`](../docs/DOCUMENTATION.md)
+ | Order groceries from my kirana | customer.ordereasy.win |
+ | Bill a walk-in customer | retailer.ordereasy.win → POS |
+ | Confirm an online order | retailer.ordereasy.win → Orders |
++| Print barcode stickers | retailer.ordereasy.win → Print Labels |
+ | Scan 200 new products | Scanner app → then retailer Bulk Add |
+ | Learn what OrderEasy is | ordereasy.win |
+ 
+-→ [How everything works together](how-it-works-together.md)
++→ [How everything works together](how-it-works-together.md) · [What’s new](../whats-new.md)
+diff --git a/wiki/project/how-it-works-together.md b/wiki/project/how-it-works-together.md
+index f80d239..c23ad7b 100644
+--- a/wiki/project/how-it-works-together.md
++++ b/wiki/project/how-it-works-together.md
+@@ -34,7 +34,8 @@ All of that shares **one set of numbers** in the cloud.
+ | Customer orders 2 bags online | Customer app | 38 bags |
+ | Walk-in buys 3 bags at counter | Retailer POS | 35 bags |
+ | Supplier delivers 50 bags | Retailer Purchases | 85 bags |
+-| Staff scans 10 new SKUs | Scanner → Bulk add | New products live |
++| Scan 200 new SKUs | Scanner → Bulk add | New products live |
++| Print stickers for those SKUs | Retailer Print Labels | Packs scannable at POS |
+ 
+ Customer always sees **current** availability. No separate "online stock" notebook.
+ 
+@@ -77,11 +78,11 @@ If shop is out of rice, they **modify** order → Priya gets **approval** reques
+ 
+ | Data | Synced across |
+ |------|---------------|
+-| Product prices | POS + customer app |
++| Product prices | POS + customer app (unless you hide a batch from the app) |
+ | Stock levels | POS + online orders + purchases |
+ | Order status | Retailer actions → customer tracking |
+ | Offers | POS + checkout (when configured) |
+-| Customer credit | POS sales + ledger |
++| Customer credit | POS sales + shop ledger + customer Profile |
+ 
+ ## What you manage manually
+ 
+diff --git a/wiki/retailer-guide/README.md b/wiki/retailer-guide/README.md
+index 67b873f..75b605e 100644
+--- a/wiki/retailer-guide/README.md
++++ b/wiki/retailer-guide/README.md
+@@ -1,26 +1,27 @@
+ # Retailer guide
+ 
+-Everything a **shop owner or staff member** needs to run daily operations on OrderEasy — counter sales, online orders, stock, suppliers, credit, and promotions.
++Everything a **shop owner or staff member** needs to run daily operations on OrderEasy — counter sales, labels, online orders, stock, suppliers, credit, and promotions.
+ 
+ ## In this section
+ 
+ | Page | What you will learn |
+ |------|---------------------|
+ | [Dashboard overview](dashboard.md) | Home screen, stats, quick actions |
+-| [POS billing](pos-billing.md) | Counter sales, barcode, payments, receipts |
++| [POS billing](pos-billing.md) | Counter sales, barcode, UPI QR, credit, receipts |
+ | [Online orders](online-orders.md) | Accept, modify, fulfil customer orders |
+ | [Products and stock](products-and-stock.md) | Catalog, batches, bulk add, scanner |
+-| [Purchases and suppliers](purchases-and-suppliers.md) | Stock-in, invoices, supplier khata |
++| [Print labels and rack tags](print-labels.md) | Barcode stickers and shelf display labels |
++| [Purchases and suppliers](purchases-and-suppliers.md) | Stock-in, bill photo, supplier khata |
+ | [Customers and credit](customers-and-credit.md) | CRM, udhaar/khata, credit limits |
+ | [Offers and promotions](offers-and-promotions.md) | Discounts, BXGY, loyalty points |
+-| [Shop settings](shop-settings.md) | Profile, hours, location, delivery rules |
++| [Shop settings](shop-settings.md) | Profile, map pin, UPI ID, hours, delivery rules |
+ | [Reports and reviews](reports-and-reviews.md) | Sales analytics, customer feedback |
+ 
+ ## The retailer journey at a glance
+ 
+ ```
+ Log in → Dashboard → POS for walk-ins / Orders for online
+-    → Products & Purchases for stock → Customers & Offers for relationships
++    → Products, labels & Purchases for stock → Customers & Offers for relationships
+ ```
+ 
+ ![Retailer POS and order handling](../../docs/visuals/retailer-pos-order-handling.jpg)
+@@ -32,22 +33,25 @@ Log in → Dashboard → POS for walk-ins / Orders for online
+ - Retailer account with shop access code (from OrderEasy onboarding)
+ - Browser on phone or computer — [retailer.ordereasy.win](https://retailer.ordereasy.win)
+ - Optional: Android phone for the **scanner app** when building catalog
++- Optional: thermal printer for **receipts** and/or **labels**
+ 
+ ## Sidebar menu (main sections)
+ 
+ | Menu item | Purpose |
+ |-----------|---------|
+ | Overview | Dashboard and insights |
+-| POS | Walk-in billing |
++| POS Billing | Walk-in billing |
+ | Purchases | Stock received from suppliers |
+ | Khata / Suppliers | What you owe suppliers |
+ | Products | Your catalog |
++| Print Labels | Barcode stickers for packs |
++| Display Labels | Larger rack / shelf price tags |
+ | Categories | Organise products |
+ | Orders | Online customer orders |
+ | Reviews | Customer ratings |
+ | Customers | CRM and credit |
+ | Offers | Promotions |
+-| Profile | Shop settings |
++| Profile | Shop settings, UPI, map pin |
+ | Operating Hours | Open/close schedule |
+ 
+ ## Quick links
+@@ -55,3 +59,4 @@ Log in → Dashboard → POS for walk-ins / Orders for online
+ - Open the app: [retailer.ordereasy.win](https://retailer.ordereasy.win)
+ - New here? [Getting started for retailers](../getting-started/for-retailers.md)
+ - Scanner help: [Scanner guide](../scanner-guide/README.md)
++- Recent product changes: [What’s new](../whats-new.md)
+diff --git a/wiki/retailer-guide/customers-and-credit.md b/wiki/retailer-guide/customers-and-credit.md
+index 9e76b91..e1b154b 100644
+--- a/wiki/retailer-guide/customers-and-credit.md
++++ b/wiki/retailer-guide/customers-and-credit.md
+@@ -21,7 +21,7 @@ Customers are often created automatically when:
+ - Staff attaches a new person at POS
+ - You add manually from Customers → Add
+ 
+-Keep phone numbers accurate for OTP login and delivery calls.
++Keep phone numbers accurate for login, delivery calls, and POS credit sales.
+ 
+ ## Customer credit (udhaar / khata)
+ 
+@@ -68,7 +68,7 @@ For problematic accounts you can **blacklist** — blocks new credit or orders p
+ 
+ ## POS customer search
+ 
+-At billing, typeahead shows **only your customers** by name. Helps attach the right person quickly during rush hour.
++At billing, typeahead shows **your shop’s customers** (walk-in and people who ordered online) by phone, with name when known. Helps attach the right person quickly during rush hour. Users who never bought from you do not appear.
+ 
+ ## Online vs counter customers
+ 
+diff --git a/wiki/retailer-guide/online-orders.md b/wiki/retailer-guide/online-orders.md
+index 4513096..f598c75 100644
+--- a/wiki/retailer-guide/online-orders.md
++++ b/wiki/retailer-guide/online-orders.md
+@@ -8,6 +8,7 @@ Open **Orders** from the sidebar. You will see lists such as:
+ 
+ - **Pending** — new orders needing your response
+ - **In progress** — confirmed and being prepared
++- **Returned** — sales returns and fully returned orders
+ - **Completed** — delivered or picked up
+ - **Cancelled** — did not go through
+ 
+diff --git a/wiki/retailer-guide/pos-billing.md b/wiki/retailer-guide/pos-billing.md
+index ff5c1bd..70db3d7 100644
+--- a/wiki/retailer-guide/pos-billing.md
++++ b/wiki/retailer-guide/pos-billing.md
+@@ -17,12 +17,32 @@ Online orders use the **Orders** section instead — but they draw from the **sa
+ 3. Tap product to add to bill — adjust quantity as needed
+ 4. Repeat for all items
+ 
++Shortcuts that help on a busy counter:
++
++| Action | How |
++|--------|-----|
++| Search | Focus the search box and type or scan |
++| Quantity from barcode | Scan or type `barcode*qty` then Enter (example: `8901234567890*3`) |
++| Several open bills | Use bill **tabs** so one customer can wait while you serve another |
++| Keyboard help | Open the shortcuts panel / onboarding tour on POS |
++
++## Product not in catalog / unknown barcode
++
++If a scan does not match a product:
++
++1. Create a **new SKU** from that barcode, or
++2. **Link** the barcode to an existing product as another batch (common when a dummy barcode was used at first)
++
++Do not invent a second product for the same pack if you can link it.
++
++If one barcode matches **several batches** (different MRP or lots), POS asks which batch to sell.
++
+ ## Attaching a customer (optional)
+ 
+ You can bill anonymously or link the sale to a customer:
+ 
+-- Search customer by **name or phone**
+-- Only **your shop’s customers** appear in search
++- Search by **phone** (from about 3 digits) — name appears when known
++- Results are **your shop’s customers**, including people who ordered **online** before
+ - Linking helps track purchase history and credit
+ 
+ Useful for regulars who buy on udhaar.
+@@ -32,9 +52,9 @@ Useful for regulars who buy on udhaar.
+ If you have active offers for POS:
+ 
+ - Eligible discounts may apply automatically
+-- Or select an offer manually depending on setup
++- You can also enter a **manual ₹ discount** — the bill uses the better of the two
+ 
+-Same offer engine can run on POS and customer app — configure in **Offers**.
++Configure offers in **Offers**. The same engine can run on POS and the customer app.
+ 
+ ## Taking payment
+ 
+@@ -43,44 +63,67 @@ Same offer engine can run on POS and customer app — configure in **Offers**.
+ | **Cash** | Customer pays notes/coins |
+ | **UPI** | Customer pays via UPI to your shop |
+ | **Credit (khata)** | Customer owes you — added to their ledger |
+-| **Split** | Part cash, part UPI, or part credit |
++| **Split** | Part cash, part UPI, and/or part credit |
++
++Credit sales need a **10-digit mobile** on the bill and stay within the customer’s **credit limit** (if you set one).
+ 
+-Credit sales require the customer to be attached and within their **credit limit** (if you set one).
++### Exact-amount UPI QR
++
++When you choose **UPI** or a **split** that includes UPI, POS can show a **QR for this bill’s amount** (or just the UPI portion of a split).
++
++- Customer scans with any UPI app and pays that amount
++- You must save a **UPI ID** under **Profile** first — without it, POS tells you to add one
++- This is still **your** UPI. Money goes to the shop, not to OrderEasy
++
++You can also keep a static QR image on Profile for cases where you prefer that. The POS QR is generated for the current total so the customer does not type the amount.
+ 
+ ## Complete the bill
+ 
+ 1. Review total
+ 2. Confirm payment method(s)
+ 3. **Complete** the sale
+-4. **Print receipt** if you use a printer
++4. **Print receipt** if you use a printer (58 mm or 80 mm — set in Profile)
++
++Optional on the receipt: shop GST, footer message, and a **UPI QR** (Profile toggle **Print UPI QR on receipt**).
+ 
+ Stock reduces immediately for sold items.
+ 
++After checkout you can optionally **rate** the linked customer.
++
++## Print labels from the cart
++
++If you just added new packs and need stickers, use **Print Labels** from the POS cart. That opens the same barcode-sticker list as the Print Labels menu.
++
++→ [Print labels and rack tags](print-labels.md)
++
+ ## Returns at POS
+ 
+ If a customer returns something from a previous bill:
+ 
+-- Use the **return** flow from POS (or order history)
+-- Stock goes back in; payment may be refunded or adjusted as credit
++- Use the **return** flow from POS
++- Find the original sale by order number, mobile, or name
++- Stock goes back in; refund cash or UPI as you choose
+ 
+-Process returns carefully — they affect inventory and customer balance.
++Process returns carefully — they affect inventory and customer balance. Fully returned sales also show under Orders → **Returned**.
+ 
+ ## Tips for fast billing
+ 
+ | Tip | Benefit |
+ |-----|---------|
+ | Keep barcodes on products | Scan instead of search |
++| Print labels after a price change | Sticker matches the bill |
+ | Create customer records for regulars | Faster credit sales |
+-| Use categories in product setup | Easier search when barcode missing |
++| Save UPI ID in Profile | Exact-amount QR appears on UPI bills |
+ | Train staff on split payment | Common at kirana counters |
+ 
+ ## Common situations
+ 
+ | Situation | What to do |
+ |-----------|------------|
+-| Product not found | Add product first or search alternate spelling |
+-| Wrong quantity entered | Tap line to edit before completing |
+-| Customer over credit limit | Take partial cash or manager override per your policy |
+-| Price dispute | Check product master price; edit product if permanent change |
++| Product not found | Add or link the barcode; or search by name |
++| Wrong quantity entered | Tap the line to edit before completing |
++| Customer over credit limit | Take partial cash / UPI, or raise the limit if you intend to |
++| Price dispute | Check product master price; edit product if the change is permanent |
++| UPI QR missing | Add UPI ID in Profile |
+ 
+-→ [Products and stock](products-and-stock.md) · [Customers and credit](customers-and-credit.md)
++→ [Products and stock](products-and-stock.md) · [Customers and credit](customers-and-credit.md) · [Payments](../shared/payments.md)
+diff --git a/wiki/retailer-guide/print-labels.md b/wiki/retailer-guide/print-labels.md
+new file mode 100644
+index 0000000..78e7bd2
+--- /dev/null
++++ b/wiki/retailer-guide/print-labels.md
+@@ -0,0 +1,80 @@
++# Print labels and rack tags
++
++Print **barcode stickers** for packs and **larger display labels** for racks. Both use the browser print dialog — typically a thermal label printer connected to the computer or phone that is running the retailer app.
++
++These screens are in the retailer sidebar as **Print Labels** and **Display Labels**. You can also send products here from the **Products** list and from the **POS** cart.
++
++## Two kinds of labels
++
++| Kind | Menu | Typical use | Sizes |
++|------|------|-------------|-------|
++| **Barcode stickers** | Print Labels | Stick on the pack so POS can scan | 50×25 mm or 38×25 mm |
++| **Display / rack tags** | Display Labels | Sit on the shelf so customers see price | Thermal rolls (100×75, 75×50, 75×75, 75×25 mm) or A4 sheet (21 labels) |
++
++Barcode stickers are for **staff and scanners**. Display labels are for **shoppers looking at the rack**.
++
++## Print Labels (barcode stickers)
++
++### Build a print list
++
++1. Open **Print Labels**
++2. Search products by name or barcode and tap to add
++3. Or from **Products**, select items and choose Print Labels
++4. Or from **POS**, use the Print Labels action on the current cart
++
++Each row is one product. Set **how many copies** you need (one sticker per pack on the shelf).
++
++### What can appear on a sticker
++
++Turn fields on or off in the template:
++
++| Field | Typical |
++|-------|---------|
++| Shop name | On |
++| Product name | On |
++| MRP | On |
++| Selling price | On |
++| Barcode (CODE128) | On — this is what POS scans |
++| Weight | Off unless you pack loose goods |
++| Packing date | Off unless you need it |
++| Expiry date | Off unless you need it |
++
++Preview updates as you change size, columns, and fields.
++
++### Print
++
++1. Check the live preview
++2. Tap **Print**
++3. In the browser dialog, pick your **label printer**
++4. Paper size should match the sticker (50×25 or 38×25). Do not scale to A4 unless you meant to
++
++Works with common thermal label printers (for example TVS LP46NEO). If barcodes look stretched, check printer paper size and disable “fit to page”.
++
++## Display Labels (rack / shelf tags)
++
++1. Open **Display Labels**
++2. Search and add products
++3. Pick a **thermal roll** size or **A4 21-up** sheet
++4. Optional: show savings (“Save ₹…”) and discount (“18% OFF”) from MRP vs selling price
++5. Preview, then print
++
++Use these when you want a **large price** at eye level, not a tiny barcode on the pack.
++
++## After a price change
++
++When you change selling price or MRP on a product, the app can prompt you to **print updated labels**. Print the new sticker before the old one confuses customers or staff.
++
++## Tips
++
++| Tip | Why |
++|-----|-----|
++| Put a barcode on every SKU you sell at POS | Scan instead of search |
++| Reprint after a price change | Rack price matches the bill |
++| Keep barcode stickers on the pack, display labels on the shelf | Two jobs, two sizes |
++| Set **UPI ID** in Profile if you also print UPI QR on receipts | Separate from product labels |
++
++## Related
++
++- [Products and stock](products-and-stock.md)
++- [POS billing](pos-billing.md)
++- [Shop settings](shop-settings.md) (receipt printer size is for bills, not stickers)
+diff --git a/wiki/retailer-guide/products-and-stock.md b/wiki/retailer-guide/products-and-stock.md
+index 34bdc0a..fcaf98a 100644
+--- a/wiki/retailer-guide/products-and-stock.md
++++ b/wiki/retailer-guide/products-and-stock.md
+@@ -4,28 +4,34 @@ Your **product catalog** is what customers see online and what staff search at P
+ 
+ ## Product list
+ 
+-Open **Products** to see everything in your catalog. Each product typically has:
++Open **Products** to see everything in your catalog. Filter by category, stock (in / out / low), active vs inactive, featured, or seasonal. Search matches **product barcodes and batch barcodes**.
++
++Each product typically has:
+ 
+ | Field | Purpose |
+ |-------|---------|
+ | Name | What customers and staff search for |
+ | Selling price | Current price |
+ | MRP | Printed price on pack (optional) |
+-| Barcode | For POS scan |
++| Barcode | For POS scan and label print |
+ | Category | Organisation and browsing |
+ | Stock quantity | How many available |
+ | Images | Photos for customer app |
+ | Active / inactive | Hide without deleting |
+ 
++From the list you can edit a product, change price quickly, print labels, or open **product ledger**.
++
+ ## Adding one product
+ 
+ 1. Products → **Add product**
+ 2. Fill name, price, unit, category
+-3. Add barcode if available
++3. Add barcode if available (camera scan on the form works)
+ 4. Upload photo (helps online sales)
+ 5. Set opening stock if tracking inventory
+ 6. Save
+ 
++If the barcode is already in the **master catalog**, name and MRP may fill in for you.
++
+ ## Categories
+ 
+ **Categories** group products for customer browsing (e.g. "Snacks", "Cleaning").
+@@ -44,11 +50,11 @@ One number per product — goes down on sale, up on purchase or return.
+ 
+ ### Batch tracking
+ 
+-For items bought at different costs or expiry dates:
++For items bought at different costs, MRP, or lots:
+ 
+-- Each **batch** has its own quantity and purchase price
+-- Sales consume stock FIFO (oldest batch first) by default
+-- Useful for groceries with expiry or varying wholesale rates
++- Each **batch** has its own barcode, quantity, MRP, and selling price
++- Sales use the batch you pick at POS, or the oldest batch first (FIFO) when the system chooses
++- You can hide a batch from the **customer app** (`Show on customer app`) while still selling it at POS — same prices, different visibility
+ 
+ ![Inventory and batches](../../docs/visuals/inventory-and-batches.jpg)
+ 
+@@ -63,7 +69,15 @@ Some items sell both wholesale and retail:
+ - **Parent:** Carton of 24 bottles
+ - **Child:** Single bottle
+ 
+-Linking them keeps stock in sync when you break a case.
++Linking them keeps stock in sync when you break a case. Child stock is derived from the parent using the conversion factor.
++
++You can show or hide the **parent** on the customer app independently of the child packs (so shoppers see “1 bottle” without seeing the carton).
++
++## Print labels
++
++After prices and barcodes are right, print **stickers** and **rack tags** from Products or the dedicated Print Labels / Display Labels screens.
++
++→ [Print labels and rack tags](print-labels.md)
+ 
+ ## Adding many products at once
+ 
+@@ -78,10 +92,11 @@ Best when you already have a spreadsheet.
+ 
+ ### Scanner app + review
+ 
+-1. Staff walks aisle with **scanner app** — scan barcodes, photo labels
+-2. Session syncs to cloud
+-3. Retailer app → Products → **Bulk add** → open session
+-4. Review, fix names/prices, **commit** to live catalog
++1. Staff walks aisle with **scanner app** — scan barcodes, photograph the pack
++2. Known barcodes may fill name and MRP from the master catalog
++3. Session syncs to cloud
++4. Retailer app → Products → **Bulk add** → open session
++5. Review, fix names/prices, **commit** to live catalog
+ 
+ ![Scanner to catalog flow](../../docs/visuals/scanner-to-catalog-flow.jpg)
+ 
+@@ -91,15 +106,24 @@ Best when you already have a spreadsheet.
+ 
+ | Action | When |
+ |--------|------|
+-| **Edit price** | Regular price change |
++| **Edit price** | Regular price change — reprint labels if you use stickers |
+ | **Deactivate** | Seasonal item, not selling now — hidden from customers |
++| **Edit inactive products** | You can still open and update an inactive SKU, then activate when ready |
+ | **Delete** | Rare — prefer deactivate to keep history |
+ 
+ Inactive products may still appear in old orders and reports.
+ 
++## Featured and seasonal
++
++Mark products as **featured** or **seasonal** so they show in special lanes on the customer shop home.
++
++## Track inventory off
++
++For items you do not count (for example prepared food), turn **Track inventory** off. They stay available without a stock number.
++
+ ## Product ledger
+ 
+-**Product ledger** shows stock movements — sales, purchases, adjustments. Use it to answer "why is stock X?"
++**Product ledger** shows stock movements — sales, purchases, returns, removals. Use it to answer "why is stock X?" Rows that belong to an order open that order.
+ 
+ ## Tips
+ 
+@@ -107,7 +131,8 @@ Inactive products may still appear in old orders and reports.
+ |-----|-----|
+ | Photograph top sellers first | Online conversion improves with images |
+ | Barcode every SKU you can | Faster POS |
++| Reprint labels after a price change | Rack and pack match the bill |
+ | Reconcile stock weekly | Catch theft, damage, or data entry gaps |
+-| Match online price to counter | Avoid customer arguments |
++| Match online price to counter | Avoid customer arguments — hide a batch from the app if it is counter-only |
+ 
+ → [Purchases and suppliers](purchases-and-suppliers.md) · [POS billing](pos-billing.md)
+diff --git a/wiki/retailer-guide/shop-settings.md b/wiki/retailer-guide/shop-settings.md
+index 94f70eb..a33ae65 100644
+--- a/wiki/retailer-guide/shop-settings.md
++++ b/wiki/retailer-guide/shop-settings.md
+@@ -10,7 +10,7 @@ Configure how your shop appears to customers and how online ordering behaves.
+ |---------|-------------------|
+ | Shop name | On shop list and storefront |
+ | Description | Short intro optional |
+-| Phone | For calls about orders |
++| Phone | For calls about orders (you can verify with OTP) |
+ | Logo / images | Branding in app |
+ | Payment methods accepted | At checkout |
+ 
+@@ -20,22 +20,18 @@ Keep name consistent with what locals call your shop — easier to find.
+ 
+ Pin your shop on the **map**:
+ 
++- Search the address, use **GPS**, or drag the pin
+ - Customers use this for distance and discovery
+ - Set pin at your actual storefront
+ - Update if you move (rare)
+ 
+-Customers may be asked for **their** location at app start — your pin is where **you** are.
++Customers are asked for **their** location at app start — your pin is where **you** are.
+ 
+ ## Operating hours
+ 
+-**Operating hours** define when you are open each day:
++**Operating hours** define when you are open each day. You can copy Monday’s hours to the rest of the week.
+ 
+-| Day | Open | Close |
+-|-----|------|-------|
+-| Monday–Saturday | e.g. 8:00 | e.g. 21:00 |
+-| Sunday | Optional different hours |
+-
+-Customers may still place orders outside hours depending on settings — clarify your policy with staff.
++Customers may still place orders outside hours — those wait until you open. Confirm that with staff.
+ 
+ ## Delivery and pickup
+ 
+@@ -44,7 +40,7 @@ Configure what you offer:
+ | Option | Settings |
+ |--------|----------|
+ | **Pickup** | Always available if enabled — customer collects |
+-| **Delivery** | Delivery radius, minimum order, delivery charge |
++| **Delivery** | Delivery radius, minimum order, delivery charge, serviceable pincodes, free-delivery threshold |
+ 
+ Be realistic with radius — overpromising causes bad reviews.
+ 
+@@ -66,11 +62,30 @@ Enable methods you actually accept:
+ - UPI on delivery
+ - Credit for known customers (POS mainly)
+ 
++Also set:
++
++| Field | Why |
++|-------|-----|
++| **UPI ID** | POS shows an **exact-amount QR** from this ID |
++| **UPI QR image** | Optional static QR you already use |
++| **Accept COD / Accept UPI** | What customers see at checkout |
++
+ Mismatch between settings and reality frustrates customers.
+ 
++## Receipts (thermal bills)
++
++| Setting | Effect |
++|---------|--------|
++| Show GST on receipt | Prints shop GSTIN when you have one |
++| Printer size | 58 mm or 80 mm |
++| Footer message | Extra line on the bill |
++| Print UPI QR on receipt | Adds a UPI QR to the printed bill (uses your UPI ID) |
++
++Product **stickers** and **rack tags** are separate — see [Print labels](print-labels.md). Receipt size is for bills, not stickers.
++
+ ## Notifications
+ 
+-Ensure staff devices allow **push notifications** for new online orders. Missing alerts means delayed confirmations.
++Ensure staff devices allow **push notifications** for new online orders. Missing alerts means delayed confirmations. Order counts on the sidebar refresh when a new order arrives — they do not poll all day.
+ 
+ ## Access and staff
+ 
+@@ -84,10 +99,12 @@ Document internal roles even if the app has one login today.
+ 
+ ## Before going live checklist
+ 
+-- [ ] Shop name, phone, and location correct
++- [ ] Shop name, phone, and **map pin** correct
++- [ ] **UPI ID** saved if you take UPI at POS
+ - [ ] Operating hours set
+ - [ ] Delivery/pickup rules match what you tell customers
+-- [ ] Top products added with prices
++- [ ] Top products added with prices and barcodes
+ - [ ] Test order from customer app completed once
++- [ ] Test POS sale + receipt print
+ 
+-→ [Getting started for retailers](../getting-started/for-retailers.md)
++→ [Getting started for retailers](../getting-started/for-retailers.md) · [POS billing](pos-billing.md)
+diff --git a/wiki/scanner-guide/README.md b/wiki/scanner-guide/README.md
+index 665f62b..b089f04 100644
+--- a/wiki/scanner-guide/README.md
++++ b/wiki/scanner-guide/README.md
+@@ -1,13 +1,13 @@
+ # Scanner app guide
+ 
+-The **BuyEasy Scanner** is a mobile app for shop staff who need to add many products quickly — by scanning barcodes and photographing labels.
++The **Retailer Scanner** is a mobile app for shop staff who need to add many products quickly — by scanning barcodes and photographing packs.
+ 
+ ## What the scanner is (and is not)
+ 
+ | Scanner is… | Scanner is not… |
+ |-------------|-----------------|
+ | A fast capture tool at the shelf | Where you edit your full catalog |
+-| A way to upload sessions to the cloud | The POS or order app |
++| A way to upload sessions to the cloud | The POS, label printer, or order app |
+ | Used with same login as retailer app | A customer-facing app |
+ 
+ **Review and publish** always happens in the **retailer web app** under Products → Bulk Add.
+@@ -29,7 +29,7 @@ The **BuyEasy Scanner** is a mobile app for shop staff who need to add many prod
+ 
+ | Page | Topic |
+ |------|-------|
+-| [Using the scanner app](using-the-scanner.md) | Login, sessions, scan, photo, OCR |
++| [Using the scanner app](using-the-scanner.md) | Login, sessions, scan, photo, catalog lookup |
+ | [Adding products in bulk](adding-products-in-bulk.md) | Review session in retailer app and commit |
+ 
+ ## The full flow
+@@ -40,8 +40,10 @@ Scanner: login → new session → scan/photo items → sync
+ Retailer web: Products → Bulk Add → review → fix → commit to catalog
+     ↓
+ Customer app & POS: products now searchable
++    ↓
++Optional: Print Labels / Display Labels for the new SKUs
+ ```
+ 
+ ![Scanner to catalog](../../docs/visuals/scanner-to-catalog-flow.jpg)
+ 
+-→ [Products and stock](../retailer-guide/products-and-stock.md)
++→ [Products and stock](../retailer-guide/products-and-stock.md) · [Print labels](../retailer-guide/print-labels.md)
+diff --git a/wiki/scanner-guide/adding-products-in-bulk.md b/wiki/scanner-guide/adding-products-in-bulk.md
+index 0d06698..f4dd003 100644
+--- a/wiki/scanner-guide/adding-products-in-bulk.md
++++ b/wiki/scanner-guide/adding-products-in-bulk.md
+@@ -22,7 +22,7 @@ Fix common issues:
+ 
+ | Issue | Fix |
+ |-------|-----|
+-| Wrong name from OCR | Edit text |
++| Wrong name (typed or catalog fill-in) | Edit text |
+ | Duplicate barcode | Merge or skip |
+ | Missing category | Assign category |
+ | Wrong unit | Set kg/piece/pack |
+diff --git a/wiki/scanner-guide/using-the-scanner.md b/wiki/scanner-guide/using-the-scanner.md
+index b508215..39925b2 100644
+--- a/wiki/scanner-guide/using-the-scanner.md
++++ b/wiki/scanner-guide/using-the-scanner.md
+@@ -2,16 +2,20 @@
+ 
+ Step-by-step guide for capturing products on your Android phone.
+ 
++The scanner **captures** barcodes, names, prices, and pack photos into an **upload session**. It is not the POS and it does not publish the catalog. The manager reviews sessions on the retailer website.
++
+ ## Install and login
+ 
+-1. Install the **BuyEasy Scanner** app on your Android phone
++1. Install the **Retailer Scanner** app (also called BuyEasy Scanner in some docs) on your Android phone
+ 2. Open app → **Login**
+ 3. Use the **same username and password** as retailer.ordereasy.win
+ 4. If your shop uses a custom server (staging), configure API URL in settings — production shops use default
+ 
+-## Home screen
++## Home / gateway
++
++After login you choose to **create or resume an upload session**. Sessions are named batches of products you are capturing — e.g. "Aisle 1 March" or "New stock 18 Sep".
+ 
+-After login you see options to **manage upload sessions**. Sessions are named batches of products you are capturing — e.g. "Aisle 1 March" or "New stock 22 Aug".
++Review and processing still happen in the **retailer app**.
+ 
+ ## Create or resume a session
+ 
+@@ -20,7 +24,7 @@ After login you see options to **manage upload sessions**. Sessions are named ba
+ | **New session** | Starting a fresh batch of products |
+ | **Resume session** | Continue yesterday’s work |
+ 
+-Give sessions clear names so manager knows what to review.
++Give sessions clear names so the manager knows what to review.
+ 
+ ## Capture a product
+ 
+@@ -29,14 +33,22 @@ Inside a session:
+ ### Scan barcode
+ 
+ 1. Point camera at barcode
+-2. App reads barcode automatically (ML Kit)
++2. App reads barcode automatically
+ 3. Barcode field fills in
+ 
+-### Photograph label
++You can also **enter the barcode manually** if the camera cannot read it.
++
++### Master catalog fill-in
++
++If that barcode is already known to OrderEasy, **name, MRP, and product group** may fill in automatically. Check they match the pack in your hand.
++
++### Photograph the pack
++
++1. Tap camera to capture the product front
++2. Retake if the photo is dark or cropped
++3. The photo is uploaded with the item for the manager to review
+ 
+-1. Tap camera to capture product front
+-2. **OCR** may read name, MRP, price from packaging
+-3. Review extracted text — OCR is not perfect
++The live capture path is **barcode + optional catalog lookup + photo + typed fields**. Do not wait for the app to “read” the whole label as OCR — if a field is blank, type it.
+ 
+ ### Enter or edit details
+ 
+@@ -55,24 +67,24 @@ Tap save — item joins the session queue. Repeat for next product.
+ 
+ ## Sync
+ 
+-Sessions sync to the cloud when online. Manager can review on retailer web app even while you keep scanning.
++Sessions sync to the cloud when online. The manager can review on retailer web even while you keep scanning.
+ 
+ ## Tips for fast capture
+ 
+ | Tip | Why |
+ |-----|-----|
+-| Good lighting | Better OCR and barcode read |
++| Good lighting | Better barcode read and pack photo |
+ | Hold steady on barcode | Fewer failed scans |
+ | One aisle per session | Easier review |
+-| Fix obvious OCR errors now | Less work at review |
++| Fix wrong auto-filled names now | Less work at review |
+ 
+ ## Troubleshooting
+ 
+ | Problem | Try |
+ |---------|-----|
+ | Barcode not scanning | Clean lens; enter manually |
+-| OCR wrong price | Edit before save |
++| Name or price blank | Type it — catalog lookup only works for known barcodes |
+ | Cannot login | Check credentials; check internet |
+-| Session not visible on web | Wait for sync; pull to refresh on web |
++| Session not visible on web | Wait for sync; pull to refresh on web Bulk Add |
+ 
+ → Next: [Adding products in bulk](adding-products-in-bulk.md)
+diff --git a/wiki/shared/payments.md b/wiki/shared/payments.md
+index 55e4026..491916d 100644
+--- a/wiki/shared/payments.md
++++ b/wiki/shared/payments.md
+@@ -4,34 +4,36 @@ How money moves in OrderEasy — simple and shop-direct.
+ 
+ ## Important principle
+ 
+-In most flows today, **payment goes directly to the shop**, not to OrderEasy. The system records *how* the customer paid for the shop’s books.
++**Payment goes directly to the shop**, not to OrderEasy. The system records *how* the customer paid for the shop’s books. OrderEasy is not a wallet or a payment processor.
+ 
+ ## Customer app payments
+ 
+ | Method | How it works |
+ |--------|--------------|
+ | **Cash on Delivery (COD)** | Customer pays cash when order arrives or at pickup |
+-| **UPI** | Customer pays shop’s UPI when receiving order |
++| **UPI** | Customer pays the shop’s UPI when receiving the order |
+ 
+-You may not pay inside the app like a wallet — checkout selects the **intended** payment method.
++Checkout selects the **intended** method. On the order screen the shop may show UPI ID / QR and ask for a transaction reference. Credit/khata is **not** a checkout button on the customer app — it is a shop-side ledger (you can **see remaining credit** on Profile after the shop has given you a limit).
+ 
+ ## POS payments (counter)
+ 
+ | Method | How it works |
+ |--------|--------------|
+ | **Cash** | Till receives notes/coins |
+-| **UPI** | Customer scans shop QR |
++| **UPI** | POS shows an **exact-amount QR** for this bill (or the UPI part of a split). Customer scans it. Requires **UPI ID** in Profile |
+ | **Credit (khata)** | Amount added to customer ledger — pay later |
+-| **Split** | Combination e.g. part cash + part UPI |
++| **Split** | Combination e.g. part cash + part UPI + part credit |
+ 
+-Credit is common at kirana counters for trusted regulars.
++You can still print or display a **static** shop QR if you prefer. The generated POS QR exists so the customer does not type the amount.
++
++Thermal receipts can optionally include a UPI QR — turn that on under Profile → receipt settings.
+ 
+ ## Customer credit vs payment
+ 
+ **Credit is not a payment gateway** — it is bookkeeping:
+ 
+ - Shop trusts customer to pay later
+-- Balance tracked in **Customers → ledger**
++- Balance tracked in **Customers → ledger** (shop) and **Profile → Credit / Khata** (customer)
+ - Settlement happens offline (cash/UPI to shop)
+ 
+ ## Supplier payments (shop side)
+@@ -49,10 +51,6 @@ Separate from customer payments — **supplier khata** tracks what **shop owes w
+ | Daily | Weekly |
+ |-------|--------|
+ | Match COD collected vs delivered orders | Reconcile customer khata collections |
+-| Check UPI receipts vs UPI-tagged orders | Match supplier payments to khata |
+-
+-## Future note
+-
+-Payment integrations may expand over time. This wiki describes current kirana-friendly COD/UPI/credit patterns.
++| Check UPI receipts vs UPI-tagged POS bills | Match supplier payments to khata |
+ 
+ → [Cart and checkout (customers)](../customer-guide/cart-and-checkout.md) · [POS billing](../retailer-guide/pos-billing.md) · [Customers and credit](../retailer-guide/customers-and-credit.md)
+diff --git a/wiki/welcome/what-is-ordereasy.md b/wiki/welcome/what-is-ordereasy.md
+index 09c7629..7b603f1 100644
+--- a/wiki/welcome/what-is-ordereasy.md
++++ b/wiki/welcome/what-is-ordereasy.md
+@@ -4,8 +4,8 @@ OrderEasy is software that helps a **local shop** run its daily business and tak
+ 
+ Think of it as a digital helper for your kirana, provision store, or neighbourhood shop:
+ 
+-- **At the counter** — bill walk-in customers, take cash or UPI, track credit (khata), print receipts
+-- **On the shelf** — know what is in stock, what you bought from suppliers, and what is running low
++- **At the counter** — bill walk-in customers, take cash or UPI (exact-amount QR), track credit (khata), print receipts
++- **On the shelf** — know what is in stock, print barcode stickers and rack price tags, record what you bought from suppliers, see what is running low
+ - **On the phone** — let regular customers browse your real catalog and place orders without endless WhatsApp messages
+ - **Behind the scenes** — run offers, loyalty points, and keep supplier payments organised
+ 
+diff --git a/wiki/welcome/what-it-is-not.md b/wiki/welcome/what-it-is-not.md
+index 234f56e..8f1756a 100644
+--- a/wiki/welcome/what-it-is-not.md
++++ b/wiki/welcome/what-it-is-not.md
+@@ -36,7 +36,7 @@ For most orders today:
+ - The shop receives payment directly from the customer
+ - Credit (khata) sales are tracked in the system but settled offline between shop and customer
+ 
+-OrderEasy records *how* payment was made; it does not replace your bank account or UPI QR in most flows.
++OrderEasy records *how* payment was made. POS can **show a QR for this bill’s amount** from the UPI ID you save in Profile — that is still **your** UPI, not an OrderEasy wallet. It does not replace your bank account.
+ 
+ ---
+ 
+diff --git a/wiki/whats-new.md b/wiki/whats-new.md
+new file mode 100644
+index 0000000..a5cdc34
+--- /dev/null
++++ b/wiki/whats-new.md
+@@ -0,0 +1,45 @@
++# What’s new (wiki refresh, 18 Sep 2026)
++
++This wiki was first written in August 2026. This page lists **user-visible** changes that landed after that, based on the live apps on GitHub `main` as of 18 Sep 2026.
++
++Older pages in this wiki have been updated to match. Technical ticket snapshots still live in [`docs/tickets/`](../docs/tickets/README.md).
++
++## For shop owners
++
++| Change | Where you use it |
++|--------|------------------|
++| **Print Labels** — barcode stickers (50×25 or 38×25 mm) from Products, POS cart, or the Print Labels screen | Retailer sidebar → Print Labels |
++| **Display Labels** — larger rack/shelf price tags (thermal rolls or A4 sheet) | Retailer sidebar → Display Labels |
++| **Exact-amount UPI QR on POS** — customer scans a QR for this bill (or the UPI part of a split bill) | POS → pay with UPI or Split |
++| **UPI QR on thermal receipts** — optional; turn on in Profile | Profile → receipt settings |
++| **Unknown barcode at POS** — create a new SKU or **link** the scan to an existing product | POS search / scan |
++| **Supplier edit and deactivate** — keep khata history; hide from new purchase pickers | Khata / Suppliers |
++| **Returned** tab on Orders — sales returns and fully returned online orders | Orders filters |
++| **Parent pack visibility** — hide or show the bulk SKU on the customer app without changing child packs | Product form |
++| **Show on customer app** per batch — sell a batch at the counter only | Product form → batches |
++| **Shop map pin + GPS** — customers find you by location | Profile |
++| **UPI ID** on Profile — required for the POS exact-amount QR | Profile → payments |
++
++## For customers
++
++| Change | Where you use it |
++|--------|------------------|
++| **Credit / khata on Profile** — limit, outstanding, remaining, per shop | Profile |
++| **Frequently bought together** — extra items other shoppers buy with yours | Product page and cart |
++| **Location before shopping** — confirm city / GPS so nearby shops are real | App start |
++| **Pack sizes** on product pages when the shop linked bulk and retail SKUs | Product page |
++| **Out-of-stock items** are hidden from most catalog lists (you can still ask the shop) | Shop catalog |
++
++## Still true (did not change)
++
++- OrderEasy is **one shop**, not a marketplace
++- OrderEasy does **not** send riders
++- Payment still goes **to the shop** (cash, UPI, khata) — not to an OrderEasy wallet
++- Scanner app **captures catalog**; it is not POS
++- Retailer source of truth is `retailer_ordereasy_njs`; prod static export is `retailer_web_build`
++
++## How this wiki is kept
++
++- Canonical copy: Git folder [`wiki/`](README.md) in `RetailerCustomerPlatform`
++- Last reviewed against code: **18 Sep 2026**
++- Architecture for engineers: [`docs/02-ARCHITECTURE.md`](../docs/02-ARCHITECTURE.md)
+-- 
+2.43.0
+

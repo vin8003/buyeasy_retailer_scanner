@@ -47,9 +47,9 @@ If you buy on **udhaar** from a shop, Profile shows a **Credit / Khata** section
 
 - Credit limit the shop set
 - Outstanding balance
-- **Remaining** credit (limit minus outstanding)
+- **Remaining** credit (limit minus outstanding; can be negative if you owe more than the limit)
 
-Balances appear after you have a credit account with that shop (usually after a credit sale at their counter). Loyalty points / cashback are listed separately on the same Profile screen.
+Balances appear after you have a credit account with that shop (usually after a credit sale at their counter). Remaining is on **Profile**, not on old order bills. Loyalty points / cashback are listed separately on the same Profile screen.
 
 ## Saved addresses
 

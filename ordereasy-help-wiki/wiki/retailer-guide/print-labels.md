@@ -9,7 +9,7 @@ These screens are in the retailer sidebar as **Print Labels** and **Display Labe
 | Kind | Menu | Typical use | Sizes |
 |------|------|-------------|-------|
 | **Barcode stickers** | Print Labels | Stick on the pack so POS can scan | 50×25 mm or 38×25 mm |
-| **Display / rack tags** | Display Labels | Sit on the shelf so customers see price | Thermal rolls (100×75, 75×50, 75×75, 75×25 mm) or A4 sheet (21 labels) |
+| **Display / rack tags** | Display Labels | Sit on the shelf so customers see price | Thermal rolls: 100×75 (4:3), 75×50 (3:2), **75×75 (1:1)**, **75×25 (3:1)**, or A4 sheet (21 labels) |
 
 Barcode stickers are for **staff and scanners**. Display labels are for **shoppers looking at the rack**.
 
@@ -54,11 +54,20 @@ Works with common thermal label printers (for example TVS LP46NEO). If barcodes 
 
 1. Open **Display Labels**
 2. Search and add products
-3. Pick a **thermal roll** size or **A4 21-up** sheet
-4. Optional: show savings (“Save ₹…”) and discount (“18% OFF”) from MRP vs selling price
-5. Preview, then print
+3. Pick a size. Layout follows the paper:
 
-Use these when you want a **large price** at eye level, not a tiny barcode on the pack.
+| Size | Shape |
+|------|--------|
+| 100×75 mm | Tall (4:3) |
+| 75×50 mm | Tall (3:2) — default |
+| 75×75 mm | Square (1:1) |
+| 75×25 mm | Wide strip (3:1) |
+| A4 21-up | 3 columns × 7 rows on A4 |
+
+4. Turn fields on or off: product name, MRP, selling price, savings (“Save ₹…”), discount (“18% OFF”), barcode (CODE128 or EAN13)
+5. Preview, then print. If a thermal tag looks stretched landscape, pick the matching roll size and do not “fit to page”
+
+Use these when you want a **large price** at eye level. You can still print a barcode on the rack tag; pack stickers remain the POS scan surface.
 
 ## After a price change
 
