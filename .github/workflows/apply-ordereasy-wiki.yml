@@ -3,18 +3,23 @@
 # (a PAT or fine-grained token with contents + pull-requests on RetailerCustomerPlatform).
 #
 # Trigger: Actions UI (workflow_dispatch) on master, repository_dispatch
-# event_type apply-ordereasy-wiki, or schedule at :05/:25/:45 UTC so a newly added
-# RCP_PUSH_TOKEN can land without another manual dispatch.
+# event_type apply-ordereasy-wiki, schedule every 5 minutes UTC, or a push to
+# master that touches .github/trigger-wiki-apply.
 # Patches are downloaded from Release wiki-sep-2026-2c2e (not from this checkout).
 #
 # Verify always runs against public origin/main (no secret). Land runs only if
 # RCP_PUSH_TOKEN is set. Applied wiki + git bundle are uploaded as artifacts.
 # If wiki/whats-new.md is already on RCP main, the job succeeds and skips.
+# Empty secret: schedule and push exit 0 (no failure email). Dispatch/UI still fail.
 name: Apply OrderEasy help wiki to RCP
 
 on:
   schedule:
-    - cron: "5,25,45 * * * *"
+    - cron: "*/5 * * * *"
+  push:
+    branches: [master]
+    paths:
+      - ".github/trigger-wiki-apply"
   workflow_dispatch:
     inputs:
       dry_run:
@@ -111,9 +116,9 @@ jobs:
           fi
           if [ -z "$RCP_PUSH_TOKEN" ]; then
             MSG="Patches applied cleanly onto origin/main (artifact rcp-wiki-applied). Add repository secret RCP_PUSH_TOKEN (contents + pull requests on vin8003/RetailerCustomerPlatform), then re-run. See https://github.com/vin8003/buyeasy_retailer_scanner/issues/3 and KAN-275 / https://github.com/vin8003/RetailerCustomerPlatform/issues/178 (fetch-apply-from-scanner.sh)"
-            if [ "$EVENT_NAME" = "schedule" ]; then
+            if [ "$EVENT_NAME" = "schedule" ] || [ "$EVENT_NAME" = "push" ]; then
               echo "::notice::$MSG"
-              echo "Scheduled run: secret still empty; exiting 0 so GitHub does not email a failure every 20 minutes."
+              echo "Quiet run ($EVENT_NAME): secret still empty; exiting 0 so GitHub does not email a failure."
               exit 0
             fi
             echo "::error::$MSG"
