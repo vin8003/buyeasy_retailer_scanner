@@ -1,10 +1,13 @@
 # Lands the Sep 2026 help wiki on vin8003/RetailerCustomerPlatform.
-# cursor[bot] cannot push that repo (403). This workflow uses secret RCP_PUSH_TOKEN
+# cursor[bot] cannot push that repo (403). Push/PR uses secret RCP_PUSH_TOKEN
 # (a PAT or fine-grained token with contents + pull-requests on RetailerCustomerPlatform).
 #
 # Trigger: Actions UI (workflow_dispatch) on master, or repository_dispatch
 # event_type apply-ordereasy-wiki (cursor[bot] can send that; workflow_dispatch is 403).
 # Patches are downloaded from Release wiki-sep-2026-2c2e (not from this checkout).
+#
+# Verify always runs against public origin/main (no secret). Land runs only if
+# RCP_PUSH_TOKEN is set. Applied wiki + git bundle are uploaded as artifacts.
 name: Apply OrderEasy help wiki to RCP
 
 on:
@@ -24,19 +27,7 @@ jobs:
   apply:
     runs-on: ubuntu-latest
     steps:
-      - name: Require RCP_PUSH_TOKEN
-        env:
-          RCP_PUSH_TOKEN: ${{ secrets.RCP_PUSH_TOKEN }}
-        run: |
-          if [ -z "$RCP_PUSH_TOKEN" ]; then
-            echo "::error::Add repository secret RCP_PUSH_TOKEN (contents + pull requests on vin8003/RetailerCustomerPlatform), then re-run. See KAN-275 / https://github.com/vin8003/RetailerCustomerPlatform/issues/137"
-            exit 1
-          fi
-
-      - name: Apply release patches onto origin/main
-        env:
-          RCP_PUSH_TOKEN: ${{ secrets.RCP_PUSH_TOKEN }}
-          DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
+      - name: Download patches from Release
         run: |
           set -euo pipefail
           REL=https://github.com/vin8003/buyeasy_retailer_scanner/releases/download/wiki-sep-2026-2c2e
@@ -47,8 +38,11 @@ jobs:
           curl -fsSL -O "$REL/0003-docs-wiki-add-API-map-Unmet-Demand-and-remaining-Sep.patch"
           curl -fsSL -O "$REL/0004-docs-add-Django-API-surface-and-correct-scanner-capt.patch"
           curl -fsSL -O "$REL/0005-docs-wiki-document-display-label-layouts-and-city-st.patch"
-          cd ..
-          git clone --depth=50 "https://x-access-token:${RCP_PUSH_TOKEN}@github.com/vin8003/RetailerCustomerPlatform.git" rcp
+
+      - name: Apply patches onto public origin/main
+        run: |
+          set -euo pipefail
+          git clone --depth=50 https://github.com/vin8003/RetailerCustomerPlatform.git rcp
           cd rcp
           git fetch origin main
           git checkout -B feature/wiki-content-update-2c2e origin/main
@@ -61,10 +55,41 @@ jobs:
                  ../patches/0005-docs-wiki-document-display-label-layouts-and-city-st.patch
           echo "Applied onto $(git rev-parse --short origin/main). HEAD=$(git rev-parse --short HEAD)"
           git log --oneline origin/main..HEAD
+          test -f wiki/whats-new.md
+          test -f wiki/project/apis.md
+          test -f wiki/retailer-guide/print-labels.md
+          test -f docs/05-API-SURFACE.md
+          git bundle create ../rcp-wiki-commits.bundle origin/main..HEAD
+          mkdir -p ../applied/docs
+          cp -a wiki ../applied/wiki
+          cp docs/05-API-SURFACE.md ../applied/docs/05-API-SURFACE.md
+          git diff --stat origin/main...HEAD > ../applied/diffstat.txt
+
+      - name: Upload applied wiki artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: rcp-wiki-applied
+          path: |
+            patches
+            rcp-wiki-commits.bundle
+            applied
+
+      - name: Push branch and open PR
+        env:
+          RCP_PUSH_TOKEN: ${{ secrets.RCP_PUSH_TOKEN }}
+          DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
+        run: |
+          set -euo pipefail
           if [ "$DRY_RUN" = "true" ]; then
-            echo "dry_run=true; not pushing."
+            echo "dry_run=true; patches applied (see artifact rcp-wiki-applied). Not pushing."
             exit 0
           fi
+          if [ -z "$RCP_PUSH_TOKEN" ]; then
+            echo "::error::Patches applied cleanly onto origin/main (artifact rcp-wiki-applied). Add repository secret RCP_PUSH_TOKEN (contents + pull requests on vin8003/RetailerCustomerPlatform), then re-run. See https://github.com/vin8003/buyeasy_retailer_scanner/issues/3 and KAN-275 / https://github.com/vin8003/RetailerCustomerPlatform/issues/137"
+            exit 1
+          fi
+          cd rcp
+          git remote set-url origin "https://x-access-token:${RCP_PUSH_TOKEN}@github.com/vin8003/RetailerCustomerPlatform.git"
           git push -u origin feature/wiki-content-update-2c2e
           export GH_TOKEN="$RCP_PUSH_TOKEN"
           if gh pr list --repo vin8003/RetailerCustomerPlatform --head vin8003:feature/wiki-content-update-2c2e --json number --jq '.[0].number' | grep -q .; then

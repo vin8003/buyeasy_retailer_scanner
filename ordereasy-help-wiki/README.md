@@ -44,14 +44,19 @@ User-facing help centre plus the technical pages that changed with this refresh:
 
 ## Preview site (not the lasting edit)
 
-GitHub Action **Publish OrderEasy help wiki preview** builds `wiki/` to HTML (`repository_dispatch` `publish-ordereasy-wiki-pages`). GitHub Pages enablement is 403 even from Actions. Download the rendered site from [`ordereasy-help-wiki-html.zip`](https://github.com/vin8003/buyeasy_retailer_scanner/releases/download/wiki-sep-2026-2c2e/ordereasy-help-wiki-html.zip). That preview does **not** replace Git `RetailerCustomerPlatform/wiki/` on `main`.
+GitHub Action **Publish OrderEasy help wiki preview** builds `wiki/` to HTML (`repository_dispatch` `publish-ordereasy-wiki-pages`). GitHub Pages enablement is 403 even from Actions.
+
+- Browsable snapshot: [html-preview/index.html](https://raw.githack.com/vin8003/buyeasy_retailer_scanner/feature/wiki-content-update-2c2e/ordereasy-help-wiki/html-preview/index.html) (raw.githack of this branch)
+- Zip: [`ordereasy-help-wiki-html.zip`](https://github.com/vin8003/buyeasy_retailer_scanner/releases/download/wiki-sep-2026-2c2e/ordereasy-help-wiki-html.zip)
+
+That preview does **not** replace Git `RetailerCustomerPlatform/wiki/` on `main`.
 
 ## Fastest land path (GitHub Action)
 
-1. In this scanner repo, add secret **`RCP_PUSH_TOKEN`**: a PAT with `contents` + `pull requests` on `vin8003/RetailerCustomerPlatform`.
+1. In this scanner repo, add secret **`RCP_PUSH_TOKEN`**: a PAT with `contents` + `pull requests` on `vin8003/RetailerCustomerPlatform` ([issue 3](https://github.com/vin8003/buyeasy_retailer_scanner/issues/3)).
 2. Actions → **Apply OrderEasy help wiki to RCP** → Run workflow (branch **`master`**), or `repository_dispatch` event `apply-ordereasy-wiki` (cursor[bot] can send that). Patches come from Release `wiki-sep-2026-2c2e`.
 
-That applies `ordereasy-help-wiki/patches/*.patch` onto RCP `origin/main` and opens a PR into `main`.
+The Action now `git am`s onto public `origin/main` **before** requiring the secret, and uploads artifact `rcp-wiki-applied` (applied `wiki/` + git bundle). If the secret is present it then pushes `feature/wiki-content-update-2c2e` and opens the PR into `main`.
 
 ## Fastest land path (no scanner clone)
 

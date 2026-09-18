@@ -8,7 +8,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 WIKI = ROOT / "wiki"
-OUT = ROOT / "_site"
+OUT = ROOT / "html-preview"
 
 
 def md_href_to_html(href: str) -> str:
