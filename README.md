@@ -2,7 +2,7 @@
 
 A Flutter project for the BuyEasy Retailer Scanner (OrderEasy). Catalog capture only — not POS.
 
-**Help wiki (18 Sep 2026):** see [`ordereasy-help-wiki/`](ordereasy-help-wiki/README.md). Canonical copy belongs in `RetailerCustomerPlatform/wiki/`. Gmail blocked the patch tarball; land with [issue 137](https://github.com/vin8003/RetailerCustomerPlatform/issues/137) (patches in the issue body), the [Release](https://github.com/vin8003/buyeasy_retailer_scanner/releases/tag/wiki-sep-2026-2c2e), [`curl-apply-from-release.sh`](ordereasy-help-wiki/curl-apply-from-release.sh), or Actions secret `RCP_PUSH_TOKEN` → **Apply OrderEasy help wiki to RCP**. A GitHub Pages HTML preview can be published with `repository_dispatch` event `publish-ordereasy-wiki-pages` (not the lasting edit).
+**Help wiki (18 Sep 2026):** see [`ordereasy-help-wiki/`](ordereasy-help-wiki/README.md). Canonical copy belongs in `RetailerCustomerPlatform/wiki/`. Land with [RCP issue 137](https://github.com/vin8003/RetailerCustomerPlatform/issues/137) or add secret `RCP_PUSH_TOKEN` ([scanner issue 3](https://github.com/vin8003/buyeasy_retailer_scanner/issues/3)). Release: [wiki-sep-2026-2c2e](https://github.com/vin8003/buyeasy_retailer_scanner/releases/tag/wiki-sep-2026-2c2e).
 
 ## Android Build Setup
 

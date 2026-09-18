@@ -10,6 +10,7 @@ Last reviewed against live apps on GitHub `main`: **18 Sep 2026**.
 - GitHub apply ticket: https://github.com/vin8003/RetailerCustomerPlatform/issues/132
 - Curl-from-release ticket: https://github.com/vin8003/RetailerCustomerPlatform/issues/134
 - Self-contained patches (in-issue decode + git am): https://github.com/vin8003/RetailerCustomerPlatform/issues/137
+- **Add `RCP_PUSH_TOKEN` (this repo):** https://github.com/vin8003/buyeasy_retailer_scanner/issues/3
 - Patch download (no clone): https://github.com/vin8003/buyeasy_retailer_scanner/releases/tag/wiki-sep-2026-2c2e
 - Confluence copy: https://vin8003.atlassian.net/wiki/spaces/OrderEasy/pages/40271873 (child pages now match the git wiki; still a copy, not SOT)
 
