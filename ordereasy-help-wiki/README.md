@@ -1,8 +1,14 @@
 # OrderEasy help wiki (18 Sep 2026)
 
-Canonical location is **`vin8003/RetailerCustomerPlatform`** (`wiki/` + `docs/`). This folder is a proposed copy because `cursor[bot]` cannot push that repo (GitHub 403).
+Canonical location is **`vin8003/RetailerCustomerPlatform`** (`wiki/` + `docs/`). This folder is a proposed copy because `cursor[bot]` cannot push that repo (GitHub 403 on git, refs, blobs, contents, and forks). Issues:write works.
 
 Last reviewed against live apps on GitHub `main`: **18 Sep 2026**.
+
+## Land tickets
+
+- Jira: [KAN-275](https://vin8003.atlassian.net/browse/KAN-275) (Dev In Progress)
+- GitHub apply ticket: https://github.com/vin8003/RetailerCustomerPlatform/issues/132
+- Confluence copy: https://vin8003.atlassian.net/wiki/spaces/OrderEasy/pages/40271873
 
 ## What this is
 
