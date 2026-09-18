@@ -77,7 +77,7 @@ def render_table(rows: list[str]) -> str:
     header = True
     for row in rows:
         cells = [c.strip() for c in row.strip().strip("|").split("|")]
-        if header and all(re.match(r"^:?-+:?$", c) for c in cells):
+        if all(re.match(r"^:?-+:?$", c) for c in cells):
             header = False
             continue
         tag = "th" if header else "td"
