@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
+import '../utils/app_logger.dart';
 
 import '../utils/url_config_dialog.dart';
 
@@ -24,7 +25,13 @@ class _LoginScreenState extends State<LoginScreen> {
         context,
         listen: false,
       ).login(_usernameController.text, _passwordController.text);
-    } catch (e) {
+    } catch (e, st) {
+      AppLogger.error(
+        'Login failed',
+        error: e,
+        stackTrace: st,
+        tag: 'LoginScreen',
+      );
       if (mounted) {
         ScaffoldMessenger.of(
           context,

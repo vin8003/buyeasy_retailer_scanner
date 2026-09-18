@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/scanner_provider.dart';
+import '../utils/app_logger.dart';
 import 'capture_session_screen.dart';
 
 class SessionSelectionScreen extends StatefulWidget {
@@ -76,7 +77,13 @@ class _SessionSelectionScreenState extends State<SessionSelectionScreen> {
           MaterialPageRoute(builder: (_) => const CaptureSessionScreen()),
         );
       }
-    } catch (e) {
+    } catch (e, st) {
+      AppLogger.error(
+        'Start new session failed',
+        error: e,
+        stackTrace: st,
+        tag: 'SessionSelectionScreen',
+      );
       if (mounted) {
         ScaffoldMessenger.of(
           context,
@@ -101,7 +108,13 @@ class _SessionSelectionScreenState extends State<SessionSelectionScreen> {
           MaterialPageRoute(builder: (_) => const CaptureSessionScreen()),
         );
       }
-    } catch (e) {
+    } catch (e, st) {
+      AppLogger.error(
+        'Resume session failed for sessionId=$sessionId',
+        error: e,
+        stackTrace: st,
+        tag: 'SessionSelectionScreen',
+      );
       if (mounted) {
         ScaffoldMessenger.of(
           context,

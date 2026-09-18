@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../services/ocr_service.dart';
 import '../providers/product_provider.dart';
 import '../providers/auth_provider.dart';
+import '../utils/app_logger.dart';
 
 class OCRProductFormScreen extends StatefulWidget {
   const OCRProductFormScreen({super.key});
@@ -72,7 +73,13 @@ class _OCRProductFormScreenState extends State<OCRProductFormScreen> {
         ).showSnackBar(const SnackBar(content: Text('Product Added!')));
         Navigator.pop(context);
       }
-    } catch (e) {
+    } catch (e, st) {
+      AppLogger.error(
+        'OCR product form submit failed',
+        error: e,
+        stackTrace: st,
+        tag: 'OCRProductFormScreen',
+      );
       if (mounted) {
         ScaffoldMessenger.of(
           context,
