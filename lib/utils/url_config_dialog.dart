@@ -22,12 +22,20 @@ void showServerUrlDialog(BuildContext context) {
         ),
         ElevatedButton(
           onPressed: () async {
-            await ApiConstants.setServerUrl(controller.text.trim());
-            if (context.mounted) {
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Server URL updated')),
-              );
+            try {
+              await ApiConstants.setServerUrl(controller.text.trim());
+              if (context.mounted) {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Server URL updated')),
+                );
+              }
+            } on FormatException catch (e) {
+              if (context.mounted) {
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text(e.message)));
+              }
             }
           },
           child: const Text('Save'),

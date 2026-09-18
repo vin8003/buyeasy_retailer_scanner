@@ -2,26 +2,41 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'api_base_url.dart';
+
 class ApiConstants {
-  static String _serverUrl =
-      dotenv.env['API_BASE_URL'] ??
-      'http://10.0.2.2:8000'; // Default to Android emulator localhost
+  static String _serverUrl = _originFromEnv();
 
   static String get serverUrl => _serverUrl;
-  static String get baseUrl => '$serverUrl/api';
+  static String get baseUrl => ApiBaseUrl.toApiRoot(_serverUrl);
+
+  static String _originFromEnv() {
+    final fromEnv = dotenv.env['API_BASE_URL'];
+    if (fromEnv == null || fromEnv.trim().isEmpty) {
+      return ApiBaseUrl.defaultOrigin;
+    }
+    try {
+      return ApiBaseUrl.normalizeOrigin(fromEnv);
+    } catch (_) {
+      return ApiBaseUrl.defaultOrigin;
+    }
+  }
 
   static Future<void> loadServerUrl() async {
     final prefs = await SharedPreferences.getInstance();
     final url = prefs.getString('api_server_url');
-    if (url != null && url.isNotEmpty) {
-      _serverUrl = url;
+    if (url == null || url.isEmpty) return;
+    try {
+      _serverUrl = ApiBaseUrl.normalizeOrigin(url);
+    } catch (_) {
+      _serverUrl = ApiBaseUrl.defaultOrigin;
     }
   }
 
   static Future<void> setServerUrl(String url) async {
-    _serverUrl = url;
+    _serverUrl = ApiBaseUrl.normalizeOrigin(url);
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('api_server_url', url);
+    await prefs.setString('api_server_url', _serverUrl);
   }
 
   // Auth endpoints
