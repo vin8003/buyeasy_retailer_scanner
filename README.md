@@ -1,6 +1,8 @@
 # Retailer Scanner App
 
-A Flutter project for the BuyEasy Retailer Scanner.
+A Flutter project for the BuyEasy Retailer Scanner (OrderEasy). Catalog capture only — not POS.
+
+**Help wiki (18 Sep 2026):** see [`ordereasy-help-wiki/`](ordereasy-help-wiki/README.md). Canonical copy belongs in `RetailerCustomerPlatform/wiki/`.
 
 ## Android Build Setup
 
