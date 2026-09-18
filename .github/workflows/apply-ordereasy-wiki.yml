@@ -2,8 +2,9 @@
 # cursor[bot] cannot push that repo (403). This workflow uses secret RCP_PUSH_TOKEN
 # (a PAT or fine-grained token with contents + pull-requests on RetailerCustomerPlatform).
 #
-# Actions → Apply OrderEasy help wiki to RCP → Run workflow
-# (select branch feature/wiki-content-update-2c2e).
+# Trigger: Actions UI (workflow_dispatch) on master, or repository_dispatch
+# event_type apply-ordereasy-wiki (cursor[bot] can send that; workflow_dispatch is 403).
+# Patches are downloaded from Release wiki-sep-2026-2c2e (not from this checkout).
 name: Apply OrderEasy help wiki to RCP
 
 on:
@@ -13,6 +14,8 @@ on:
         description: Apply patches locally only (no push, no PR)
         type: boolean
         default: false
+  repository_dispatch:
+    types: [apply-ordereasy-wiki]
 
 permissions:
   contents: read
@@ -21,31 +24,41 @@ jobs:
   apply:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout scanner (patches)
-        uses: actions/checkout@v4
-
       - name: Require RCP_PUSH_TOKEN
         env:
           RCP_PUSH_TOKEN: ${{ secrets.RCP_PUSH_TOKEN }}
         run: |
           if [ -z "$RCP_PUSH_TOKEN" ]; then
-            echo "::error::Add repository secret RCP_PUSH_TOKEN (repo write on vin8003/RetailerCustomerPlatform), then re-run this workflow. See KAN-275 / issue 132."
+            echo "::error::Add repository secret RCP_PUSH_TOKEN (contents + pull requests on vin8003/RetailerCustomerPlatform), then re-run. See KAN-275 / https://github.com/vin8003/RetailerCustomerPlatform/issues/137"
             exit 1
           fi
 
-      - name: Apply patches onto origin/main
+      - name: Apply release patches onto origin/main
         env:
           RCP_PUSH_TOKEN: ${{ secrets.RCP_PUSH_TOKEN }}
-          DRY_RUN: ${{ inputs.dry_run }}
+          DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
         run: |
           set -euo pipefail
+          REL=https://github.com/vin8003/buyeasy_retailer_scanner/releases/download/wiki-sep-2026-2c2e
+          mkdir -p patches
+          cd patches
+          curl -fsSL -O "$REL/0001-docs-wiki-refresh-help-centre-for-Sep-2026-product.patch"
+          curl -fsSL -O "$REL/0002-docs-point-knowledge-base-index-at-wiki-what-s-new-a.patch"
+          curl -fsSL -O "$REL/0003-docs-wiki-add-API-map-Unmet-Demand-and-remaining-Sep.patch"
+          curl -fsSL -O "$REL/0004-docs-add-Django-API-surface-and-correct-scanner-capt.patch"
+          curl -fsSL -O "$REL/0005-docs-wiki-document-display-label-layouts-and-city-st.patch"
+          cd ..
           git clone --depth=50 "https://x-access-token:${RCP_PUSH_TOKEN}@github.com/vin8003/RetailerCustomerPlatform.git" rcp
           cd rcp
           git fetch origin main
           git checkout -B feature/wiki-content-update-2c2e origin/main
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config user.name "github-actions[bot]"
-          git am ../ordereasy-help-wiki/patches/*.patch
+          git am ../patches/0001-docs-wiki-refresh-help-centre-for-Sep-2026-product.patch \
+                 ../patches/0002-docs-point-knowledge-base-index-at-wiki-what-s-new-a.patch \
+                 ../patches/0003-docs-wiki-add-API-map-Unmet-Demand-and-remaining-Sep.patch \
+                 ../patches/0004-docs-add-Django-API-surface-and-correct-scanner-capt.patch \
+                 ../patches/0005-docs-wiki-document-display-label-layouts-and-city-st.patch
           echo "Applied onto $(git rev-parse --short origin/main). HEAD=$(git rev-parse --short HEAD)"
           git log --oneline origin/main..HEAD
           if [ "$DRY_RUN" = "true" ]; then
@@ -61,7 +74,7 @@ jobs:
               --base main \
               --head feature/wiki-content-update-2c2e \
               --title "docs: refresh help wiki for Sep 2026 product" \
-              --body "KAN-275 / https://github.com/vin8003/RetailerCustomerPlatform/issues/132
+              --body "KAN-275 / https://github.com/vin8003/RetailerCustomerPlatform/issues/137
 
           Applies the 18 Sep 2026 OrderEasy help wiki (\`wiki/\` + \`docs/05-API-SURFACE.md\`) onto \`main\`.
 
