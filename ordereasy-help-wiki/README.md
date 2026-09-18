@@ -9,7 +9,7 @@ Last reviewed against live apps on GitHub `main`: **18 Sep 2026**.
 - Jira: [KAN-275](https://vin8003.atlassian.net/browse/KAN-275) (Dev In Progress)
 - GitHub apply ticket: https://github.com/vin8003/RetailerCustomerPlatform/issues/132
 - Patch download (no clone): https://github.com/vin8003/buyeasy_retailer_scanner/releases/tag/wiki-sep-2026-2c2e
-- Confluence copy: https://vin8003.atlassian.net/wiki/spaces/OrderEasy/pages/40271873
+- Confluence copy: https://vin8003.atlassian.net/wiki/spaces/OrderEasy/pages/40271873 (child pages now match the git wiki; still a copy, not SOT)
 
 ## What this is
 
