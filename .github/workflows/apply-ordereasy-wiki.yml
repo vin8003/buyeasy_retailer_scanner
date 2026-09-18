@@ -2,15 +2,19 @@
 # cursor[bot] cannot push that repo (403). Push/PR uses secret RCP_PUSH_TOKEN
 # (a PAT or fine-grained token with contents + pull-requests on RetailerCustomerPlatform).
 #
-# Trigger: Actions UI (workflow_dispatch) on master, or repository_dispatch
-# event_type apply-ordereasy-wiki (cursor[bot] can send that; workflow_dispatch is 403).
+# Trigger: Actions UI (workflow_dispatch) on master, repository_dispatch
+# event_type apply-ordereasy-wiki, or schedule every 20 minutes so a newly added
+# RCP_PUSH_TOKEN can land without another manual dispatch.
 # Patches are downloaded from Release wiki-sep-2026-2c2e (not from this checkout).
 #
 # Verify always runs against public origin/main (no secret). Land runs only if
 # RCP_PUSH_TOKEN is set. Applied wiki + git bundle are uploaded as artifacts.
+# If wiki/whats-new.md is already on RCP main, the job succeeds and skips.
 name: Apply OrderEasy help wiki to RCP
 
 on:
+  schedule:
+    - cron: "*/20 * * * *"
   workflow_dispatch:
     inputs:
       dry_run:
@@ -27,7 +31,20 @@ jobs:
   apply:
     runs-on: ubuntu-latest
     steps:
+      - name: Skip if wiki already on RCP main
+        id: check
+        run: |
+          set -euo pipefail
+          if curl -fsI "https://raw.githubusercontent.com/vin8003/RetailerCustomerPlatform/main/wiki/whats-new.md" >/dev/null; then
+            echo "already=true" >> "$GITHUB_OUTPUT"
+            echo "wiki/whats-new.md is already on RCP main; nothing to land."
+          else
+            echo "already=false" >> "$GITHUB_OUTPUT"
+            echo "wiki/whats-new.md is still missing on RCP main."
+          fi
+
       - name: Download patches from Release
+        if: steps.check.outputs.already != 'true'
         run: |
           set -euo pipefail
           REL=https://github.com/vin8003/buyeasy_retailer_scanner/releases/download/wiki-sep-2026-2c2e
@@ -40,6 +57,7 @@ jobs:
           curl -fsSL -O "$REL/0005-docs-wiki-document-display-label-layouts-and-city-st.patch"
 
       - name: Apply patches onto public origin/main
+        if: steps.check.outputs.already != 'true'
         run: |
           set -euo pipefail
           git clone --depth=50 https://github.com/vin8003/RetailerCustomerPlatform.git rcp
@@ -66,6 +84,7 @@ jobs:
           git diff --stat origin/main...HEAD > ../applied/diffstat.txt
 
       - name: Upload applied wiki artifact
+        if: steps.check.outputs.already != 'true'
         uses: actions/upload-artifact@v4
         with:
           name: rcp-wiki-applied
@@ -75,9 +94,11 @@ jobs:
             applied
 
       - name: Push branch and open PR
+        if: steps.check.outputs.already != 'true'
         env:
           RCP_PUSH_TOKEN: ${{ secrets.RCP_PUSH_TOKEN }}
           DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
+          EVENT_NAME: ${{ github.event_name }}
         run: |
           set -euo pipefail
           if [ "$DRY_RUN" = "true" ]; then
@@ -85,7 +106,13 @@ jobs:
             exit 0
           fi
           if [ -z "$RCP_PUSH_TOKEN" ]; then
-            echo "::error::Patches applied cleanly onto origin/main (artifact rcp-wiki-applied). Add repository secret RCP_PUSH_TOKEN (contents + pull requests on vin8003/RetailerCustomerPlatform), then re-run. See https://github.com/vin8003/buyeasy_retailer_scanner/issues/3 and KAN-275 / https://github.com/vin8003/RetailerCustomerPlatform/issues/178 (fetch-apply-from-scanner.sh)"
+            MSG="Patches applied cleanly onto origin/main (artifact rcp-wiki-applied). Add repository secret RCP_PUSH_TOKEN (contents + pull requests on vin8003/RetailerCustomerPlatform), then re-run. See https://github.com/vin8003/buyeasy_retailer_scanner/issues/3 and KAN-275 / https://github.com/vin8003/RetailerCustomerPlatform/issues/178 (fetch-apply-from-scanner.sh)"
+            if [ "$EVENT_NAME" = "schedule" ]; then
+              echo "::notice::$MSG"
+              echo "Scheduled run: secret still empty; exiting 0 so GitHub does not email a failure every 20 minutes."
+              exit 0
+            fi
+            echo "::error::$MSG"
             exit 1
           fi
           cd rcp
