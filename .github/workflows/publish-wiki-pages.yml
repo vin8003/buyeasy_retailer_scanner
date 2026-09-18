@@ -1,7 +1,6 @@
-# Publishes the Sep 2026 help wiki as a GitHub Pages preview from this scanner repo.
+# Builds the Sep 2026 help wiki to HTML and attaches it to Release wiki-sep-2026-2c2e.
 # Canonical SOT remains RetailerCustomerPlatform/wiki on main (KAN-275 / issue 137).
-# cursor[bot] cannot enable Pages via REST (403) but Actions GITHUB_TOKEN may
-# create the site on first deploy-pages.
+# GitHub Pages enablement is 403 even from GITHUB_TOKEN (integration cannot create Pages).
 name: Publish OrderEasy help wiki preview
 
 on:
@@ -16,12 +15,12 @@ on:
       - ".github/workflows/publish-wiki-pages.yml"
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
 concurrency:
-  group: pages
+  group: wiki-preview
   cancel-in-progress: true
 
 jobs:
@@ -36,22 +35,15 @@ jobs:
       - name: Build static HTML
         run: python3 ordereasy-help-wiki/build-static-site.py
 
-      - name: Configure Pages
-        uses: actions/configure-pages@v5
+      - name: Upload HTML artifact
+        uses: actions/upload-artifact@v4
         with:
-          enablement: true
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
+          name: ordereasy-help-wiki-html
           path: ordereasy-help-wiki/_site
 
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Attach HTML zip to Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          (cd ordereasy-help-wiki/_site && zip -r /tmp/ordereasy-help-wiki-html.zip .)
+          gh release upload wiki-sep-2026-2c2e /tmp/ordereasy-help-wiki-html.zip --clobber --repo "$GITHUB_REPOSITORY"
