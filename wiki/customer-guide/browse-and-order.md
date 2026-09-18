@@ -38,7 +38,14 @@ Tap a product to see:
 | Price | Current selling price set by the shop |
 | Unit / pack size | 500g, 1L, pack of 6, etc. |
 | Availability | In stock or not |
+| Pack size | Switch between linked packs (e.g. 1 kg vs 5 kg) when the shop set them up |
 | Description | Extra info if the shop added it |
+
+Shops often **hide out-of-stock items** from the catalog so you mostly see what you can buy. If something is missing, it may be unsold online, not on the shelf, or not listed yet — ask the shop.
+
+## Frequently bought together
+
+On some product pages and on the cart, OrderEasy may suggest items **other customers often buy with** what you already picked. These are from **this shop only**. Add them if you want — they are never required.
 
 ## Add to cart
 

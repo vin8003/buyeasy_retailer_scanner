@@ -8,6 +8,7 @@ Open **Orders** from the sidebar. You will see lists such as:
 
 - **Pending** — new orders needing your response
 - **In progress** — confirmed and being prepared
+- **Returned** — sales returns and fully returned orders
 - **Completed** — delivered or picked up
 - **Cancelled** — did not go through
 

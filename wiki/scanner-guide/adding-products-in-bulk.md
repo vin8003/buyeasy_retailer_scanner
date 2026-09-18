@@ -22,7 +22,7 @@ Fix common issues:
 
 | Issue | Fix |
 |-------|-----|
-| Wrong name from OCR | Edit text |
+| Wrong name (typed or catalog fill-in) | Edit text |
 | Duplicate barcode | Merge or skip |
 | Missing category | Assign category |
 | Wrong unit | Set kg/piece/pack |

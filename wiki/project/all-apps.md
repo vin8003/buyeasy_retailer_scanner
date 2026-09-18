@@ -7,8 +7,8 @@ OrderEasy is one product spread across **five apps**. Each has a clear job. Toge
 | App | For whom | URL / platform | Main job |
 |-----|----------|----------------|----------|
 | **Marketing website** | Everyone | [ordereasy.win](https://ordereasy.win) | Explain product; link to customer or retailer app |
-| **Customer app** | Shoppers | [customer.ordereasy.win](https://customer.ordereasy.win) | Browse one shop, order, track, rewards |
-| **Retailer app** | Shop owners & staff | [retailer.ordereasy.win](https://retailer.ordereasy.win) | POS, orders, stock, suppliers, offers |
+| **Customer app** | Shoppers | [customer.ordereasy.win](https://customer.ordereasy.win) | Browse one shop, order, track, rewards, khata |
+| **Retailer app** | Shop owners & staff | [retailer.ordereasy.win](https://retailer.ordereasy.win) | POS, labels, orders, stock, suppliers, offers |
 | **Scanner app** | Shop staff | Android install | Fast barcode/photo capture for catalog |
 | **Backend** | (invisible to users) | api.ordereasy.win | Stores all data; powers every app |
 
@@ -34,14 +34,19 @@ Customers and retailers only need the first three URLs in daily life. Scanner is
 **Who:** Local shoppers ordering from a shop they know
 
 **What customers do:**
-- Share location → see nearby shops
-- Pick **one shop** → browse catalog
+- Confirm location / city → see nearby shops
+- Pick **one shop** → browse catalog (out-of-stock items are usually hidden)
+- Switch pack sizes when the shop linked them
+- See **frequently bought together** suggestions
 - Cart → checkout (delivery/pickup, COD/UPI)
 - Track orders, chat, wishlist, rewards
+- See **credit / khata** per shop on Profile
 
 **Works on:** Phone browser (web app); Android wrapper available
 
-**Does not:** Show marketplace of unrelated sellers; provide OrderEasy delivery
+**Login:** Phone + password, or Google (phone bind if needed). Guest cart before signup.
+
+**Does not:** Show marketplace of unrelated sellers; provide OrderEasy delivery; take card/wallet checkout
 
 → Full guide: [Customer guide](../customer-guide/README.md)
 
@@ -53,16 +58,17 @@ Customers and retailers only need the first three URLs in daily life. Scanner is
 
 **What retailers do:**
 - **Dashboard** — today’s numbers
-- **POS** — bill walk-in customers
-- **Orders** — fulfil online orders
-- **Products** — catalog and stock
-- **Purchases** — stock from suppliers
-- **Suppliers** — khata (what you owe)
+- **POS** — bill walk-in customers, exact-amount UPI QR, credit, receipts
+- **Print Labels / Display Labels** — pack stickers and rack tags
+- **Orders** — fulfil online orders (including **Returned**)
+- **Products** — catalog, batches, bulk add
+- **Purchases** — stock from suppliers, bill photo
+- **Suppliers** — khata (what you owe); edit / deactivate
 - **Customers** — CRM and credit (what they owe you)
 - **Offers** — promotions and loyalty
-- **Reports & reviews**
+- **Profile** — map pin, UPI ID, hours, delivery rules
 
-**Works on:** Browser on phone or computer
+**Works on:** Browser on phone or computer. Prod site is a static export of this app (`retailer_web_build`).
 
 → Full guide: [Retailer guide](../retailer-guide/README.md)
 
@@ -75,11 +81,11 @@ Customers and retailers only need the first three URLs in daily life. Scanner is
 **What it does:**
 - Login with retailer credentials
 - Create **upload sessions**
-- Scan barcodes + photograph labels
-- OCR helps fill name and price
-- Sync to cloud for manager review
+- Scan barcodes + photograph packs
+- Fill name/MRP from the master catalog when the barcode is known
+- Sync to cloud for manager review in Bulk Add
 
-**Does not:** Replace retailer app for editing catalog or billing
+**Does not:** Replace retailer app for editing catalog, printing labels, or billing
 
 → Full guide: [Scanner guide](../scanner-guide/README.md)
 
@@ -98,6 +104,8 @@ Customers and retailers only need the first three URLs in daily life. Scanner is
 
 **Why it matters to you:** One stock number everywhere. Sell at POS → online quantity drops. Customer orders → POS stock drops.
 
+This Git repo also holds **this wiki** (`wiki/`) and technical docs (`docs/`).
+
 Developers and agents find technical docs in [`docs/`](../docs/DOCUMENTATION.md).
 
 ---
@@ -109,7 +117,8 @@ Developers and agents find technical docs in [`docs/`](../docs/DOCUMENTATION.md)
 | Order groceries from my kirana | customer.ordereasy.win |
 | Bill a walk-in customer | retailer.ordereasy.win → POS |
 | Confirm an online order | retailer.ordereasy.win → Orders |
+| Print barcode stickers | retailer.ordereasy.win → Print Labels |
 | Scan 200 new products | Scanner app → then retailer Bulk Add |
 | Learn what OrderEasy is | ordereasy.win |
 
-→ [How everything works together](how-it-works-together.md)
+→ [How everything works together](how-it-works-together.md) · [What’s new](../whats-new.md)

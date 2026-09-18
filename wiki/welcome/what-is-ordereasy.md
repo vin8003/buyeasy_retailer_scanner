@@ -4,8 +4,8 @@ OrderEasy is software that helps a **local shop** run its daily business and tak
 
 Think of it as a digital helper for your kirana, provision store, or neighbourhood shop:
 
-- **At the counter** — bill walk-in customers, take cash or UPI, track credit (khata), print receipts
-- **On the shelf** — know what is in stock, what you bought from suppliers, and what is running low
+- **At the counter** — bill walk-in customers, take cash or UPI (exact-amount QR), track credit (khata), print receipts
+- **On the shelf** — know what is in stock, print barcode stickers and rack price tags, record what you bought from suppliers, see what is running low
 - **On the phone** — let regular customers browse your real catalog and place orders without endless WhatsApp messages
 - **Behind the scenes** — run offers, loyalty points, and keep supplier payments organised
 

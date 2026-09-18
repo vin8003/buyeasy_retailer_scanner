@@ -22,13 +22,21 @@ Software for a **local kirana or shop** — counter billing, stock, supplier acc
 **Retailers:** No — use [retailer.ordereasy.win](https://retailer.ordereasy.win).  
 **Scanner:** Yes — Android app for bulk product capture.
 
+### What changed recently?
+
+See [What’s new](../whats-new.md) (last reviewed 18 Sep 2026).
+
 ---
 
 ## For customers
 
 ### How do I find my shop?
 
-Open the customer app, allow location (or pick city), and search the shop list. [Find your shop](../customer-guide/find-your-shop.md)
+Open the customer app, confirm location or pick a city, then search the shop list. [Find your shop](../customer-guide/find-your-shop.md)
+
+### How do I log in?
+
+Use **phone + password**, or **Google**. New accounts also verify **email**. Google may ask for phone + OTP once so the shop has a mobile number. This is not passwordless SMS login every time. [Your account](../customer-guide/your-account.md)
 
 ### Can I order without signing up?
 
@@ -40,11 +48,19 @@ The shop may be out of something. They modify the order and you must **approve**
 
 ### How do I pay?
 
-Usually **Cash on Delivery** or **UPI** when you receive the order. Payment goes to the shop, not to OrderEasy.
+Usually **Cash on Delivery** or **UPI** when you receive the order. Payment goes to the shop, not to OrderEasy. At the counter, the shop can show a QR for the **exact bill amount**.
+
+### Where do I see my khata / remaining credit?
+
+**Profile → Credit / Khata**, per shop (limit, outstanding, remaining). Loyalty points are a separate block on the same screen.
 
 ### Can I use reward points at any shop?
 
 **No.** Points are **per shop** — only at the shop where you earned them.
+
+### What is “frequently bought together”?
+
+Suggestions on the product page and cart of items other people at **this shop** often buy with yours. Optional.
 
 ### My order says Pending for a long time
 
@@ -64,15 +80,31 @@ Go to [retailer.ordereasy.win](https://retailer.ordereasy.win) → Sign up with 
 
 ### How do I add many products quickly?
 
-Use the **scanner app** to capture barcodes, then **Bulk Add** in retailer web to review and commit. [Scanner guide](../scanner-guide/README.md)
+Use the **scanner app** to capture barcodes and pack photos, then **Bulk Add** in retailer web to review and commit. [Scanner guide](../scanner-guide/README.md)
+
+### How do I print barcodes and rack prices?
+
+**Print Labels** for pack stickers, **Display Labels** for shelf tags. You can also start from Products or the POS cart. [Print labels](../retailer-guide/print-labels.md)
+
+### Why is there no UPI QR on POS?
+
+Save a **UPI ID** under Profile. POS then shows an exact-amount QR for UPI and split bills.
 
 ### Can I sell on credit (udhaar)?
 
-**Yes** at POS for customers you trust. Balance shows in **Customers → ledger**. [Customers and credit](../retailer-guide/customers-and-credit.md)
+**Yes** at POS for customers you trust. Balance shows in **Customers → ledger**. Customers see remaining credit on their Profile. [Customers and credit](../retailer-guide/customers-and-credit.md)
 
 ### What if I need to change a customer’s order?
 
 Use **modify** in Orders. Customer must **approve** before you pack.
+
+### Can I hide a pack from the customer app but still sell it at POS?
+
+**Yes** — turn off **Show on customer app** for that batch, or hide the parent bulk SKU while leaving child packs visible.
+
+### How do I stop using a supplier without losing khata?
+
+**Deactivate** them in Khata / Suppliers. Old bills stay; they disappear from new purchase pickers. You can still record payments.
 
 ### Is there a rider app?
 
@@ -80,7 +112,7 @@ Use **modify** in Orders. Customer must **approve** before you pack.
 
 ### How do I track what I owe suppliers?
 
-**Purchases** and **Supplier khata** in retailer app. [Purchases and suppliers](../retailer-guide/purchases-and-suppliers.md)
+**Purchases** and **Supplier khata** in retailer app. Attach a **bill photo** when you record inward stock. [Purchases and suppliers](../retailer-guide/purchases-and-suppliers.md)
 
 ---
 
@@ -88,10 +120,12 @@ Use **modify** in Orders. Customer must **approve** before you pack.
 
 | Problem | Try |
 |---------|-----|
-| Customer cannot see my shop | Check shop location pin and that you are active on platform |
-| Barcode not scanning at POS | Add barcode on product; or search by name |
+| Customer cannot see my shop | Check shop **map pin**, that you are active, and that the customer confirmed the right city |
+| Barcode not scanning at POS | Add barcode on product; print a new sticker; or search by name |
+| POS UPI QR missing | Add UPI ID in Profile |
+| Label print looks stretched | Pick the sticker paper size in the print dialog; do not “fit to page” |
 | Scanner session missing on web | Wait for sync; refresh Bulk Add page |
-| OTP not arriving | Check signal; retry; contact support |
+| Email / reset OTP not arriving | Check spam; retry; contact support |
 | Wrong stock count | Review recent sales, purchases, returns in product ledger |
 
 ---

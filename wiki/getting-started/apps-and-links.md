@@ -7,7 +7,7 @@ OrderEasy is made up of a few apps that work together. Here is what each one is 
 | App | Who uses it | Open it | What it does |
 |-----|-------------|---------|--------------|
 | **Customer app** | Shoppers | [customer.ordereasy.win](https://customer.ordereasy.win) | Browse a shop, order, track, rewards |
-| **Retailer app** | Shop owners & staff | [retailer.ordereasy.win](https://retailer.ordereasy.win) | POS, orders, stock, suppliers, offers |
+| **Retailer app** | Shop owners & staff | [retailer.ordereasy.win](https://retailer.ordereasy.win) | POS, labels, orders, stock, suppliers, offers |
 | **Scanner app** | Shop staff (phone) | Install on Android (from your shop) | Scan barcodes and photograph products for bulk catalog upload |
 | **Website** | Everyone | [ordereasy.win](https://ordereasy.win) | Learn about OrderEasy and choose customer or retailer |
 

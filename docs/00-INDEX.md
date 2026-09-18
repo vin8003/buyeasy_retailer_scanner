@@ -6,7 +6,7 @@ It is designed for both humans and AI agents. **Canonical copy is this Git tree*
 
 ## User wiki (start here for retailers & customers)
 
-The **[`wiki/`](../wiki/README.md)** folder is the plain-language help centre — getting started, customer guide, retailer guide, scanner, FAQ, and end-to-end project map. Use [`wiki/SUMMARY.md`](../wiki/SUMMARY.md) as the table of contents.
+The **[`wiki/`](../wiki/README.md)** folder is the plain-language help centre — getting started, customer guide, retailer guide, scanner, FAQ, and end-to-end project map. Use [`wiki/SUMMARY.md`](../wiki/SUMMARY.md) as the table of contents. Last reviewed **18 Sep 2026** — see [What’s new](../wiki/whats-new.md).
 
 | Wiki section | Audience |
 |--------------|----------|

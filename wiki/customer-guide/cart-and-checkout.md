@@ -48,7 +48,7 @@ Common options:
 | **Cash on Delivery (COD)** | Pay the delivery person or at pickup in cash |
 | **UPI** | Pay via UPI when you receive the order (shop’s UPI) |
 
-The shop receives payment directly. OrderEasy records the payment type for the shop’s records.
+The shop receives payment directly. OrderEasy records the payment type for the shop’s records. On the **order detail** screen you may see the shop’s UPI ID / QR and a place to submit a UPI transaction reference if they asked you to pay that way.
 
 ### 4. Reward points
 
@@ -77,7 +77,7 @@ Check the final total including:
 - Delivery charge (if any)
 - Discounts / points applied
 
-Tap **Place order**. You should see a confirmation screen with your order number.
+Tap **Place order**. The app opens that order’s **tracking** screen with your order number (Orders → that order).
 
 ## After placing the order
 

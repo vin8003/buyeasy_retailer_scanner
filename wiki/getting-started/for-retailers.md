@@ -51,8 +51,9 @@ Open **POS Billing** and run a test sale:
 1. Search or scan a product barcode
 2. Add items to the bill
 3. Optionally attach a customer
-4. Take payment (cash, UPI, credit, or split)
+4. Take payment (cash, UPI with exact-amount QR, credit, or split)
 5. Complete and print receipt
+6. Optional: print barcode stickers from **Print Labels**
 
 This confirms your catalog and prices work before going live online.
 
@@ -90,6 +91,8 @@ When an order comes in:
 - Add **suppliers** and track **supplier khata** (what you owe them)
 - Enable **customer credit** for trusted regulars
 - Install the **scanner app** for faster catalog building
+- Print **barcode stickers** and **rack tags** once prices are stable
+- Save **UPI ID** in Profile so POS can show a pay-this-bill QR
 
 ## Need more detail?
 

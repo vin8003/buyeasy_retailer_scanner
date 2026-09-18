@@ -11,7 +11,7 @@ Everything a **shopper** needs to use OrderEasy confidently — from finding a s
 | [Cart and checkout](cart-and-checkout.md) | Delivery, pickup, payment, placing the order |
 | [Track your order](track-your-order.md) | Status meanings, notifications, chat, approvals |
 | [Rewards and referrals](rewards-and-referrals.md) | Points, referral codes, how to redeem |
-| [Your account](your-account.md) | Login, profile, addresses, support |
+| [Your account](your-account.md) | Login, profile, addresses, credit/khata, support |
 
 ## The customer journey at a glance
 
@@ -29,6 +29,7 @@ Open app → Allow location → See nearby shops → Pick YOUR shop
 - You need a smartphone or computer with internet
 - You should know **which local shop** you want to order from (or be willing to pick one nearby)
 - Payment is usually **Cash on Delivery** or **UPI** — have your method ready at checkout
+- Login is **phone + password** (or Google), not a one-time SMS every visit
 
 ## Quick links
 

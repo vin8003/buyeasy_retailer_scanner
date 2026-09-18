@@ -2,9 +2,12 @@
 
 Use this page to navigate the wiki. Pages are ordered from introduction → daily use → deeper topics.
 
+Last reviewed against live apps: **18 Sep 2026**.
+
 ## Welcome
 
 * [Home](README.md)
+* [What’s new](whats-new.md)
 * [What is OrderEasy?](welcome/what-is-ordereasy.md)
 * [Who is it for?](welcome/who-is-it-for.md)
 * [What OrderEasy is not](welcome/what-it-is-not.md)
@@ -32,6 +35,7 @@ Use this page to navigate the wiki. Pages are ordered from introduction → dail
 * [POS billing (counter sales)](retailer-guide/pos-billing.md)
 * [Online orders](retailer-guide/online-orders.md)
 * [Products and stock](retailer-guide/products-and-stock.md)
+* [Print labels and rack tags](retailer-guide/print-labels.md)
 * [Purchases and suppliers](retailer-guide/purchases-and-suppliers.md)
 * [Customers and credit (khata)](retailer-guide/customers-and-credit.md)
 * [Offers and promotions](retailer-guide/offers-and-promotions.md)

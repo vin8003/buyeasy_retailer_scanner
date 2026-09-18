@@ -1,13 +1,13 @@
 # Scanner app guide
 
-The **BuyEasy Scanner** is a mobile app for shop staff who need to add many products quickly — by scanning barcodes and photographing labels.
+The **Retailer Scanner** is a mobile app for shop staff who need to add many products quickly — by scanning barcodes and photographing packs.
 
 ## What the scanner is (and is not)
 
 | Scanner is… | Scanner is not… |
 |-------------|-----------------|
 | A fast capture tool at the shelf | Where you edit your full catalog |
-| A way to upload sessions to the cloud | The POS or order app |
+| A way to upload sessions to the cloud | The POS, label printer, or order app |
 | Used with same login as retailer app | A customer-facing app |
 
 **Review and publish** always happens in the **retailer web app** under Products → Bulk Add.
@@ -29,7 +29,7 @@ The **BuyEasy Scanner** is a mobile app for shop staff who need to add many prod
 
 | Page | Topic |
 |------|-------|
-| [Using the scanner app](using-the-scanner.md) | Login, sessions, scan, photo, OCR |
+| [Using the scanner app](using-the-scanner.md) | Login, sessions, scan, photo, catalog lookup |
 | [Adding products in bulk](adding-products-in-bulk.md) | Review session in retailer app and commit |
 
 ## The full flow
@@ -40,8 +40,10 @@ Scanner: login → new session → scan/photo items → sync
 Retailer web: Products → Bulk Add → review → fix → commit to catalog
     ↓
 Customer app & POS: products now searchable
+    ↓
+Optional: Print Labels / Display Labels for the new SKUs
 ```
 
 ![Scanner to catalog](../../docs/visuals/scanner-to-catalog-flow.jpg)
 
-→ [Products and stock](../retailer-guide/products-and-stock.md)
+→ [Products and stock](../retailer-guide/products-and-stock.md) · [Print labels](../retailer-guide/print-labels.md)

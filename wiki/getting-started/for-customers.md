@@ -10,12 +10,12 @@ No install is required — it works in your browser.
 
 ## Step 2: Share your location (or pick a city)
 
-When you first open the app:
+When you first open the app you must **confirm location** before shopping:
 
 1. Allow location access if prompted — this helps show **shops near you**
-2. If location is not available, you can **pick your city manually**
+2. If location is not available, **pick your city** from the list
 
-You will see a list of shops in your area.
+You will see shops for that city. You can change city later if you travel.
 
 ## Step 3: Choose your shop
 
@@ -42,8 +42,9 @@ You can add items **before creating an account** — your cart is saved as a gue
 
 When you go to checkout, you may need to:
 
-- **Sign up** with your phone number (OTP verification)
-- Or **log in** if you already have an account
+- **Sign up** with phone, email, and password (then verify email)
+- Or **log in** with phone + password, or **Google**
+- **Verify your phone** if the shop does not have a verified mobile for you yet
 
 Your guest cart should carry over when you sign up — you should not lose items you already added.
 

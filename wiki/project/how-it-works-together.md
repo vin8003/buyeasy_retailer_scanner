@@ -34,7 +34,8 @@ All of that shares **one set of numbers** in the cloud.
 | Customer orders 2 bags online | Customer app | 38 bags |
 | Walk-in buys 3 bags at counter | Retailer POS | 35 bags |
 | Supplier delivers 50 bags | Retailer Purchases | 85 bags |
-| Staff scans 10 new SKUs | Scanner → Bulk add | New products live |
+| Scan 200 new SKUs | Scanner → Bulk add | New products live |
+| Print stickers for those SKUs | Retailer Print Labels | Packs scannable at POS |
 
 Customer always sees **current** availability. No separate "online stock" notebook.
 
@@ -77,11 +78,11 @@ If shop is out of rice, they **modify** order → Priya gets **approval** reques
 
 | Data | Synced across |
 |------|---------------|
-| Product prices | POS + customer app |
+| Product prices | POS + customer app (unless you hide a batch from the app) |
 | Stock levels | POS + online orders + purchases |
 | Order status | Retailer actions → customer tracking |
 | Offers | POS + checkout (when configured) |
-| Customer credit | POS sales + ledger |
+| Customer credit | POS sales + shop ledger + customer Profile |
 
 ## What you manage manually
 

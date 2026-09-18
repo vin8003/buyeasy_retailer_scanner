@@ -4,9 +4,11 @@ OrderEasy shows you **local shops** you can order from. You pick one shop and sh
 
 ## Allow location (recommended)
 
-When you open the customer app, it asks for your location. Say **yes** if you are comfortable — this is the fastest way to see shops near you.
+When you open the customer app, it asks you to **confirm where you are** (GPS or city) before you shop. That keeps the shop list honest.
 
-**What happens:** The app sorts shops by distance and shows delivery/pickup options for your area.
+Say **yes** to location if you are comfortable — this is the fastest way to see shops near you.
+
+**What happens:** The app matches you to a service city and shows shops there, with delivery/pickup options for your area.
 
 ## Pick a city manually
 

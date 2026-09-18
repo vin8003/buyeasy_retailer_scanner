@@ -36,7 +36,7 @@ For most orders today:
 - The shop receives payment directly from the customer
 - Credit (khata) sales are tracked in the system but settled offline between shop and customer
 
-OrderEasy records *how* payment was made; it does not replace your bank account or UPI QR in most flows.
+OrderEasy records *how* payment was made. POS can **show a QR for this bill’s amount** from the UPI ID you save in Profile — that is still **your** UPI, not an OrderEasy wallet. It does not replace your bank account.
 
 ---
 

@@ -21,7 +21,7 @@ Customers are often created automatically when:
 - Staff attaches a new person at POS
 - You add manually from Customers → Add
 
-Keep phone numbers accurate for OTP login and delivery calls.
+Keep phone numbers accurate for login, delivery calls, and POS credit sales.
 
 ## Customer credit (udhaar / khata)
 
@@ -68,7 +68,7 @@ For problematic accounts you can **blacklist** — blocks new credit or orders p
 
 ## POS customer search
 
-At billing, typeahead shows **only your customers** by name. Helps attach the right person quickly during rush hour.
+At billing, typeahead shows **your shop’s customers** (walk-in and people who ordered online) by phone, with name when known. Helps attach the right person quickly during rush hour. Users who never bought from you do not appear.
 
 ## Online vs counter customers
 
