@@ -2,26 +2,42 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
+/// Dummy/local origin for Android emulator. Never a live host.
+const String kDummyLocalServerUrl = 'http://10.0.2.2:8000';
+
+/// Picks a dummy/local default when [candidate] is empty or a live host.
+String resolveServerUrl(String? candidate) {
+  final url = candidate?.trim() ?? '';
+  if (url.isEmpty) {
+    return kDummyLocalServerUrl;
+  }
+  final host = Uri.tryParse(url)?.host.toLowerCase() ?? '';
+  if (host.isEmpty ||
+      host == 'ordereasy.win' ||
+      host.endsWith('.ordereasy.win')) {
+    return kDummyLocalServerUrl;
+  }
+  return url;
+}
+
 class ApiConstants {
-  static String _serverUrl =
-      dotenv.env['API_BASE_URL'] ??
-      'http://10.0.2.2:8000'; // Default to Android emulator localhost
+  static String _serverUrl = kDummyLocalServerUrl;
 
   static String get serverUrl => _serverUrl;
   static String get baseUrl => '$serverUrl/api';
 
   static Future<void> loadServerUrl() async {
     final prefs = await SharedPreferences.getInstance();
-    final url = prefs.getString('api_server_url');
-    if (url != null && url.isNotEmpty) {
-      _serverUrl = url;
-    }
+    final saved = prefs.getString('api_server_url');
+    _serverUrl = resolveServerUrl(
+      (saved != null && saved.isNotEmpty) ? saved : dotenv.env['API_BASE_URL'],
+    );
   }
 
   static Future<void> setServerUrl(String url) async {
-    _serverUrl = url;
+    _serverUrl = resolveServerUrl(url);
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('api_server_url', url);
+    await prefs.setString('api_server_url', _serverUrl);
   }
 
   // Auth endpoints
