@@ -14,9 +14,12 @@ Say **yes** to location if you are comfortable — this is the fastest way to se
 
 If you decline location or GPS is unavailable:
 
-1. You will be asked to **select your city**
-2. The app shows shops registered in that area
-3. You can still order — distance may be less precise
+1. You will be asked to **select your state, then city** (India list)
+2. The app may **guess city from your network** so you can confirm instead of typing
+3. The app shows shops registered in that area
+4. You can still order — distance may be less precise
+
+GPS without a city/pincode is not enough to list shops. Confirm the city even if the pin looks right.
 
 ## The shop list
 
@@ -56,7 +59,7 @@ To order from a different shop, go back to the shop list and switch — your car
 
 | Problem | What to try |
 |---------|-------------|
-| No shops shown | Check city selection; shop may not be on OrderEasy yet in your area |
+| No shops shown | Confirm **state + city**; shop may not be on OrderEasy yet in your area |
 | Shop too far | They may not deliver to you — try pickup or another shop |
 | Cannot find my usual kirana | Ask the shop owner if they are on OrderEasy; they need to register |
 

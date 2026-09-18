@@ -43,6 +43,8 @@ Trusted regulars often buy **on credit** and settle later — classic kirana kha
 
 You can set a **maximum credit** per customer. POS blocks new credit sales above limit (unless you change policy).
 
+Customers see the same numbers on **their Profile** (limit, outstanding, remaining) after they have a credit account with your shop.
+
 ### Recording payment
 
 When customer pays off khata:

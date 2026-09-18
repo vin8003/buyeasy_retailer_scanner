@@ -9,6 +9,7 @@ Open **Cart** from the bottom bar to review:
 - Each product name, quantity, and line price
 - Subtotal before offers and delivery
 - Applied discounts or reward points (if any)
+- **Frequently bought together** suggestions for this shop (optional extras)
 
 You can:
 
