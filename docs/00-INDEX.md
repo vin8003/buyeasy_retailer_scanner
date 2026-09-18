@@ -19,6 +19,7 @@ The **[`wiki/`](../wiki/README.md)** folder is the plain-language help centre â€
 | [Scanner guide](../wiki/scanner-guide/README.md) | Bulk catalog capture |
 | [FAQ](../wiki/faq/common-questions.md) | Quick answers |
 | [Full project](../wiki/project/all-apps.md) | All apps end to end |
+| [API map (plain language)](../wiki/project/apis.md) | How apps talk to the Django API |
 
 ## Technical docs (`docs/`)
 
@@ -28,6 +29,7 @@ The **[`wiki/`](../wiki/README.md)** folder is the plain-language help centre â€
 | [01-OVERVIEW.md](01-OVERVIEW.md) | Project identity, purpose, value proposition, component map |
 | [02-ARCHITECTURE.md](02-ARCHITECTURE.md) | High-level system architecture (Mermaid + illustration) |
 | [03-USER-JOURNEYS.md](03-USER-JOURNEYS.md) | Customer, retailer POS, and scanner journeys |
+| [05-API-SURFACE.md](05-API-SURFACE.md) | Django API route map (18 Sep 2026) |
 | [07-KEY-FLOWS/](07-KEY-FLOWS/) | Detailed key business flows |
 | [requirements/](requirements/) | Durable product/engineering requirements extracted from tickets |
 | [decisions/](decisions/) | Architecture Decision Records (ADRs) |
@@ -43,7 +45,6 @@ The **[`wiki/`](../wiki/README.md)** folder is the plain-language help centre â€
 ### Not written yet in `docs/` (do not invent technical content)
 
 - Domain models (`04-DOMAIN-MODELS/`)
-- API surface (`05-API-SURFACE.md`)
 - Developer setup (`08-SETUP.md`)
 
 ## Canonical Diagrams

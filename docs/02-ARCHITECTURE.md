@@ -38,7 +38,7 @@ flowchart TB
 - **Database**: PostgreSQL (with trigram extensions for search).
 - **Notifications**: Firebase Cloud Messaging (FCM) for push notifications.
 - **Authentication**: JWT (access + refresh tokens) + OTP flows.
-- **Clients** are thin: they handle UI/UX and call the API. No business logic is duplicated in the frontends.
+- **Clients** are thin: they handle UI/UX and call the API. No business logic is duplicated in the frontends. Route map: [05-API-SURFACE.md](05-API-SURFACE.md). Plain-language map: [wiki/project/apis.md](../wiki/project/apis.md).
 
 ## Component Responsibilities
 
@@ -46,8 +46,8 @@ flowchart TB
 |-----------|----------------|
 | Backend (`RetailerCustomerPlatform`) | Auth, Products, Batches, Inventory, Cart, Orders, Offers engine, Loyalty, Credit/Khata, Purchases, Returns, Scanner upload sessions |
 | Customer App | Discovery, catalog browsing, cart, checkout, order tracking, rewards, chat |
-| Retailer Dashboard + POS | Order management, POS billing, product & batch management, purchases, offers, customer CRM, reports |
-| Scanner App | Barcode scanning, image capture + OCR, upload sessions for bulk product creation |
+| Retailer Dashboard + POS | Order management, POS billing, browser-print barcode/display labels, product & batch management, purchases, offers, customer CRM, reports. Label HTML and POS UPI QR are client-side (shop UPI ID). |
+| Scanner App | Barcode scanning, pack photo, master-catalog lookup, upload sessions for bulk product creation. OCR form code exists but is unused on the live path. |
 
 ## Data Flow Principle
 

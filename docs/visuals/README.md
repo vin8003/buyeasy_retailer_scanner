@@ -23,7 +23,7 @@ Committed in `429dbfc`. No real data.
 | `credit-khata-system.jpg` | Customer credit + supplier khata | `07-KEY-FLOWS/credit-khata.md` |
 | `customer-journey.jpg` | Discover → browse → cart → checkout → track → rewards | `03-USER-JOURNEYS.md` |
 | `retailer-pos-order-handling.jpg` | POS + online order workflow | `03-USER-JOURNEYS.md` |
-| `scanner-to-catalog-flow.jpg` | Scanner → session → OCR → review → catalog | `03-USER-JOURNEYS.md` |
+| `scanner-to-catalog-flow.jpg` | Scanner → session → barcode/photo → review → catalog | `03-USER-JOURNEYS.md` |
 
 ## Naming for future screenshots
 

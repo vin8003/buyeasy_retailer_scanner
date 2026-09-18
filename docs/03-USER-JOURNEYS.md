@@ -49,20 +49,24 @@ flowchart TB
 
 - Retailer app: `retailer_ordereasy_njs` at `https://retailer.ordereasy.win`.
 - POS customer typeahead lists **this retailer’s customers only**, with name ([pos-customer-typeahead.md](requirements/pos-customer-typeahead.md)).
+- POS exact-amount UPI QR is built in the browser from the shop’s saved UPI ID (no payment-processor API).
+- Print Labels / Display Labels are browser print HTML.
 - Store pin is set in the retailer app ([retailer-store-location.md](requirements/retailer-store-location.md)).
 - Order status rules live in [order-lifecycle.md](07-KEY-FLOWS/order-lifecycle.md).
+- API route map: [05-API-SURFACE.md](05-API-SURFACE.md).
 
 ## Scanner to catalog
 
 ![Scanner to Catalog Flow](visuals/scanner-to-catalog-flow.jpg)
 
-*Flutter scanner → upload session → scan/OCR → review → edit → commit to catalog.*
+*Flutter scanner → upload session → barcode + photo (+ master catalog lookup) → review on web → commit to catalog.*
 
 ```mermaid
 flowchart LR
     Scan[Flutter scanner] --> Session[Upload session]
-    Session --> OCR[Scan / OCR]
-    OCR --> Review[Review]
+    Session --> Capture[Barcode / photo / typed fields]
+    Capture --> Lookup[Master catalog fill-in]
+    Lookup --> Review[Review on retailer web]
     Review --> Edit[Edit]
     Edit --> Catalog[Commit to catalog]
 ```
@@ -70,5 +74,7 @@ flowchart LR
 **Key points**
 
 - Scanner is `buyeasy_retailer_scanner` (Flutter + ML Kit). It talks to the same Django API via upload sessions.
+- Live capture is **barcode + optional master-catalog fill-in + pack photo + typed fields**. `OCRProductFormScreen` is unused — do not document OCR as the daily path.
 - Catalog truth is the backend, not the scanner device.
+- After commit, shops often print **barcode stickers** from retailer Print Labels (browser print HTML, not an API).
 - Crash/logging work for intensive scanning is **ticket work**, not a durable architecture change: [tickets/KAN-18.md](tickets/KAN-18.md).
