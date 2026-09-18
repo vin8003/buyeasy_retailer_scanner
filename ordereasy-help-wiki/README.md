@@ -7,7 +7,7 @@ Last reviewed against live apps on GitHub `main`: **18 Sep 2026**.
 ## Land tickets
 
 - Jira: [KAN-275](https://vin8003.atlassian.net/browse/KAN-275) (Dev In Progress)
-- GitHub apply ticket: https://github.com/vin8003/RetailerCustomerPlatform/issues/132
+- **One-command apply on the canonical repo:** https://github.com/vin8003/RetailerCustomerPlatform/issues/178
 - Curl-from-release ticket: https://github.com/vin8003/RetailerCustomerPlatform/issues/134
 - Self-contained patches (in-issue decode + git am): https://github.com/vin8003/RetailerCustomerPlatform/issues/137
 - **Add `RCP_PUSH_TOKEN` (this repo):** https://github.com/vin8003/buyeasy_retailer_scanner/issues/3
