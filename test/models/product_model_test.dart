@@ -53,6 +53,8 @@ void main() {
       expect(product.name, '100');
       expect(product.quantity, 3);
       expect(product.unit, 'kg');
+      expect(Product.fromJson({'quantity': 3.5}).quantity, 3);
+      expect(Product.fromJson({'quantity': '3.5'}).quantity, 3);
     });
   });
 }
