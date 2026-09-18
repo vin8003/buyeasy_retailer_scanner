@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Fast-forward the Sep 2026 help wiki onto RetailerCustomerPlatform origin/main
 # using the git bundle from Release wiki-sep-2026-2c2e (no patch decode).
-# Requires origin/main at e9420db. Verified: merge --ff-only -> 959b8f1.
+# Requires origin/main at e9420db. Verified: merge --ff-only -> b252163 (same commits as scanner rcp-wiki-applied).
 set -euo pipefail
 
 RCP_DIR="${1:-}"
