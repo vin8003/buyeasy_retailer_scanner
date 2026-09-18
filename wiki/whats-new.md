@@ -19,6 +19,7 @@ Older pages in this wiki have been updated to match. Technical ticket snapshots 
 | **Show on customer app** per batch — sell a batch at the counter only | Product form → batches |
 | **Shop map pin + GPS** — customers find you by location | Profile |
 | **UPI ID** on Profile — required for the POS exact-amount QR | Profile → payments |
+| **Unmet Demand** on Overview — searches that found zero products (last 30 days) | Overview |
 
 ## For customers
 

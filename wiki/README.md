@@ -31,7 +31,7 @@ Last reviewed against the live apps: **18 Sep 2026**. See [What’s new](whats-n
 5. **[Retailer guide](retailer-guide/README.md)** — POS, labels, online orders, stock, suppliers, credit, offers
 6. **[Scanner app guide](scanner-guide/README.md)** — Add products quickly with your phone camera
 7. **[Shared topics](shared/order-statuses.md)** — Order statuses, payments, delivery and pickup
-8. **[The full project](project/all-apps.md)** — Every app and how they work together
+8. **[The full project](project/all-apps.md)** — Every app, how they fit, and [how they talk to the API](project/apis.md)
 9. **[FAQ](faq/common-questions.md)** — Common questions answered
 
 ## For developers and agents

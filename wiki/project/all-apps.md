@@ -57,7 +57,7 @@ Customers and retailers only need the first three URLs in daily life. Scanner is
 **Who:** Kirana owner and counter staff
 
 **What retailers do:**
-- **Dashboard** — today’s numbers
+- **Dashboard** — period stats, cash vs digital, POS vs online, **Unmet Demand**
 - **POS** — bill walk-in customers, exact-amount UPI QR, credit, receipts
 - **Print Labels / Display Labels** — pack stickers and rack tags
 - **Orders** — fulfil online orders (including **Returned**)
@@ -106,7 +106,7 @@ Customers and retailers only need the first three URLs in daily life. Scanner is
 
 This Git repo also holds **this wiki** (`wiki/`) and technical docs (`docs/`).
 
-Developers and agents find technical docs in [`docs/`](../docs/DOCUMENTATION.md).
+Developers and agents: [How the apps talk to the API](apis.md) and [`docs/`](../docs/DOCUMENTATION.md).
 
 ---
 
@@ -121,4 +121,4 @@ Developers and agents find technical docs in [`docs/`](../docs/DOCUMENTATION.md)
 | Scan 200 new products | Scanner app → then retailer Bulk Add |
 | Learn what OrderEasy is | ordereasy.win |
 
-→ [How everything works together](how-it-works-together.md) · [What’s new](../whats-new.md)
+→ [How everything works together](how-it-works-together.md) · [How the apps talk to the API](apis.md) · [What’s new](../whats-new.md)

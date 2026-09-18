@@ -1,55 +1,83 @@
 # Dashboard overview
 
-The **Overview** (dashboard) is your home screen when you log into the retailer app. It gives a snapshot of how the shop is doing today and quick links to common tasks.
+The **Overview** screen is your home when you log into the retailer app. It is a snapshot of how the shop is doing — not a separate reports product.
 
-## What you see
+Open it from the sidebar: **Overview**.
 
-Typical dashboard widgets include:
+## Time range
 
-| Section | What it shows |
-|---------|---------------|
-| **Revenue** | Sales for the selected period |
-| **Order counts** | Online vs POS breakdown |
-| **Payment split** | Cash vs digital (UPI, etc.) |
-| **Recent orders** | Latest online orders needing attention |
-| **Recent reviews** | What customers said recently |
-| **Demand insights** | Popular products or trends (when available) |
+At the top right you can filter stats:
 
-Exact layout may vary as features grow — the idea is **one glance, whole shop health**.
+| Filter | Meaning |
+|--------|---------|
+| **All Time** | Every recorded sale (default) |
+| **Today** | This calendar day |
+| **This Week** | Current week |
+| **This Month** | Current month |
+| **Custom Range** | Pick start and end dates |
 
-## Quick actions
+Payment split, channel split, recent sales, and the four headline cards all follow this filter. **Unmet Demand** is always the last 30 days of customer searches — it does not follow the date picker.
 
-From the dashboard you can usually jump directly to:
+## Headline cards
 
-- **New POS bill** — start counter sale
-- **Pending orders** — online orders waiting for confirmation
-- **Add product** — quick catalog entry
-- **Reports** — deeper analytics
+| Card | What it shows |
+|------|----------------|
+| **Total Orders** | How many orders in the selected period (POS + online) |
+| **Total Revenue** | Rupees taken in that period |
+| **Total Products** | Active products in your catalog (not filtered by date) |
+| **Avg Order Value** | Revenue ÷ orders for the period |
 
-Use these shortcuts during busy hours instead of hunting through menus.
+## Payment breakdown
 
-## POS vs online on one screen
+Cash vs digital (UPI and other non-cash) for the selected period, with a percentage bar. Use this at close of day to know how much should be in the till vs already in the bank.
 
-A key benefit of OrderEasy: **walk-in and online sales share the same stock**.
+## Channel performance
 
-The dashboard helps you see both channels:
+| Tile | What it is |
+|------|------------|
+| **POS Sales** | Walk-in bills from POS Billing |
+| **Online Store** | Orders placed on the customer app |
 
-- High POS day? Online stock still accurate
-- Many online orders? Plan counter staffing accordingly
+Walk-in and online share the **same stock**. A busy POS day still reduces what customers can order online.
+
+## Recent sales
+
+Latest transactions (both channels) with order number, customer name, amount, and status. Tap through **Orders** if you need to act on a pending online order.
+
+## Unmet Demand
+
+**Unmet Demand** lists search queries in your shop that returned **zero products** in the last 30 days, with how many times customers searched that term.
+
+Use it to:
+
+- Add a missing SKU (or a barcode/name customers actually type)
+- Fix spelling on a product title so search finds it
+- Decide what to stock next
+
+If the list is empty, customers found something for every recent search — not that the catalog is complete.
+
+## Recent reviews
+
+Latest customer ratings and comments. Full list is under **Reviews**.
+
+## Pending orders badge
+
+The **Orders** item in the sidebar shows a **PENDING** count when online orders are waiting. Check that before you rely on the dashboard snapshot — new orders also arrive as push notifications.
 
 ## How often to check
 
 | When | Why |
 |------|-----|
 | **Shop open** | Confirm pending online orders |
-| **Mid-day** | Catch stuck orders or low-stock alerts |
-| **Close** | Review revenue and payment split |
+| **Mid-day** | Catch stuck orders; glance at Unmet Demand |
+| **Close** | Review revenue, cash vs digital, POS vs online |
 
 ## Tips for new shops
 
-1. Complete **Profile** and **Operating hours** before promoting online ordering
-2. Add at least your top 50 products before sharing customer link
-3. Run one **test POS sale** to verify barcodes and prices
-4. Place a **test online order** from customer app to see the full flow
+1. Complete **Profile** (including **map pin** and **UPI ID**) and **Operating hours** before promoting online ordering
+2. Add at least your top 50 products before sharing the customer link
+3. Run one **test POS sale** (and a UPI QR if you saved a UPI ID)
+4. Place a **test online order** from the customer app
+5. Print **barcode stickers** for items you sell at the counter
 
-→ Next: [POS billing](pos-billing.md) · [Online orders](online-orders.md)
+→ Next: [POS billing](pos-billing.md) · [Online orders](online-orders.md) · [Reports and reviews](reports-and-reviews.md)

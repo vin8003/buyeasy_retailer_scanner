@@ -43,4 +43,4 @@ That is why stock sold at the counter immediately affects what customers see onl
 
 Customers and retailers do not need to know about repositories — this table is for anyone exploring the full project.
 
-→ [Getting started for customers](for-customers.md) · [Getting started for retailers](for-retailers.md)
+→ [Getting started for customers](for-customers.md) · [Getting started for retailers](for-retailers.md) · [How the apps talk to the API](../project/apis.md)

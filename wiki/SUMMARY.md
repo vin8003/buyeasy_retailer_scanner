@@ -58,6 +58,7 @@ Last reviewed against live apps: **18 Sep 2026**.
 
 * [All apps explained](project/all-apps.md)
 * [How everything works together](project/how-it-works-together.md)
+* [How the apps talk to the API](project/apis.md)
 
 ## FAQ
 

@@ -110,4 +110,4 @@ If shop is out of rice, they **modify** order → Priya gets **approval** reques
 | Customer | [Getting started for customers](../getting-started/for-customers.md) |
 | Retailer | [Getting started for retailers](../getting-started/for-retailers.md) |
 | Either | [FAQ](../faq/common-questions.md) |
-| Developer | [docs/DOCUMENTATION.md](../docs/DOCUMENTATION.md) |
+| Developer | [How the apps talk to the API](apis.md) · [docs/DOCUMENTATION.md](../docs/DOCUMENTATION.md) |

@@ -17,10 +17,14 @@ You do **not** need a big team or IT department. If you can use a smartphone and
 | Task | Where in OrderEasy |
 |------|-------------------|
 | Bill a walk-in customer | POS Billing |
+| Show a pay-this-bill UPI QR | POS (after saving UPI ID in Profile) |
 | Accept an online order | Orders |
 | Add a new product | Products |
+| Print pack barcodes / rack tags | Print Labels / Display Labels |
 | Record stock from a supplier | Purchases |
+| Stop using a supplier | Khata / Suppliers → Deactivate |
 | Check what a customer owes | Customers → Credit |
+| See what customers searched but did not find | Overview → Unmet Demand |
 | Run a discount or offer | Offers |
 | Scan many products quickly | Scanner app + Bulk Add |
 
@@ -44,9 +48,10 @@ You are **not** browsing hundreds of unknown shops. You pick **your** shop and o
 
 | Task | Where in OrderEasy |
 |------|-------------------|
-| Find nearby shops | Home → shop list |
+| Find nearby shops | Home → shop list (after location / city) |
 | Order groceries | Shop → Cart → Checkout |
 | See where my order is | Orders |
+| See remaining khata | Profile → Credit |
 | Save favourite items | Wishlist |
 | Use reward points | Checkout or Rewards |
 

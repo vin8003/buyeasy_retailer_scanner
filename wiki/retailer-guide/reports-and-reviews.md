@@ -15,6 +15,8 @@ Typical insights:
 | Channel split | POS vs online revenue |
 | Payment mix | Cash vs UPI vs credit |
 
+On **Overview**, **Unmet Demand** is a different question: which searches in your shop returned nothing in the last 30 days. Use it to add missing SKUs or fix product names. See [Dashboard overview](dashboard.md).
+
 Use reports for:
 
 - Reordering stock

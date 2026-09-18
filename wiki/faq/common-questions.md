@@ -114,6 +114,10 @@ Use **modify** in Orders. Customer must **approve** before you pack.
 
 **Purchases** and **Supplier khata** in retailer app. Attach a **bill photo** when you record inward stock. [Purchases and suppliers](../retailer-guide/purchases-and-suppliers.md)
 
+### What is Unmet Demand on Overview?
+
+Customer searches in **your** shop that returned **zero products** in the last 30 days. Add the SKU or fix the product name. [Dashboard](../retailer-guide/dashboard.md)
+
 ---
 
 ## Troubleshooting
