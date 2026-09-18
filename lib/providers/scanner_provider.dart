@@ -4,11 +4,15 @@ import 'package:flutter/material.dart';
 import '../models/upload_session_model.dart';
 import '../models/queue_item_model.dart';
 import '../services/product_service.dart';
+import '../utils/scan_validation.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ScannerProvider with ChangeNotifier {
-  final ProductService _productService = ProductService();
+  ScannerProvider({ProductService? productService})
+    : _productService = productService ?? ProductService();
+
+  final ProductService _productService;
 
   ProductUploadSession? _currentSession;
   List<ProductUploadSession> _sessions = [];
@@ -156,8 +160,13 @@ class ScannerProvider with ChangeNotifier {
       throw Exception("No active session");
     }
 
+    final normalizedBarcode = ScanValidation.normalizeBarcode(barcode);
+    if (ScanValidation.barcodeError(normalizedBarcode) != null) {
+      throw ArgumentError(ScanValidation.blankBarcodeMessage);
+    }
+
     final item = QueueItem(
-      barcode: barcode,
+      barcode: normalizedBarcode,
       image: image,
       name: name,
       price: price,
@@ -187,9 +196,13 @@ class ScannerProvider with ChangeNotifier {
         notifyListeners(); // Update status of item
 
         try {
+          final session = _currentSession;
+          if (session == null) {
+            throw Exception("No active session");
+          }
           final newItem = await _productService.addSessionItem(
             token,
-            _currentSession!.id,
+            session.id,
             item.barcode,
             item.image,
             details: {
@@ -202,7 +215,7 @@ class ScannerProvider with ChangeNotifier {
           );
 
           // Success
-          _currentSession!.items.insert(0, newItem);
+          session.items.insert(0, newItem);
           _pendingQueue.remove(item);
         } catch (e) {
           item.isUploading = false;
@@ -216,6 +229,11 @@ class ScannerProvider with ChangeNotifier {
     } finally {
       _isProcessingQueue = false;
       notifyListeners();
+      // If an item was enqueued after the loop drained but before this
+      // flag cleared, kick the worker again so uploads do not stall.
+      if (_pendingQueue.isNotEmpty) {
+        _processQueue(token);
+      }
     }
   }
 
