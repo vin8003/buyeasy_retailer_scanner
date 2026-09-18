@@ -39,11 +39,11 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ordereasy-help-wiki-html
-          path: ordereasy-help-wiki/_site
+          path: ordereasy-help-wiki/html-preview
 
       - name: Attach HTML zip to Release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          (cd ordereasy-help-wiki/_site && zip -r /tmp/ordereasy-help-wiki-html.zip .)
+          (cd ordereasy-help-wiki/html-preview && zip -r /tmp/ordereasy-help-wiki-html.zip .)
           gh release upload wiki-sep-2026-2c2e /tmp/ordereasy-help-wiki-html.zip --clobber --repo "$GITHUB_REPOSITORY"
