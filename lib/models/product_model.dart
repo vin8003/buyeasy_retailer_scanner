@@ -25,16 +25,43 @@ class Product {
 
   factory Product.fromJson(Map<String, dynamic> json) {
     return Product(
-      id: json['id'],
-      name: json['name'],
-      description: json['description'] ?? '',
-      price: double.parse(json['price'].toString()),
-      quantity: json['quantity'] ?? 0,
-      unit: json['unit'] ?? 'piece',
-      image: json['image'],
-      imageUrl: json['image_url'],
-      categoryName: json['category_name'],
-      brandName: json['brand_name'],
+      id: _asInt(json['id']),
+      name: _asString(json['name']),
+      description: _asString(json['description']),
+      price: _asDouble(json['price']),
+      quantity: _asInt(json['quantity']),
+      unit: _asString(json['unit'], fallback: 'piece'),
+      image: _asNullableString(json['image']),
+      imageUrl: _asNullableString(json['image_url']),
+      categoryName: _asNullableString(json['category_name']),
+      brandName: _asNullableString(json['brand_name']),
     );
+  }
+
+  static int _asInt(dynamic value) {
+    if (value == null) return 0;
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    return int.tryParse(value.toString()) ??
+        double.tryParse(value.toString())?.toInt() ??
+        0;
+  }
+
+  static double _asDouble(dynamic value) {
+    if (value == null) return 0;
+    if (value is double) return value;
+    if (value is num) return value.toDouble();
+    return double.tryParse(value.toString()) ?? 0;
+  }
+
+  static String _asString(dynamic value, {String fallback = ''}) {
+    if (value == null) return fallback;
+    final text = value.toString();
+    return text.isEmpty ? fallback : text;
+  }
+
+  static String? _asNullableString(dynamic value) {
+    if (value == null) return null;
+    return value.toString();
   }
 }

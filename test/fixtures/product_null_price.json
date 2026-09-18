@@ -1,0 +1,12 @@
+{
+  "id": 42,
+  "name": "Test Rice 1kg",
+  "description": "Dummy catalog row",
+  "price": null,
+  "quantity": null,
+  "unit": null,
+  "image": null,
+  "image_url": null,
+  "category_name": "Groceries",
+  "brand_name": null
+}
