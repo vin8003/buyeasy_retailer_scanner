@@ -1,0 +1,69 @@
+# Lands the Sep 2026 help wiki on vin8003/RetailerCustomerPlatform.
+# cursor[bot] cannot push that repo (403). This workflow uses secret RCP_PUSH_TOKEN
+# (a PAT or fine-grained token with contents + pull-requests on RetailerCustomerPlatform).
+#
+# Actions → Apply OrderEasy help wiki to RCP → Run workflow
+# (select branch feature/wiki-content-update-2c2e).
+name: Apply OrderEasy help wiki to RCP
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Apply patches locally only (no push, no PR)
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout scanner (patches)
+        uses: actions/checkout@v4
+
+      - name: Require RCP_PUSH_TOKEN
+        env:
+          RCP_PUSH_TOKEN: ${{ secrets.RCP_PUSH_TOKEN }}
+        run: |
+          if [ -z "$RCP_PUSH_TOKEN" ]; then
+            echo "::error::Add repository secret RCP_PUSH_TOKEN (repo write on vin8003/RetailerCustomerPlatform), then re-run this workflow. See KAN-275 / issue 132."
+            exit 1
+          fi
+
+      - name: Apply patches onto origin/main
+        env:
+          RCP_PUSH_TOKEN: ${{ secrets.RCP_PUSH_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          set -euo pipefail
+          git clone --depth=50 "https://x-access-token:${RCP_PUSH_TOKEN}@github.com/vin8003/RetailerCustomerPlatform.git" rcp
+          cd rcp
+          git fetch origin main
+          git checkout -B feature/wiki-content-update-2c2e origin/main
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git am ../ordereasy-help-wiki/patches/*.patch
+          echo "Applied onto $(git rev-parse --short origin/main). HEAD=$(git rev-parse --short HEAD)"
+          git log --oneline origin/main..HEAD
+          if [ "$DRY_RUN" = "true" ]; then
+            echo "dry_run=true; not pushing."
+            exit 0
+          fi
+          git push -u origin feature/wiki-content-update-2c2e
+          export GH_TOKEN="$RCP_PUSH_TOKEN"
+          if gh pr list --repo vin8003/RetailerCustomerPlatform --head vin8003:feature/wiki-content-update-2c2e --json number --jq '.[0].number' | grep -q .; then
+            echo "PR already exists for this branch."
+          else
+            gh pr create --repo vin8003/RetailerCustomerPlatform \
+              --base main \
+              --head feature/wiki-content-update-2c2e \
+              --title "docs: refresh help wiki for Sep 2026 product" \
+              --body "KAN-275 / https://github.com/vin8003/RetailerCustomerPlatform/issues/132
+
+          Applies the 18 Sep 2026 OrderEasy help wiki (\`wiki/\` + \`docs/05-API-SURFACE.md\`) onto \`main\`.
+
+          Patches: https://github.com/vin8003/buyeasy_retailer_scanner/releases/tag/wiki-sep-2026-2c2e"
+          fi
