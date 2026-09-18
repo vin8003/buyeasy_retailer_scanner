@@ -38,6 +38,7 @@ jobs:
           curl -fsSL -O "$REL/0003-docs-wiki-add-API-map-Unmet-Demand-and-remaining-Sep.patch"
           curl -fsSL -O "$REL/0004-docs-add-Django-API-surface-and-correct-scanner-capt.patch"
           curl -fsSL -O "$REL/0005-docs-wiki-document-display-label-layouts-and-city-st.patch"
+          curl -fsSL -O "$REL/0006-docs-wiki-correct-Daily-Sales-Report-vs-Overview.patch"
 
       - name: Apply patches onto public origin/main
         run: |
@@ -52,7 +53,8 @@ jobs:
                  ../patches/0002-docs-point-knowledge-base-index-at-wiki-what-s-new-a.patch \
                  ../patches/0003-docs-wiki-add-API-map-Unmet-Demand-and-remaining-Sep.patch \
                  ../patches/0004-docs-add-Django-API-surface-and-correct-scanner-capt.patch \
-                 ../patches/0005-docs-wiki-document-display-label-layouts-and-city-st.patch
+                 ../patches/0005-docs-wiki-document-display-label-layouts-and-city-st.patch \
+                 ../patches/0006-docs-wiki-correct-Daily-Sales-Report-vs-Overview.patch
           echo "Applied onto $(git rev-parse --short origin/main). HEAD=$(git rev-parse --short HEAD)"
           git log --oneline origin/main..HEAD
           test -f wiki/whats-new.md

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Fast-forward the Sep 2026 help wiki onto RetailerCustomerPlatform origin/main
-# by fetching scanner branch rcp-wiki-applied (original five commits on e9420db).
+# by fetching scanner branch rcp-wiki-applied (wiki commits on e9420db).
 # Then tries git push + gh pr create when this machine has RCP write access.
 set -euo pipefail
 

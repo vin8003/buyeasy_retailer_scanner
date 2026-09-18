@@ -82,21 +82,19 @@ Land via <a href="https://github.com/vin8003/RetailerCustomerPlatform/issues/178
 </nav>
 <main><article>
 <h1>Reports and reviews</h1>
-<p>Understand how your shop is performing and what customers think.</p>
-<h2>Reports</h2>
-<p>Open <strong>Reports</strong> for sales analytics beyond the dashboard snapshot.</p>
-<p>Typical insights:</p>
-<table><thead><tr><th>Report area</th><th>Questions it answers</th></tr></thead><tbody><tr><td>Sales over time</td><td>Busy days and seasons</td></tr><tr><td>Product performance</td><td>What sells most</td></tr><tr><td>Channel split</td><td>POS vs online revenue</td></tr><tr><td>Payment mix</td><td>Cash vs UPI vs credit</td></tr></tbody></table>
-<p>On <strong>Overview</strong>, <strong>Unmet Demand</strong> is a different question: which searches in your shop returned nothing in the last 30 days. Use it to add missing SKUs or fix product names. See <a href="dashboard.html">Dashboard overview</a>.</p>
-<p>Use reports for:</p>
-<ul>
-<li>Reordering stock</li>
-<li>Planning festival offers</li>
-<li>Seeing if online channel is growing</li>
-</ul>
-<p>Exact report names may evolve — look for date filters and export if available.</p>
+<p>Understand how your shop is performing today and what customers think.</p>
+<h2>Daily Sales Report</h2>
+<p>The retailer app has a <strong>Daily Sales Report</strong> page at <code>/dashboard/reports</code> titled <strong>Daily Sales Report</strong>. It is a <strong>today-only closing summary</strong> (not a weekly/monthly analytics suite).</p>
+<p>It is <strong>not</strong> in the sidebar or bottom navigation today. Open it by going to:</p>
+<p><code>https://retailer.ordereasy.win/dashboard/reports</code></p>
+<p>(or the same path on your shop’s retailer origin).</p>
+<p>The page loads <code>GET /api/products/erp/daily-sales-summary/</code> and shows:</p>
+<table><thead><tr><th>Block</th><th>What it is</th></tr></thead><tbody><tr><td><strong>Total Sales Today</strong></td><td>Today’s rupees and order count, plus average order value</td></tr><tr><td><strong>Payment Breakdown</strong></td><td>Cash in hand vs digital, with refund deductions when present</td></tr><tr><td><strong>Channel Performance</strong></td><td>POS sales vs online store for today</td></tr><tr><td><strong>Print Closing Summary</strong></td><td>Browser print of this page</td></tr></tbody></table>
+<p><strong>Refresh</strong> reloads today’s numbers. There is no date picker and no product-level report on this screen.</p>
+<p>Period stats (today / week / month / custom) live on <strong>Overview</strong> — see <a href="dashboard.html">Dashboard overview</a>. <strong>Unmet Demand</strong> on Overview is a different question: which searches in your shop returned nothing in the last 30 days.</p>
+<p>Use the Daily Sales Report at close of day to print a till-vs-digital snapshot. Use Overview during the day for the date-filtered pulse.</p>
 <h2>Reviews</h2>
-<p><strong>Reviews</strong> shows ratings and comments customers leave after delivery.</p>
+<p><strong>Reviews</strong> (sidebar) shows ratings and comments customers leave after delivery.</p>
 <h3>Why reviews matter</h3>
 <ul>
 <li>Build trust with new online customers</li>
@@ -110,9 +108,8 @@ Land via <a href="https://github.com/vin8003/RetailerCustomerPlatform/issues/178
 <li>Fix root cause (stock, delivery time, staff training)</li>
 </ol>
 <p>Public reviews influence whether neighbours try your online ordering.</p>
-<h2>Dashboard vs reports</h2>
-<table><thead><tr><th>Tool</th><th>Best for</th></tr></thead><tbody><tr><td><strong>Dashboard</strong></td><td>Today’s pulse, pending orders</td></tr><tr><td><strong>Reports</strong></td><td>Weekly/monthly trends, planning</td></tr></tbody></table>
-<p>Check dashboard daily; dive into reports weekly.</p>
+<h2>Dashboard vs Daily Sales Report vs Reviews</h2>
+<table><thead><tr><th>Tool</th><th>Where</th><th>Best for</th></tr></thead><tbody><tr><td><strong>Overview</strong></td><td>Sidebar</td><td>Date-filtered pulse, Unmet Demand, recent sales</td></tr><tr><td><strong>Daily Sales Report</strong></td><td><code>/dashboard/reports</code> (not in the sidebar)</td><td>Printable <strong>today</strong> closing summary</td></tr><tr><td><strong>Reviews</strong></td><td>Sidebar</td><td>Ratings and comments</td></tr></tbody></table>
 <h2>Order stats</h2>
 <p>Some builds show live order counts or polling stats on dashboard — useful during festivals when online volume spikes.</p>
 <p>→ <a href="dashboard.html">Dashboard overview</a> · <a href="online-orders.html">Online orders</a></p>

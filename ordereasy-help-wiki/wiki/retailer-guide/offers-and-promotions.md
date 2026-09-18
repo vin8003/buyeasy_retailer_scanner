@@ -64,7 +64,7 @@ Manage codes from offer or rewards settings.
 | Time-bound festival offers | Permanent deep discounts you cannot sustain |
 | Clear rules ("min ₹300") | Confusing BXGY that staff cannot explain |
 | Train staff on POS offers | Changing prices manually AND running duplicate offers |
-| Review offer cost in reports | Stacking too many offers without margin check |
+| Check Overview / Daily Sales Report after a promo day | Stacking too many offers without a margin check |
 
 ## Ending an offer
 

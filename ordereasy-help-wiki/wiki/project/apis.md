@@ -37,7 +37,7 @@ Scanner app  ──┘                         │
 | `/api/offers/` | Both | Retailer CRUD + public offers for a shop |
 | `/api/returns/` | Retailer | Sales returns and purchase returns |
 
-ERP-style retailer paths live under `/api/products/erp/` (suppliers, purchase invoices, supplier ledger, POS checkout, POS customer search, inventory ledger, dashboard summary).
+ERP-style retailer paths live under `/api/products/erp/` (suppliers, purchase invoices, supplier ledger, POS checkout, POS customer search, inventory ledger, dashboard summary, **daily-sales-summary**).
 
 ## Flows that matter
 
@@ -53,6 +53,7 @@ ERP-style retailer paths live under `/api/products/erp/` (suppliers, purchase in
 | POS customer typeahead | `GET /api/products/erp/search-pos-customers/` |
 | Scanner capture | `POST /api/products/upload/session/create/` then `add-item/` then web `commit/` |
 | Supplier deactivate | `PATCH /api/products/erp/suppliers/<id>/` with `is_active` |
+| Daily Sales Report (today closing) | `GET /api/products/erp/daily-sales-summary/` |
 
 Label printing and the POS UPI QR are **browser-side**. They do not add new payment APIs. The QR is built from the shop’s saved **UPI ID** on the retailer profile.
 

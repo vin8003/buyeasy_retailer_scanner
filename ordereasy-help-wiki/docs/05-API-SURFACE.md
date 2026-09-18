@@ -87,7 +87,7 @@ Categories / groups / brands: `categories/`, `categories/all/`, create/update/de
 
 DRF viewsets: `suppliers`, `purchase-invoices`, `supplier-ledger`.
 
-Extra: `pos-checkout/`, `verify-pos-customer/`, `search-pos-customers/` (includes online shoppers, KAN-73), `inventory-ledger/`, `daily-sales-summary/`, `dashboard/summary/`.
+Extra: `pos-checkout/`, `verify-pos-customer/`, `search-pos-customers/` (includes online shoppers, KAN-73), `inventory-ledger/`, `daily-sales-summary/` (retailer **Daily Sales Report** at `/dashboard/reports` — today only, not in the sidebar), `dashboard/summary/`.
 
 Supplier `PATCH` accepts `is_active` (KAN-78). Purchase invoices accept `bill_image`.
 
