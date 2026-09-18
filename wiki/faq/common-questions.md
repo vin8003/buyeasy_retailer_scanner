@@ -118,6 +118,10 @@ Use **modify** in Orders. Customer must **approve** before you pack.
 
 Customer searches in **your** shop that returned **zero products** in the last 30 days. Add the SKU or fix the product name. [Dashboard](../retailer-guide/dashboard.md)
 
+### Where is Reports in the retailer menu?
+
+**Daily Sales Report** is not in the sidebar. Open `/dashboard/reports` for a printable **today** closing summary (cash vs digital, POS vs online). Date-filtered stats stay on **Overview**. [Reports and reviews](../retailer-guide/reports-and-reviews.md)
+
 ---
 
 ## Troubleshooting
@@ -127,6 +131,7 @@ Customer searches in **your** shop that returned **zero products** in the last 3
 | Customer cannot see my shop | Check shop **map pin**, that you are active, and that the customer confirmed the right city |
 | Barcode not scanning at POS | Add barcode on product; print a new sticker; or search by name |
 | POS UPI QR missing | Add UPI ID in Profile |
+| Cannot find Reports in the sidebar | Open `/dashboard/reports` for today’s closing summary; Overview has date filters |
 | Label print looks stretched | Pick the sticker paper size in the print dialog; do not “fit to page” |
 | Scanner session missing on web | Wait for sync; refresh Bulk Add page |
 | Email / reset OTP not arriving | Check spam; retry; contact support |
