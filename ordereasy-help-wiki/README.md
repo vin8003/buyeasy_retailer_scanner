@@ -39,6 +39,10 @@ User-facing help centre plus the technical pages that changed with this refresh:
 5. [wiki/project/apis.md](wiki/project/apis.md) — how apps talk to the API
 6. [docs/05-API-SURFACE.md](docs/05-API-SURFACE.md) — Django route map
 
+## Preview site (not the lasting edit)
+
+GitHub Action **Publish OrderEasy help wiki preview** builds `wiki/` to HTML and deploys GitHub Pages. Trigger: `repository_dispatch` event `publish-ordereasy-wiki-pages`, or a push to this branch that touches the wiki. Expected URL after the first successful deploy: `https://vin8003.github.io/buyeasy_retailer_scanner/`. That preview does **not** replace Git `RetailerCustomerPlatform/wiki/` on `main`.
+
 ## Fastest land path (GitHub Action)
 
 1. In this scanner repo, add secret **`RCP_PUSH_TOKEN`**: a PAT with `contents` + `pull requests` on `vin8003/RetailerCustomerPlatform`.
