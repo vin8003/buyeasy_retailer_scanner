@@ -15,7 +15,7 @@ Everything a **shop owner or staff member** needs to run daily operations on Ord
 | [Customers and credit](customers-and-credit.md) | CRM, udhaar/khata, credit limits |
 | [Offers and promotions](offers-and-promotions.md) | Discounts, BXGY, loyalty points |
 | [Shop settings](shop-settings.md) | Profile, map pin, UPI ID, hours, delivery rules |
-| [Reports and reviews](reports-and-reviews.md) | Sales analytics, customer feedback |
+| [Reports and reviews](reports-and-reviews.md) | Daily Sales Report (today closing summary) and Reviews |
 
 ## The retailer journey at a glance
 
@@ -53,6 +53,8 @@ Log in → Dashboard → POS for walk-ins / Orders for online
 | Offers | Promotions |
 | Profile | Shop settings, UPI, map pin |
 | Operating Hours | Open/close schedule |
+
+**Daily Sales Report** (`/dashboard/reports`) is a printable **today** closing summary. It is not in this sidebar yet — open the URL directly. See [Reports and reviews](reports-and-reviews.md).
 
 ## Quick links
 

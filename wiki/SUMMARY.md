@@ -40,7 +40,7 @@ Last reviewed against live apps: **18 Sep 2026**.
 * [Customers and credit (khata)](retailer-guide/customers-and-credit.md)
 * [Offers and promotions](retailer-guide/offers-and-promotions.md)
 * [Shop settings](retailer-guide/shop-settings.md)
-* [Reports and reviews](retailer-guide/reports-and-reviews.md)
+* [Reports and reviews](retailer-guide/reports-and-reviews.md) — Daily Sales Report + Reviews
 
 ## Scanner app
 

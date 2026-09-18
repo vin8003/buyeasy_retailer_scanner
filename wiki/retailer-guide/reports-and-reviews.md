@@ -1,33 +1,35 @@
 # Reports and reviews
 
-Understand how your shop is performing and what customers think.
+Understand how your shop is performing today and what customers think.
 
-## Reports
+## Daily Sales Report
 
-Open **Reports** for sales analytics beyond the dashboard snapshot.
+The retailer app has a **Daily Sales Report** page at `/dashboard/reports` titled **Daily Sales Report**. It is a **today-only closing summary** (not a weekly/monthly analytics suite).
 
-Typical insights:
+It is **not** in the sidebar or bottom navigation today. Open it by going to:
 
-| Report area | Questions it answers |
-|-------------|---------------------|
-| Sales over time | Busy days and seasons |
-| Product performance | What sells most |
-| Channel split | POS vs online revenue |
-| Payment mix | Cash vs UPI vs credit |
+`https://retailer.ordereasy.win/dashboard/reports`
 
-On **Overview**, **Unmet Demand** is a different question: which searches in your shop returned nothing in the last 30 days. Use it to add missing SKUs or fix product names. See [Dashboard overview](dashboard.md).
+(or the same path on your shop’s retailer origin).
 
-Use reports for:
+The page loads `GET /api/products/erp/daily-sales-summary/` and shows:
 
-- Reordering stock
-- Planning festival offers
-- Seeing if online channel is growing
+| Block | What it is |
+|-------|------------|
+| **Total Sales Today** | Today’s rupees and order count, plus average order value |
+| **Payment Breakdown** | Cash in hand vs digital, with refund deductions when present |
+| **Channel Performance** | POS sales vs online store for today |
+| **Print Closing Summary** | Browser print of this page |
 
-Exact report names may evolve — look for date filters and export if available.
+**Refresh** reloads today’s numbers. There is no date picker and no product-level report on this screen.
+
+Period stats (today / week / month / custom) live on **Overview** — see [Dashboard overview](dashboard.md). **Unmet Demand** on Overview is a different question: which searches in your shop returned nothing in the last 30 days.
+
+Use the Daily Sales Report at close of day to print a till-vs-digital snapshot. Use Overview during the day for the date-filtered pulse.
 
 ## Reviews
 
-**Reviews** shows ratings and comments customers leave after delivery.
+**Reviews** (sidebar) shows ratings and comments customers leave after delivery.
 
 ### Why reviews matter
 
@@ -43,14 +45,13 @@ Exact report names may evolve — look for date filters and export if available.
 
 Public reviews influence whether neighbours try your online ordering.
 
-## Dashboard vs reports
+## Dashboard vs Daily Sales Report vs Reviews
 
-| Tool | Best for |
-|------|----------|
-| **Dashboard** | Today’s pulse, pending orders |
-| **Reports** | Weekly/monthly trends, planning |
-
-Check dashboard daily; dive into reports weekly.
+| Tool | Where | Best for |
+|------|-------|----------|
+| **Overview** | Sidebar | Date-filtered pulse, Unmet Demand, recent sales |
+| **Daily Sales Report** | `/dashboard/reports` (not in the sidebar) | Printable **today** closing summary |
+| **Reviews** | Sidebar | Ratings and comments |
 
 ## Order stats
 

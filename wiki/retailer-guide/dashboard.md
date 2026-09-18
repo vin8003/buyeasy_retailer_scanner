@@ -70,7 +70,7 @@ The **Orders** item in the sidebar shows a **PENDING** count when online orders 
 |------|-----|
 | **Shop open** | Confirm pending online orders |
 | **Mid-day** | Catch stuck orders; glance at Unmet Demand |
-| **Close** | Review revenue, cash vs digital, POS vs online |
+| **Close** | Review revenue, cash vs digital, POS vs online on Overview; optionally print **Daily Sales Report** at `/dashboard/reports` |
 
 ## Tips for new shops
 
