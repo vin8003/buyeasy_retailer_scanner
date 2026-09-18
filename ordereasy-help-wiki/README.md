@@ -35,7 +35,14 @@ User-facing help centre plus the technical pages that changed with this refresh:
 5. [wiki/project/apis.md](wiki/project/apis.md) — how apps talk to the API
 6. [docs/05-API-SURFACE.md](docs/05-API-SURFACE.md) — Django route map
 
-## How to land this on the canonical repo
+## Fastest land path (GitHub Action)
+
+1. In this scanner repo, add secret **`RCP_PUSH_TOKEN`**: a PAT with `contents` + `pull requests` on `vin8003/RetailerCustomerPlatform`.
+2. Actions → **Apply OrderEasy help wiki to RCP** → Run workflow (branch `feature/wiki-content-update-2c2e`).
+
+That applies `ordereasy-help-wiki/patches/*.patch` onto RCP `origin/main` and opens a PR into `main`.
+
+## How to land this on the canonical repo (local)
 
 On a machine with push access to `RetailerCustomerPlatform`:
 
