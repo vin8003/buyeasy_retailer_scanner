@@ -15,6 +15,8 @@ Last reviewed against live apps on GitHub `main`: **18 Sep 2026**.
 
 Gmail rejected the `.tgz` of these patches (policy on archives). Use the Release, `curl-apply-from-release.sh`, or the five `.patch` files — not a tarball.
 
+Open RCP [PR 147](https://github.com/vin8003/RetailerCustomerPlatform/pull/147) (unmerged) also edits `wiki/retailer-guide/products-and-stock.md` for OE-315 fields that are **not** on `origin/main` yet (app price, saleable qty, write-off, photo bulk import). If that PR merges first, `git am` of these patches will likely conflict on that file — keep both copies. Do not treat those fields as shipped until they are on `main`.
+
 ## What this is
 
 User-facing help centre plus the technical pages that changed with this refresh:
