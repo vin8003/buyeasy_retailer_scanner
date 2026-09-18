@@ -11,9 +11,11 @@ The **[`wiki/`](../wiki/README.md)** folder is the plain-language help centre â€
 | Wiki section | Audience |
 |--------------|----------|
 | [Welcome](../wiki/welcome/what-is-ordereasy.md) | Everyone |
+| [Whatâ€™s new](../wiki/whats-new.md) | Everyone (18 Sep 2026 refresh) |
 | [Getting started](../wiki/getting-started/for-customers.md) | New users |
 | [Customer guide](../wiki/customer-guide/README.md) | Shoppers |
 | [Retailer guide](../wiki/retailer-guide/README.md) | Shop owners & staff |
+| [Print labels](../wiki/retailer-guide/print-labels.md) | Shop staff (stickers & rack tags) |
 | [Scanner guide](../wiki/scanner-guide/README.md) | Bulk catalog capture |
 | [FAQ](../wiki/faq/common-questions.md) | Quick answers |
 | [Full project](../wiki/project/all-apps.md) | All apps end to end |
