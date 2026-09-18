@@ -1,19 +1,12 @@
 #!/usr/bin/env bash
-# Download the Sep 2026 wiki patches from the scanner GitHub Release and git-am
-# them onto RetailerCustomerPlatform origin/main.
-# Gmail blocked the .tgz attachment; this path does not need email or a scanner clone.
+# Fast-forward the Sep 2026 help wiki onto RetailerCustomerPlatform origin/main
+# by fetching scanner branch rcp-wiki-applied (original five commits on e9420db).
+# Then tries git push + gh pr create when this machine has RCP write access.
 set -euo pipefail
 
 RCP_DIR="${1:-}"
-REL="${WIKI_RELEASE_URL:-https://github.com/vin8003/buyeasy_retailer_scanner/releases/download/wiki-sep-2026-2c2e}"
-
-PATCHES=(
-  0001-docs-wiki-refresh-help-centre-for-Sep-2026-product.patch
-  0002-docs-point-knowledge-base-index-at-wiki-what-s-new-a.patch
-  0003-docs-wiki-add-API-map-Unmet-Demand-and-remaining-Sep.patch
-  0004-docs-add-Django-API-surface-and-correct-scanner-capt.patch
-  0005-docs-wiki-document-display-label-layouts-and-city-st.patch
-)
+SCANNER_REMOTE="${SCANNER_REMOTE:-https://github.com/vin8003/buyeasy_retailer_scanner.git}"
+SCANNER_BRANCH="${SCANNER_BRANCH:-rcp-wiki-applied}"
 
 if [[ -z "$RCP_DIR" ]]; then
   echo "Usage: $0 /path/to/RetailerCustomerPlatform" >&2
@@ -23,23 +16,17 @@ if [[ -z "$RCP_DIR" ]]; then
   exit 2
 fi
 
-TMP="$(mktemp -d)"
-trap 'rm -rf "$TMP"' EXIT
-
-echo "Downloading patches from $REL"
-for f in "${PATCHES[@]}"; do
-  curl -fsSL -o "$TMP/$f" "$REL/$f"
-done
-
 cd "$RCP_DIR"
 git fetch origin main
 git checkout -B feature/wiki-content-update-2c2e origin/main
-git am "${PATCHES[@]/#/$TMP/}"
+git fetch "$SCANNER_REMOTE" "$SCANNER_BRANCH"
+git merge --ff-only FETCH_HEAD
 echo
-echo "Patches applied onto origin/main $(git rev-parse --short origin/main)."
+echo "Fetched $SCANNER_BRANCH onto origin/main $(git rev-parse --short origin/main)."
 echo "HEAD=$(git rev-parse --short HEAD)"
 test -f wiki/whats-new.md
 test -f wiki/project/apis.md
+test -f wiki/retailer-guide/print-labels.md
 test -f docs/05-API-SURFACE.md
 
 echo "Attempting git push (needs RCP write access)..."

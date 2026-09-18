@@ -51,21 +51,18 @@ GitHub Action **Publish OrderEasy help wiki preview** builds `wiki/` to HTML (`r
 
 That preview does **not** replace Git `RetailerCustomerPlatform/wiki/` on `main`.
 
-## Fastest land path (git bundle, no decode)
+## Fastest land path (fetch scanner branch, then push)
 
 On a machine with push access to `RetailerCustomerPlatform` (`origin/main` at `e9420db`):
 
 ```bash
 git clone git@github.com:vin8003/RetailerCustomerPlatform.git
-# from this scanner clone:
-./ordereasy-help-wiki/curl-apply-bundle.sh ./RetailerCustomerPlatform
-# or without cloning the scanner:
-# curl -fsSL https://raw.githubusercontent.com/vin8003/buyeasy_retailer_scanner/feature/wiki-content-update-2c2e/ordereasy-help-wiki/curl-apply-bundle.sh | bash -s -- ./RetailerCustomerPlatform
-cd RetailerCustomerPlatform
-git push -u origin feature/wiki-content-update-2c2e
+curl -fsSL https://raw.githubusercontent.com/vin8003/buyeasy_retailer_scanner/feature/wiki-content-update-2c2e/ordereasy-help-wiki/fetch-apply-from-scanner.sh | bash -s -- ./RetailerCustomerPlatform
 ```
 
-Verified: that fast-forward lands `wiki/whats-new.md`, `wiki/project/apis.md`, `wiki/retailer-guide/print-labels.md`, and `docs/05-API-SURFACE.md` (HEAD `959b8f1`). Copy-tree zip: [`rcp-wiki-applied.zip`](https://github.com/vin8003/buyeasy_retailer_scanner/releases/download/wiki-sep-2026-2c2e/rcp-wiki-applied.zip).
+That fetches scanner branch [`rcp-wiki-applied`](https://github.com/vin8003/buyeasy_retailer_scanner/tree/rcp-wiki-applied/wiki) (five commits on `e9420db`), fast-forwards, then **tries `git push` + `gh pr create`**. If this machine has RCP write access, that is the lasting edit.
+
+Git bundle (same commits, no scanner branch required): `./ordereasy-help-wiki/curl-apply-bundle.sh ./RetailerCustomerPlatform` — also tries push + PR. Copy-tree zip: [`rcp-wiki-applied.zip`](https://github.com/vin8003/buyeasy_retailer_scanner/releases/download/wiki-sep-2026-2c2e/rcp-wiki-applied.zip).
 
 ## Fastest land path (GitHub Action)
 
