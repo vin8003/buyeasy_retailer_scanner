@@ -57,11 +57,11 @@ On a machine with push access to `RetailerCustomerPlatform` (`origin/main` at `e
 
 ```bash
 git clone git@github.com:vin8003/RetailerCustomerPlatform.git
+# from this scanner clone:
+./ordereasy-help-wiki/curl-apply-bundle.sh ./RetailerCustomerPlatform
+# or without cloning the scanner:
+# curl -fsSL https://raw.githubusercontent.com/vin8003/buyeasy_retailer_scanner/feature/wiki-content-update-2c2e/ordereasy-help-wiki/curl-apply-bundle.sh | bash -s -- ./RetailerCustomerPlatform
 cd RetailerCustomerPlatform
-git checkout -B feature/wiki-content-update-2c2e origin/main
-curl -L -O https://github.com/vin8003/buyeasy_retailer_scanner/releases/download/wiki-sep-2026-2c2e/rcp-wiki-commits.bundle
-git fetch rcp-wiki-commits.bundle
-git merge --ff-only FETCH_HEAD
 git push -u origin feature/wiki-content-update-2c2e
 ```
 
