@@ -1,0 +1,20 @@
+# Diagnostic: GitHub has never delivered event=schedule to apply-ordereasy-wiki.
+# This workflow has no secrets and no RCP push. If this never runs either,
+# the repo scheduler is not firing (not an apply-yml bug).
+name: Schedule ping
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Record ping
+        run: |
+          set -euo pipefail
+          echo "event=${GITHUB_EVENT_NAME}"
+          date -u
+          echo "If you see this from a schedule event, GitHub cron works on this repo."
