@@ -7,11 +7,17 @@ import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
 import '../providers/scanner_provider.dart';
 import '../providers/auth_provider.dart';
+import '../utils/scan_validation.dart';
+import '../widgets/camera_error_panel.dart';
 
 class CaptureSessionScreen extends StatefulWidget {
   static const routeName = '/capture-session';
 
-  const CaptureSessionScreen({super.key});
+  const CaptureSessionScreen({super.key, this.discoverCameras});
+
+  /// Test seam so widget tests can simulate a missing or denied camera
+  /// without talking to the platform plugin.
+  final Future<List<CameraDescription>> Function()? discoverCameras;
 
   @override
   State<CaptureSessionScreen> createState() => _CaptureSessionScreenState();
@@ -29,8 +35,10 @@ class _CaptureSessionScreenState extends State<CaptureSessionScreen>
   bool _isLookingUp = false;
   bool _isTakingProductPhoto =
       false; // When true, shows camera preview with OK/Cancel
+  bool _showBarcodeError = false;
   File? _capturedImage;
   String? _lookupInfoText;
+  String? _cameraError;
 
   // Form Controllers
   final _barcodeController = TextEditingController();
@@ -46,6 +54,7 @@ class _CaptureSessionScreenState extends State<CaptureSessionScreen>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _barcodeController.addListener(_onBarcodeChanged);
     _initializeCamera();
 
     // Auto-fill Selling Price from MRP
@@ -54,14 +63,41 @@ class _CaptureSessionScreenState extends State<CaptureSessionScreen>
     });
   }
 
+  void _onBarcodeChanged() {
+    if (mounted) setState(() {});
+  }
+
+  String _friendlyCameraError(Object error) {
+    final text = error.toString().toLowerCase();
+    if (text.contains('permission') ||
+        text.contains('accessdenied') ||
+        text.contains('access denied')) {
+      return 'Camera permission denied. Enable camera access and retry.';
+    }
+    return 'Camera failed to start. $error';
+  }
+
   Future<void> _initializeCamera() async {
+    if (mounted) {
+      setState(() {
+        _cameraError = null;
+        _isCameraInitialized = false;
+      });
+    }
+
+    final previous = _cameraController;
+    _cameraController = null;
+    if (previous != null) {
+      await previous.dispose();
+    }
+
     try {
-      _cameras = await availableCameras();
+      _cameras = await (widget.discoverCameras ?? availableCameras)();
       if (_cameras.isEmpty) {
         if (mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(const SnackBar(content: Text('No camera found')));
+          setState(() {
+            _cameraError = 'No camera found on this device.';
+          });
         }
         return;
       }
@@ -94,28 +130,39 @@ class _CaptureSessionScreenState extends State<CaptureSessionScreen>
       });
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Camera Error: $e')));
+        setState(() {
+          _cameraError = _friendlyCameraError(e);
+        });
       }
+    }
+  }
+
+  Future<void> _ensureImageStream() async {
+    final controller = _cameraController;
+    if (controller == null || !controller.value.isInitialized) return;
+    if (!controller.value.isStreamingImages) {
+      await controller.startImageStream(_processCameraImage);
+    }
+  }
+
+  Future<void> _stopImageStream() async {
+    final controller = _cameraController;
+    if (controller == null || !controller.value.isInitialized) return;
+    if (controller.value.isStreamingImages) {
+      await controller.stopImageStream();
     }
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    // Re-initialize camera on resume if needed (usually handled by plugin, but good practice to check)
-    if (_cameraController == null || !_cameraController!.value.isInitialized) {
-      return;
-    }
-
     if (state == AppLifecycleState.inactive) {
-      // _cameraController?.dispose();
-      // We might not want to fully dispose if we want fast resume, but standard practice is to dispose to release resource.
-      // However, for this specific "Stay Open" requirement, we just let it be handled or pause stream?
-      // CameraController usually needs to be re-initialized after resume.
+      _stopImageStream();
     } else if (state == AppLifecycleState.resumed) {
-      if (_cameraController != null) {
-        // onResume logic
+      if (_cameraController == null ||
+          !_cameraController!.value.isInitialized) {
+        _initializeCamera();
+      } else if (!_isEditing) {
+        _ensureImageStream();
       }
     }
   }
@@ -123,6 +170,7 @@ class _CaptureSessionScreenState extends State<CaptureSessionScreen>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _barcodeController.removeListener(_onBarcodeChanged);
     _cameraController?.dispose();
     _barcodeScanner.close();
 
@@ -156,13 +204,9 @@ class _CaptureSessionScreenState extends State<CaptureSessionScreen>
         }
       }
     } catch (e) {
-      // Silently ignore scan errors
+      // Frame-level decode errors are expected; keep the preview alive.
     } finally {
-      if (mounted) {
-        // Add small delay to prevent CPU burn if no barcode found?
-        // await Future.delayed(const Duration(milliseconds: 100)); // Optional throttle
-        _isProcessingFrame = false;
-      }
+      _isProcessingFrame = false;
     }
   }
 
@@ -228,6 +272,7 @@ class _CaptureSessionScreenState extends State<CaptureSessionScreen>
       _capturedImage = null;
       _isLookingUp = false;
       _lookupInfoText = null;
+      _showBarcodeError = false;
     });
 
     if (barcode != null && barcode.isNotEmpty) {
@@ -269,15 +314,14 @@ class _CaptureSessionScreenState extends State<CaptureSessionScreen>
           _isLookingUp = false;
           if (data != null) {
             _lookupInfoText = "Found in Master Catalog";
-            _nameController.text = data['name'] ?? '';
-            final mrpValue = data['mrp'];
-            _mrpController.text = mrpValue != null ? mrpValue.toString() : '';
+            _nameController.text = ScanValidation.displayString(data['name']);
+            final mrpText = ScanValidation.displayString(data['mrp']);
+            _mrpController.text = mrpText;
             // Price is often same as MRP initially
-            _priceController.text = mrpValue != null ? mrpValue.toString() : '';
-            final productGroup = data['product_group'];
-            _groupController.text = productGroup != null
-                ? productGroup.toString()
-                : '';
+            _priceController.text = mrpText;
+            _groupController.text = ScanValidation.displayString(
+              data['product_group'],
+            );
           } else {
             _lookupInfoText = "New Product (Not found)";
           }
@@ -297,8 +341,9 @@ class _CaptureSessionScreenState extends State<CaptureSessionScreen>
     setState(() {
       _isEditing = false;
       _capturedImage = null;
+      _showBarcodeError = false;
     });
-    // Stream continues running but now _isEditing is false, so it will pick up frames again.
+    _ensureImageStream();
   }
 
   void _startPhotoMode() {
@@ -320,7 +365,11 @@ class _CaptureSessionScreenState extends State<CaptureSessionScreen>
     if (_cameraController!.value.isTakingPicture) return;
 
     try {
+      // takePicture() fails on many Android devices while the ML Kit
+      // image stream is still running.
+      await _stopImageStream();
       final XFile photo = await _cameraController!.takePicture();
+      if (!mounted) return;
       setState(() {
         _capturedImage = File(photo.path);
         _isTakingProductPhoto = false; // Return to form after taking photo
@@ -365,11 +414,14 @@ class _CaptureSessionScreenState extends State<CaptureSessionScreen>
       }
 
       // Validate
-      final barcode = _barcodeController.text.trim();
-      if (barcode.isEmpty) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Barcode is required')));
+      final barcode = ScanValidation.normalizeBarcode(_barcodeController.text);
+      if (ScanValidation.barcodeError(barcode) != null) {
+        if (mounted) {
+          setState(() => _showBarcodeError = true);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text(ScanValidation.blankBarcodeMessage)),
+          );
+        }
         return;
       }
 
@@ -452,6 +504,15 @@ class _CaptureSessionScreenState extends State<CaptureSessionScreen>
                   fontStyle: FontStyle.italic,
                   color: Colors.white70,
                 ),
+              )
+            else if (scannerProvider.failedQueue.isNotEmpty)
+              Text(
+                '${scannerProvider.failedQueue.length} upload(s) failed',
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontStyle: FontStyle.italic,
+                  color: Colors.orangeAccent,
+                ),
               ),
           ],
         ),
@@ -486,6 +547,20 @@ class _CaptureSessionScreenState extends State<CaptureSessionScreen>
               }
             },
           ),
+          if (scannerProvider.failedQueue.isNotEmpty)
+            TextButton(
+              onPressed: () {
+                final token = context.read<AuthProvider>().token;
+                if (token == null) return;
+                for (final item in List.of(scannerProvider.failedQueue)) {
+                  scannerProvider.retryFailedItem(token, item);
+                }
+              },
+              child: const Text(
+                'Retry',
+                style: TextStyle(color: Colors.orangeAccent),
+              ),
+            ),
           IconButton(
             icon: const Icon(Icons.check_circle_outline),
             onPressed: () {
@@ -507,6 +582,14 @@ class _CaptureSessionScreenState extends State<CaptureSessionScreen>
           // 1. Full Screen Camera
           if (_isCameraInitialized && _cameraController != null)
             SizedBox.expand(child: CameraPreview(_cameraController!))
+          else if (_cameraError != null)
+            ColoredBox(
+              color: Colors.black,
+              child: CameraErrorPanel(
+                message: _cameraError!,
+                onRetry: _initializeCamera,
+              ),
+            )
           else
             const Center(child: CircularProgressIndicator()),
 
@@ -651,11 +734,14 @@ class _CaptureSessionScreenState extends State<CaptureSessionScreen>
 
               TextField(
                 controller: _barcodeController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Barcode',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.qr_code),
+                  border: const OutlineInputBorder(),
+                  prefixIcon: const Icon(Icons.qr_code),
                   isDense: true,
+                  errorText: _showBarcodeError
+                      ? ScanValidation.barcodeError(_barcodeController.text)
+                      : null,
                 ),
                 textInputAction: TextInputAction.next,
               ),
@@ -772,7 +858,10 @@ class _CaptureSessionScreenState extends State<CaptureSessionScreen>
 
               const SizedBox(height: 16),
               ElevatedButton(
-                onPressed: _submitItem,
+                onPressed:
+                    ScanValidation.barcodeError(_barcodeController.text) == null
+                    ? _submitItem
+                    : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blueAccent,
                   foregroundColor: Colors.white,

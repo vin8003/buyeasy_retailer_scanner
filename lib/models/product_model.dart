@@ -25,16 +25,27 @@ class Product {
 
   factory Product.fromJson(Map<String, dynamic> json) {
     return Product(
-      id: json['id'],
-      name: json['name'],
-      description: json['description'] ?? '',
-      price: double.parse(json['price'].toString()),
-      quantity: json['quantity'] ?? 0,
-      unit: json['unit'] ?? 'piece',
-      image: json['image'],
-      imageUrl: json['image_url'],
-      categoryName: json['category_name'],
-      brandName: json['brand_name'],
+      id: _asInt(json['id']),
+      name: json['name']?.toString() ?? '',
+      description: json['description']?.toString() ?? '',
+      price: _asDouble(json['price']),
+      quantity: _asInt(json['quantity']),
+      unit: json['unit']?.toString() ?? 'piece',
+      image: json['image']?.toString(),
+      imageUrl: json['image_url']?.toString(),
+      categoryName: json['category_name']?.toString(),
+      brandName: json['brand_name']?.toString(),
     );
   }
+}
+
+int _asInt(dynamic value) {
+  if (value is int) return value;
+  return int.tryParse(value?.toString() ?? '') ?? 0;
+}
+
+double _asDouble(dynamic value) {
+  if (value is double) return value;
+  if (value is int) return value.toDouble();
+  return double.tryParse(value?.toString() ?? '') ?? 0;
 }

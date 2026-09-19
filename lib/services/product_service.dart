@@ -17,8 +17,14 @@ class ProductService {
 
     if (response.statusCode == 200) {
       final decoded = jsonDecode(response.body);
-      final List<dynamic> data = decoded is Map ? decoded['results'] : decoded;
-      return data.map((json) => Product.fromJson(json)).toList();
+      final data = decoded is Map ? decoded['results'] : decoded;
+      if (data is! List) {
+        throw Exception('Invalid products response');
+      }
+      return data
+          .whereType<Map>()
+          .map((json) => Product.fromJson(Map<String, dynamic>.from(json)))
+          .toList();
     } else {
       throw Exception('Failed to load products');
     }
@@ -103,10 +109,16 @@ class ProductService {
     String token,
     String barcode,
   ) async {
+    final trimmed = barcode.trim();
+    if (trimmed.isEmpty) {
+      throw Exception('Barcode is required');
+    }
     try {
       final response = await http
           .get(
-            Uri.parse('${ApiConstants.masterProductSearch}?barcode=$barcode'),
+            Uri.parse(
+              ApiConstants.masterProductSearch,
+            ).replace(queryParameters: {'barcode': trimmed}),
             headers: {
               'Content-Type': 'application/json',
               'Authorization': 'Bearer $token',
@@ -169,8 +181,17 @@ class ProductService {
     );
 
     if (response.statusCode == 200) {
-      final List<dynamic> data = jsonDecode(response.body);
-      return data.map((json) => ProductUploadSession.fromJson(json)).toList();
+      final decoded = jsonDecode(response.body);
+      if (decoded is! List) {
+        throw Exception('Invalid sessions response');
+      }
+      return decoded
+          .whereType<Map>()
+          .map(
+            (json) =>
+                ProductUploadSession.fromJson(Map<String, dynamic>.from(json)),
+          )
+          .toList();
     } else {
       throw Exception('Failed to load active sessions');
     }
@@ -189,14 +210,9 @@ class ProductService {
     );
 
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      // Backend returns {'session': {...}, 'matched_var': ..., 'unmatched_var': ...}
-      // But ProductUploadSession.fromJson expects just the session object usually.
-      // Let's check backend view structure or model.
-      // Based on typical serializers, let's assume 'session' key or flat structure?
-      // Re-reading GetSessionDetailsView in 1600-1843 of views.py (Step 162/163).
-      // Response: {'session': serializer.data, 'matched_items': ..., 'unmatched_items': ...}
-      return ProductUploadSession.fromJson(data['session']);
+      return ProductUploadSession.fromDetailsResponse(
+        jsonDecode(response.body),
+      );
     } else {
       throw Exception('Failed to load session details');
     }
@@ -224,8 +240,9 @@ class ProductService {
       // Send as JSON data to preserve types (e.g. double vs string)
       final dataMap = <String, dynamic>{};
 
-      if (details['name'] != null && details['name'].isNotEmpty) {
-        dataMap['name'] = details['name'];
+      final name = details['name']?.toString();
+      if (name != null && name.isNotEmpty) {
+        dataMap['name'] = name;
       }
       if (details['price'] != null) {
         dataMap['price'] = details['price'];
@@ -236,9 +253,9 @@ class ProductService {
       if (details['quantity'] != null) {
         dataMap['qty'] = details['quantity'];
       }
-      if (details['product_group'] != null &&
-          details['product_group'].isNotEmpty) {
-        dataMap['product_group'] = details['product_group'];
+      final productGroup = details['product_group']?.toString();
+      if (productGroup != null && productGroup.isNotEmpty) {
+        dataMap['product_group'] = productGroup;
       }
 
       if (dataMap.isNotEmpty) {
