@@ -1,0 +1,283 @@
+From 977282d8ecbe48a8df25c1338c0076557e431b44 Mon Sep 17 00:00:00 2001
+From: Cursor Agent <cursoragent@cursor.com>
+Date: Fri, 18 Sep 2026 12:19:35 +0000
+Subject: [PATCH 4/5] docs: add Django API surface and correct scanner capture
+ path
+
+Inventory live /api/ routes. Stop describing unused OCR as the
+scanner journey. Point architecture at client-side labels and UPI QR.
+
+Co-authored-by: Vineet Sharma <vin8003@gmail.com>
+---
+ docs/00-INDEX.md         |   3 +-
+ docs/01-OVERVIEW.md      |   8 +--
+ docs/02-ARCHITECTURE.md  |   6 +-
+ docs/03-USER-JOURNEYS.md |  12 +++-
+ docs/05-API-SURFACE.md   | 123 +++++++++++++++++++++++++++++++++++++++
+ docs/visuals/README.md   |   2 +-
+ 6 files changed, 142 insertions(+), 12 deletions(-)
+ create mode 100644 docs/05-API-SURFACE.md
+
+diff --git a/docs/00-INDEX.md b/docs/00-INDEX.md
+index 6b5d2bc..01eb8a0 100644
+--- a/docs/00-INDEX.md
++++ b/docs/00-INDEX.md
+@@ -19,6 +19,7 @@ The **[`wiki/`](../wiki/README.md)** folder is the plain-language help centre 
+ | [Scanner guide](../wiki/scanner-guide/README.md) | Bulk catalog capture |
+ | [FAQ](../wiki/faq/common-questions.md) | Quick answers |
+ | [Full project](../wiki/project/all-apps.md) | All apps end to end |
++| [API map (plain language)](../wiki/project/apis.md) | How apps talk to the Django API |
+ 
+ ## Technical docs (`docs/`)
+ 
+@@ -28,6 +29,7 @@ The **[`wiki/`](../wiki/README.md)** folder is the plain-language help centre 
+ | [01-OVERVIEW.md](01-OVERVIEW.md) | Project identity, purpose, value proposition, component map |
+ | [02-ARCHITECTURE.md](02-ARCHITECTURE.md) | High-level system architecture (Mermaid + illustration) |
+ | [03-USER-JOURNEYS.md](03-USER-JOURNEYS.md) | Customer, retailer POS, and scanner journeys |
++| [05-API-SURFACE.md](05-API-SURFACE.md) | Django API route map (18 Sep 2026) |
+ | [07-KEY-FLOWS/](07-KEY-FLOWS/) | Detailed key business flows |
+ | [requirements/](requirements/) | Durable product/engineering requirements extracted from tickets |
+ | [decisions/](decisions/) | Architecture Decision Records (ADRs) |
+@@ -43,7 +45,6 @@ The **[`wiki/`](../wiki/README.md)** folder is the plain-language help centre 
+ ### Not written yet in `docs/` (do not invent technical content)
+ 
+ - Domain models (`04-DOMAIN-MODELS/`)
+-- API surface (`05-API-SURFACE.md`)
+ - Developer setup (`08-SETUP.md`)
+ 
+ ## Canonical Diagrams
+diff --git a/docs/01-OVERVIEW.md b/docs/01-OVERVIEW.md
+index 0d9118b..eb57d8f 100644
+--- a/docs/01-OVERVIEW.md
++++ b/docs/01-OVERVIEW.md
+@@ -8,8 +8,8 @@
+ 
+ ## Value Proposition
+ 
+-- **For Customers**: Modern ordering experience from local stores (browse, cart, track, rewards, chat).
+-- **For Retailers**: Full digital store operating system (online orders + POS + inventory with batches + supplier purchases + loyalty + CRM + credit/khata).
++- **For Customers**: Modern ordering experience from local stores (browse, cart, track, rewards, chat, per-shop khata on Profile).
++- **For Retailers**: Full digital store operating system (online orders + POS + barcode/display labels + inventory with batches + supplier purchases + loyalty + CRM + credit/khata).
+ 
+ ## Component Map
+ 
+@@ -17,8 +17,8 @@
+ |-----------|------------|------------|------|
+ | Backend API | `RetailerCustomerPlatform` | Django + Django REST Framework | Core platform (auth, products, inventory, orders, cart, offers, loyalty, returns, purchases) |
+ | Customer App | `customer_ordereasy_njs` | Next.js + TypeScript + Capacitor | Customer-facing web + hybrid mobile app |
+-| Retailer Dashboard + POS | `retailer_ordereasy_njs` | Next.js 16 + React 19 + TypeScript + shadcn/ui | Retailer web app (dashboard, POS, product management, purchases, offers, customers, reports) |
+-| Retailer Scanner | `buyeasy_retailer_scanner` | Flutter + ML Kit | Dedicated product scanning / OCR / inventory capture app |
++| Retailer Dashboard + POS | `retailer_ordereasy_njs` | Next.js 16 + React 19 + TypeScript + shadcn/ui | Retailer web app (dashboard, POS, print/display labels, product management, purchases, offers, customers, reports). Prod static export: `retailer_web_build`. |
++| Retailer Scanner | `buyeasy_retailer_scanner` | Flutter + ML Kit | Barcode scan, pack photo, master-catalog fill-in, upload sessions. An OCR form screen exists in the repo but is **not** on the live capture path. |
+ 
+ ## User Personas
+ 
+diff --git a/docs/02-ARCHITECTURE.md b/docs/02-ARCHITECTURE.md
+index aef271b..40b2c1e 100644
+--- a/docs/02-ARCHITECTURE.md
++++ b/docs/02-ARCHITECTURE.md
+@@ -38,7 +38,7 @@ flowchart TB
+ - **Database**: PostgreSQL (with trigram extensions for search).
+ - **Notifications**: Firebase Cloud Messaging (FCM) for push notifications.
+ - **Authentication**: JWT (access + refresh tokens) + OTP flows.
+-- **Clients** are thin: they handle UI/UX and call the API. No business logic is duplicated in the frontends.
++- **Clients** are thin: they handle UI/UX and call the API. No business logic is duplicated in the frontends. Route map: [05-API-SURFACE.md](05-API-SURFACE.md). Plain-language map: [wiki/project/apis.md](../wiki/project/apis.md).
+ 
+ ## Component Responsibilities
+ 
+@@ -46,8 +46,8 @@ flowchart TB
+ |-----------|----------------|
+ | Backend (`RetailerCustomerPlatform`) | Auth, Products, Batches, Inventory, Cart, Orders, Offers engine, Loyalty, Credit/Khata, Purchases, Returns, Scanner upload sessions |
+ | Customer App | Discovery, catalog browsing, cart, checkout, order tracking, rewards, chat |
+-| Retailer Dashboard + POS | Order management, POS billing, product & batch management, purchases, offers, customer CRM, reports |
+-| Scanner App | Barcode scanning, image capture + OCR, upload sessions for bulk product creation |
++| Retailer Dashboard + POS | Order management, POS billing, browser-print barcode/display labels, product & batch management, purchases, offers, customer CRM, reports. Label HTML and POS UPI QR are client-side (shop UPI ID). |
++| Scanner App | Barcode scanning, pack photo, master-catalog lookup, upload sessions for bulk product creation. OCR form code exists but is unused on the live path. |
+ 
+ ## Data Flow Principle
+ 
+diff --git a/docs/03-USER-JOURNEYS.md b/docs/03-USER-JOURNEYS.md
+index d51d0a7..bae5b62 100644
+--- a/docs/03-USER-JOURNEYS.md
++++ b/docs/03-USER-JOURNEYS.md
+@@ -49,20 +49,24 @@ flowchart TB
+ 
+ - Retailer app: `retailer_ordereasy_njs` at `https://retailer.ordereasy.win`.
+ - POS customer typeahead lists **this retailer’s customers only**, with name ([pos-customer-typeahead.md](requirements/pos-customer-typeahead.md)).
++- POS exact-amount UPI QR is built in the browser from the shop’s saved UPI ID (no payment-processor API).
++- Print Labels / Display Labels are browser print HTML.
+ - Store pin is set in the retailer app ([retailer-store-location.md](requirements/retailer-store-location.md)).
+ - Order status rules live in [order-lifecycle.md](07-KEY-FLOWS/order-lifecycle.md).
++- API route map: [05-API-SURFACE.md](05-API-SURFACE.md).
+ 
+ ## Scanner to catalog
+ 
+ ![Scanner to Catalog Flow](visuals/scanner-to-catalog-flow.jpg)
+ 
+-*Flutter scanner → upload session → scan/OCR → review → edit → commit to catalog.*
++*Flutter scanner → upload session → barcode + photo (+ master catalog lookup) → review on web → commit to catalog.*
+ 
+ ```mermaid
+ flowchart LR
+     Scan[Flutter scanner] --> Session[Upload session]
+-    Session --> OCR[Scan / OCR]
+-    OCR --> Review[Review]
++    Session --> Capture[Barcode / photo / typed fields]
++    Capture --> Lookup[Master catalog fill-in]
++    Lookup --> Review[Review on retailer web]
+     Review --> Edit[Edit]
+     Edit --> Catalog[Commit to catalog]
+ ```
+@@ -70,5 +74,7 @@ flowchart LR
+ **Key points**
+ 
+ - Scanner is `buyeasy_retailer_scanner` (Flutter + ML Kit). It talks to the same Django API via upload sessions.
++- Live capture is **barcode + optional master-catalog fill-in + pack photo + typed fields**. `OCRProductFormScreen` is unused — do not document OCR as the daily path.
+ - Catalog truth is the backend, not the scanner device.
++- After commit, shops often print **barcode stickers** from retailer Print Labels (browser print HTML, not an API).
+ - Crash/logging work for intensive scanning is **ticket work**, not a durable architecture change: [tickets/KAN-18.md](tickets/KAN-18.md).
+diff --git a/docs/05-API-SURFACE.md b/docs/05-API-SURFACE.md
+new file mode 100644
+index 0000000..05c3527
+--- /dev/null
++++ b/docs/05-API-SURFACE.md
+@@ -0,0 +1,123 @@
++# 05 – API surface
++
++Inventory of the Django API as of **18 Sep 2026** (`RetailerCustomerPlatform` `main`). Host: `https://api.ordereasy.win/api/`.
++
++This is a **route map**, not an OpenAPI spec. Behaviour lives in the view modules. Clients: `customer_ordereasy_njs`, `retailer_ordereasy_njs`, `buyeasy_retailer_scanner`.
++
++Auth: JWT (SimpleJWT). Prefixes mounted in `ordering_platform/urls.py`.
++
++## Mounts
++
++| Mount | App |
++|-------|-----|
++| `/api/auth/` | `authentication.urls` |
++| `/api/retailer/` and `/api/retailers/` | `retailers.urls` (same include twice) |
++| `/api/customer/` | `customers.urls` |
++| `/api/products/` | `products.urls` + ERP router |
++| `/api/orders/` | `orders.urls` |
++| `/api/cart/` | `cart.urls` |
++| `/api/` | `offers.urls` (`/api/offers/…`) |
++| `/api/returns/` | `returns.urls` |
++
++## Auth (`/api/auth/`)
++
++| Method implied | Path | Notes |
++|----------------|------|--------|
++| POST | `retailer/signup/` | Access code |
++| POST | `retailer/login/` | |
++| POST | `customer/signup/` | |
++| POST | `customer/login/` | Phone + password |
++| POST | `customer/google-login/` | May require phone + OTP |
++| POST | `customer/verify-otp/`, `resend-otp/`, `request-verification/` | Phone bind / checkout verify |
++| GET/PATCH | `profile/`, `profile/update/` | |
++| POST | `change-password/`, `logout/` | |
++| POST | `token/refresh/`, `token/verify/` | SimpleJWT |
++| POST | `device/register/` | FCM |
++| POST | `password/forgot/`, `password/reset/` | |
++| POST | `password/email/forgot/`, `password/email/reset/` | |
++| POST | `verify-email/`, `resend-email-otp/` | |
++
++## Retailers (`/api/retailers/` or `/api/retailer/`)
++
++| Path | Notes |
++|------|--------|
++| `profile/`, `profile/create/`, `profile/update/` | Includes UPI ID, lat/lng, receipt flags, `print_upi_qr_on_receipt` |
++| `operating-hours/` | |
++| `reward-config/` | |
++| `` (list), `search/`, `categories/` | Public discovery |
++| `cities/` | Operational cities (KAN-64) |
++| `geo-estimate/` | IP / geo hint (KAN-64) |
++| `<id>/` | Public shop detail |
++| `<id>/reviews/`, `<id>/reviews/create/` | |
++
++## Customers (`/api/customer/`)
++
++| Path | Notes |
++|------|--------|
++| `profile/`, `profile/update/`, `dashboard/` | |
++| `addresses/` CRUD | |
++| `wishlist/` add/remove | |
++| `notifications/` | |
++| `loyalty/`, `loyalty/all/`, `loyalty/transactions/` | Per-shop points |
++| `credit/all/` | Profile khata (KAN-70) |
++| `reward-configuration/` | |
++| `referral/apply/`, `referral/stats/` | |
++| `retailer/list/`, `retailer/details/<id>/`, `retailer/update/<id>/` | CRM |
++| `retailer/blacklist/toggle/` | |
++| `retailer/ledger/<id>/`, `retailer/payment/record/`, `retailer/credit-limit/update/<id>/` | Khata |
++| `loyalty/retailer-customers/` | |
++
++## Products (`/api/products/`)
++
++Retailer catalog: `''`, `search/`, `create/`, `<id>/`, `<id>/update/`, `<id>/delete/`, `bulk-update/`, `upload/`, `stats/`, `demand-insights/`, `master/search/`.
++
++Scanner / bulk sessions: `upload/check/`, `upload/complete/`, `upload/session/create/`, `active/`, `add-item/`, `details/<session_id>/`, `update-items/`, `item/<id>/delete/`, `commit/`.
++
++Public customer catalog (KAN-63 hides tracked OOS except product detail):
++
++- `retailer/<id>/`, `search/`, `categories/`, `categories/<cat>/groups/`
++- `featured/`, `best-selling/`, `buy-again/`, `recommended/`
++- `frequently-bought-together/` (KAN-17)
++- `deals-of-the-day/`, `budget-buys/`, `trending-now/`, `new-arrivals/`, `seasonal-picks/`
++- `retailer/<id>/<product_id>/` (detail; not wrapped in hide-OOS)
++
++Categories / groups / brands: `categories/`, `categories/all/`, create/update/delete, `product-groups/`, `brands/`.
++
++### ERP (`/api/products/erp/`)
++
++DRF viewsets: `suppliers`, `purchase-invoices`, `supplier-ledger`.
++
++Extra: `pos-checkout/`, `verify-pos-customer/`, `search-pos-customers/` (includes online shoppers, KAN-73), `inventory-ledger/`, `daily-sales-summary/`, `dashboard/summary/`.
++
++Supplier `PATCH` accepts `is_active` (KAN-78). Purchase invoices accept `bill_image`.
++
++## Cart (`/api/cart/`)
++
++`''`, `add/`, `items/<id>/`, `items/<id>/remove/`, `clear/`, `summary/`, `validate/`, `count/`.
++
++## Orders (`/api/orders/`)
++
++`place/`, `current/`, `history/`, `<id>/`, `<id>/status/`, `cancel/`, `modify/`, `confirm_modification/`, `submit_payment/`, `verify_payment/`, `estimated-time/`, `stats/`, `retailer-reviews/`, `<id>/feedback/`, `rate-customer/`, `return/`, chat `chat/`, `chat/send/`, `chat/read/`.
++
++`?status=returned` matches sales returns (KAN-77).
++
++## Offers (`/api/offers/`)
++
++ViewSet CRUD. Public: `offers/public/retailer/<id>/`. POS/app calculate via offer engine (see [offer-calculation.md](07-KEY-FLOWS/offer-calculation.md)).
++
++## Returns (`/api/returns/`)
++
++ViewSets: `sales/`, `purchase/`.
++
++## Not in this API
++
++- Label HTML print (retailer browser)
++- Dynamic UPI intent URI (retailer browser from profile UPI ID)
++- Landing page
++- Delivery/rider service
++
++## Related
++
++- User-facing map: [wiki/project/apis.md](../wiki/project/apis.md)
++- Architecture: [02-ARCHITECTURE.md](02-ARCHITECTURE.md)
++- Release notes: [releases/2026-08-agent-batch.md](releases/2026-08-agent-batch.md)
+diff --git a/docs/visuals/README.md b/docs/visuals/README.md
+index 41d8ff3..d4c4f8c 100644
+--- a/docs/visuals/README.md
++++ b/docs/visuals/README.md
+@@ -23,7 +23,7 @@ Committed in `429dbfc`. No real data.
+ | `credit-khata-system.jpg` | Customer credit + supplier khata | `07-KEY-FLOWS/credit-khata.md` |
+ | `customer-journey.jpg` | Discover → browse → cart → checkout → track → rewards | `03-USER-JOURNEYS.md` |
+ | `retailer-pos-order-handling.jpg` | POS + online order workflow | `03-USER-JOURNEYS.md` |
+-| `scanner-to-catalog-flow.jpg` | Scanner → session → OCR → review → catalog | `03-USER-JOURNEYS.md` |
++| `scanner-to-catalog-flow.jpg` | Scanner → session → barcode/photo → review → catalog | `03-USER-JOURNEYS.md` |
+ 
+ ## Naming for future screenshots
+ 
+-- 
+2.43.0
+

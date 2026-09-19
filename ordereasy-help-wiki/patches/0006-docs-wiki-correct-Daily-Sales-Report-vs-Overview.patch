@@ -1,0 +1,196 @@
+From b1940c6ba3a1ca820c5f8555345e7e94122f36a8 Mon Sep 17 00:00:00 2001
+From: Cursor Agent <cursoragent@cursor.com>
+Date: Fri, 18 Sep 2026 17:08:21 +0000
+Subject: [PATCH] docs(wiki): correct Daily Sales Report vs Overview
+
+The retailer Reports page is a today-only closing summary at
+/dashboard/reports (not in the sidebar). Stop describing weekly
+analytics that the shipped UI does not provide.
+
+Co-authored-by: Vineet Sharma <vin8003@gmail.com>
+---
+ docs/05-API-SURFACE.md                       |  2 +-
+ wiki/SUMMARY.md                              |  2 +-
+ wiki/project/apis.md                         |  3 +-
+ wiki/retailer-guide/README.md                |  4 +-
+ wiki/retailer-guide/dashboard.md             |  2 +-
+ wiki/retailer-guide/offers-and-promotions.md |  2 +-
+ wiki/retailer-guide/reports-and-reviews.md   | 49 ++++++++++----------
+ 7 files changed, 34 insertions(+), 30 deletions(-)
+
+diff --git a/docs/05-API-SURFACE.md b/docs/05-API-SURFACE.md
+index 05c3527..0d8dfce 100644
+--- a/docs/05-API-SURFACE.md
++++ b/docs/05-API-SURFACE.md
+@@ -87,7 +87,7 @@ Categories / groups / brands: `categories/`, `categories/all/`, create/update/de
+ 
+ DRF viewsets: `suppliers`, `purchase-invoices`, `supplier-ledger`.
+ 
+-Extra: `pos-checkout/`, `verify-pos-customer/`, `search-pos-customers/` (includes online shoppers, KAN-73), `inventory-ledger/`, `daily-sales-summary/`, `dashboard/summary/`.
++Extra: `pos-checkout/`, `verify-pos-customer/`, `search-pos-customers/` (includes online shoppers, KAN-73), `inventory-ledger/`, `daily-sales-summary/` (retailer **Daily Sales Report** at `/dashboard/reports` — today only, not in the sidebar), `dashboard/summary/`.
+ 
+ Supplier `PATCH` accepts `is_active` (KAN-78). Purchase invoices accept `bill_image`.
+ 
+diff --git a/wiki/SUMMARY.md b/wiki/SUMMARY.md
+index e8c63fa..49b3c4a 100644
+--- a/wiki/SUMMARY.md
++++ b/wiki/SUMMARY.md
+@@ -40,7 +40,7 @@ Last reviewed against live apps: **18 Sep 2026**.
+ * [Customers and credit (khata)](retailer-guide/customers-and-credit.md)
+ * [Offers and promotions](retailer-guide/offers-and-promotions.md)
+ * [Shop settings](retailer-guide/shop-settings.md)
+-* [Reports and reviews](retailer-guide/reports-and-reviews.md)
++* [Reports and reviews](retailer-guide/reports-and-reviews.md) — Daily Sales Report + Reviews
+ 
+ ## Scanner app
+ 
+diff --git a/wiki/project/apis.md b/wiki/project/apis.md
+index 419fb70..2ac58d2 100644
+--- a/wiki/project/apis.md
++++ b/wiki/project/apis.md
+@@ -37,7 +37,7 @@ Scanner app  ──┘                         │
+ | `/api/offers/` | Both | Retailer CRUD + public offers for a shop |
+ | `/api/returns/` | Retailer | Sales returns and purchase returns |
+ 
+-ERP-style retailer paths live under `/api/products/erp/` (suppliers, purchase invoices, supplier ledger, POS checkout, POS customer search, inventory ledger, dashboard summary).
++ERP-style retailer paths live under `/api/products/erp/` (suppliers, purchase invoices, supplier ledger, POS checkout, POS customer search, inventory ledger, dashboard summary, **daily-sales-summary**).
+ 
+ ## Flows that matter
+ 
+@@ -53,6 +53,7 @@ ERP-style retailer paths live under `/api/products/erp/` (suppliers, purchase in
+ | POS customer typeahead | `GET /api/products/erp/search-pos-customers/` |
+ | Scanner capture | `POST /api/products/upload/session/create/` then `add-item/` then web `commit/` |
+ | Supplier deactivate | `PATCH /api/products/erp/suppliers/<id>/` with `is_active` |
++| Daily Sales Report (today closing) | `GET /api/products/erp/daily-sales-summary/` |
+ 
+ Label printing and the POS UPI QR are **browser-side**. They do not add new payment APIs. The QR is built from the shop’s saved **UPI ID** on the retailer profile.
+ 
+diff --git a/wiki/retailer-guide/README.md b/wiki/retailer-guide/README.md
+index 75b605e..0b41da5 100644
+--- a/wiki/retailer-guide/README.md
++++ b/wiki/retailer-guide/README.md
+@@ -15,7 +15,7 @@ Everything a **shop owner or staff member** needs to run daily operations on Ord
+ | [Customers and credit](customers-and-credit.md) | CRM, udhaar/khata, credit limits |
+ | [Offers and promotions](offers-and-promotions.md) | Discounts, BXGY, loyalty points |
+ | [Shop settings](shop-settings.md) | Profile, map pin, UPI ID, hours, delivery rules |
+-| [Reports and reviews](reports-and-reviews.md) | Sales analytics, customer feedback |
++| [Reports and reviews](reports-and-reviews.md) | Daily Sales Report (today closing summary) and Reviews |
+ 
+ ## The retailer journey at a glance
+ 
+@@ -54,6 +54,8 @@ Log in → Dashboard → POS for walk-ins / Orders for online
+ | Profile | Shop settings, UPI, map pin |
+ | Operating Hours | Open/close schedule |
+ 
++**Daily Sales Report** (`/dashboard/reports`) is a printable **today** closing summary. It is not in this sidebar yet — open the URL directly. See [Reports and reviews](reports-and-reviews.md).
++
+ ## Quick links
+ 
+ - Open the app: [retailer.ordereasy.win](https://retailer.ordereasy.win)
+diff --git a/wiki/retailer-guide/dashboard.md b/wiki/retailer-guide/dashboard.md
+index 614762a..f14af08 100644
+--- a/wiki/retailer-guide/dashboard.md
++++ b/wiki/retailer-guide/dashboard.md
+@@ -70,7 +70,7 @@ The **Orders** item in the sidebar shows a **PENDING** count when online orders
+ |------|-----|
+ | **Shop open** | Confirm pending online orders |
+ | **Mid-day** | Catch stuck orders; glance at Unmet Demand |
+-| **Close** | Review revenue, cash vs digital, POS vs online |
++| **Close** | Review revenue, cash vs digital, POS vs online on Overview; optionally print **Daily Sales Report** at `/dashboard/reports` |
+ 
+ ## Tips for new shops
+ 
+diff --git a/wiki/retailer-guide/offers-and-promotions.md b/wiki/retailer-guide/offers-and-promotions.md
+index 013c069..280e9c6 100644
+--- a/wiki/retailer-guide/offers-and-promotions.md
++++ b/wiki/retailer-guide/offers-and-promotions.md
+@@ -64,7 +64,7 @@ Manage codes from offer or rewards settings.
+ | Time-bound festival offers | Permanent deep discounts you cannot sustain |
+ | Clear rules ("min ₹300") | Confusing BXGY that staff cannot explain |
+ | Train staff on POS offers | Changing prices manually AND running duplicate offers |
+-| Review offer cost in reports | Stacking too many offers without margin check |
++| Check Overview / Daily Sales Report after a promo day | Stacking too many offers without a margin check |
+ 
+ ## Ending an offer
+ 
+diff --git a/wiki/retailer-guide/reports-and-reviews.md b/wiki/retailer-guide/reports-and-reviews.md
+index bb8262f..595d78e 100644
+--- a/wiki/retailer-guide/reports-and-reviews.md
++++ b/wiki/retailer-guide/reports-and-reviews.md
+@@ -1,33 +1,35 @@
+ # Reports and reviews
+ 
+-Understand how your shop is performing and what customers think.
++Understand how your shop is performing today and what customers think.
+ 
+-## Reports
++## Daily Sales Report
+ 
+-Open **Reports** for sales analytics beyond the dashboard snapshot.
++The retailer app has a **Daily Sales Report** page at `/dashboard/reports` titled **Daily Sales Report**. It is a **today-only closing summary** (not a weekly/monthly analytics suite).
+ 
+-Typical insights:
++It is **not** in the sidebar or bottom navigation today. Open it by going to:
+ 
+-| Report area | Questions it answers |
+-|-------------|---------------------|
+-| Sales over time | Busy days and seasons |
+-| Product performance | What sells most |
+-| Channel split | POS vs online revenue |
+-| Payment mix | Cash vs UPI vs credit |
++`https://retailer.ordereasy.win/dashboard/reports`
+ 
+-On **Overview**, **Unmet Demand** is a different question: which searches in your shop returned nothing in the last 30 days. Use it to add missing SKUs or fix product names. See [Dashboard overview](dashboard.md).
++(or the same path on your shop’s retailer origin).
+ 
+-Use reports for:
++The page loads `GET /api/products/erp/daily-sales-summary/` and shows:
+ 
+-- Reordering stock
+-- Planning festival offers
+-- Seeing if online channel is growing
++| Block | What it is |
++|-------|------------|
++| **Total Sales Today** | Today’s rupees and order count, plus average order value |
++| **Payment Breakdown** | Cash in hand vs digital, with refund deductions when present |
++| **Channel Performance** | POS sales vs online store for today |
++| **Print Closing Summary** | Browser print of this page |
+ 
+-Exact report names may evolve — look for date filters and export if available.
++**Refresh** reloads today’s numbers. There is no date picker and no product-level report on this screen.
++
++Period stats (today / week / month / custom) live on **Overview** — see [Dashboard overview](dashboard.md). **Unmet Demand** on Overview is a different question: which searches in your shop returned nothing in the last 30 days.
++
++Use the Daily Sales Report at close of day to print a till-vs-digital snapshot. Use Overview during the day for the date-filtered pulse.
+ 
+ ## Reviews
+ 
+-**Reviews** shows ratings and comments customers leave after delivery.
++**Reviews** (sidebar) shows ratings and comments customers leave after delivery.
+ 
+ ### Why reviews matter
+ 
+@@ -43,14 +45,13 @@ Exact report names may evolve — look for date filters and export if available.
+ 
+ Public reviews influence whether neighbours try your online ordering.
+ 
+-## Dashboard vs reports
+-
+-| Tool | Best for |
+-|------|----------|
+-| **Dashboard** | Today’s pulse, pending orders |
+-| **Reports** | Weekly/monthly trends, planning |
++## Dashboard vs Daily Sales Report vs Reviews
+ 
+-Check dashboard daily; dive into reports weekly.
++| Tool | Where | Best for |
++|------|-------|----------|
++| **Overview** | Sidebar | Date-filtered pulse, Unmet Demand, recent sales |
++| **Daily Sales Report** | `/dashboard/reports` (not in the sidebar) | Printable **today** closing summary |
++| **Reviews** | Sidebar | Ratings and comments |
+ 
+ ## Order stats
+ 
+-- 
+2.43.0
+

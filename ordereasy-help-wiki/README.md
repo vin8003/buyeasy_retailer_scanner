@@ -1,0 +1,136 @@
+# OrderEasy help wiki (18 Sep 2026)
+
+Canonical location is **`vin8003/RetailerCustomerPlatform`** (`wiki/` + `docs/`). This folder is a proposed copy because `cursor[bot]` cannot push that repo (GitHub 403 on git, refs, blobs, contents, and forks). Issues:write works.
+
+Last reviewed against live apps on GitHub `main`: **18 Sep 2026**.
+
+## Land tickets
+
+- Jira: [KAN-275](https://vin8003.atlassian.net/browse/KAN-275) (Dev In Progress)
+- **One-command apply on the canonical repo:** https://github.com/vin8003/RetailerCustomerPlatform/issues/178
+- Curl-from-release ticket: https://github.com/vin8003/RetailerCustomerPlatform/issues/134
+- Self-contained patches (in-issue decode + git am): https://github.com/vin8003/RetailerCustomerPlatform/issues/137
+- **Add `RCP_PUSH_TOKEN` (this repo):** https://github.com/vin8003/buyeasy_retailer_scanner/issues/3
+- Patch download (no clone): https://github.com/vin8003/buyeasy_retailer_scanner/releases/tag/wiki-sep-2026-2c2e
+- Confluence copy: https://vin8003.atlassian.net/wiki/spaces/OrderEasy/pages/40271873 (child pages now match the git wiki; still a copy, not SOT)
+
+Gmail rejected the `.tgz` of these patches (policy on archives). Use the Release, `curl-apply-from-release.sh`, or the five `.patch` files — not a tarball.
+
+Open RCP [PR 147](https://github.com/vin8003/RetailerCustomerPlatform/pull/147) (unmerged) also edits `wiki/retailer-guide/products-and-stock.md` for OE-315 fields that are **not** on `origin/main` yet (app price, saleable qty, write-off, photo bulk import). If that PR merges first, `git am` of these patches will likely conflict on that file — keep both copies. Do not treat those fields as shipped until they are on `main`.
+
+## What this is
+
+User-facing help centre plus the technical pages that changed with this refresh:
+
+| Path here | Apply onto RCP as |
+|-----------|-------------------|
+| `wiki/` | `RetailerCustomerPlatform/wiki/` |
+| `docs/05-API-SURFACE.md` | `RetailerCustomerPlatform/docs/05-API-SURFACE.md` (new) |
+| `docs/00-INDEX.md` | `RetailerCustomerPlatform/docs/00-INDEX.md` |
+| `docs/01-OVERVIEW.md` | `RetailerCustomerPlatform/docs/01-OVERVIEW.md` |
+| `docs/02-ARCHITECTURE.md` | `RetailerCustomerPlatform/docs/02-ARCHITECTURE.md` |
+| `docs/03-USER-JOURNEYS.md` | `RetailerCustomerPlatform/docs/03-USER-JOURNEYS.md` |
+| `docs/DOCUMENTATION.md` | unchanged SOT rules (included for agents) |
+| `docs/visuals/README.md` | scanner-flow caption only |
+
+## Start here
+
+1. [wiki/README.md](wiki/README.md) — help home
+2. [wiki/SUMMARY.md](wiki/SUMMARY.md) — table of contents
+3. [wiki/whats-new.md](wiki/whats-new.md) — what changed since August 2026
+4. [wiki/project/all-apps.md](wiki/project/all-apps.md) — every app
+5. [wiki/project/apis.md](wiki/project/apis.md) — how apps talk to the API
+6. [docs/05-API-SURFACE.md](docs/05-API-SURFACE.md) — Django route map
+
+## Preview site (not the lasting edit)
+
+GitHub Action **Publish OrderEasy help wiki preview** builds `wiki/` to HTML (`repository_dispatch` `publish-ordereasy-wiki-pages`). GitHub Pages enablement is 403 even from Actions.
+
+- Browsable snapshot: [html-preview/index.html](https://raw.githack.com/vin8003/buyeasy_retailer_scanner/feature/wiki-content-update-2c2e/ordereasy-help-wiki/html-preview/index.html) (raw.githack of this branch)
+- Zip: [`ordereasy-help-wiki-html.zip`](https://github.com/vin8003/buyeasy_retailer_scanner/releases/download/wiki-sep-2026-2c2e/ordereasy-help-wiki-html.zip)
+
+That preview does **not** replace Git `RetailerCustomerPlatform/wiki/` on `main`.
+
+## Fastest land path (fetch scanner branch, then push)
+
+On a machine with push access to `RetailerCustomerPlatform` (`origin/main` at `e9420db`):
+
+```bash
+git clone git@github.com:vin8003/RetailerCustomerPlatform.git
+curl -fsSL https://raw.githubusercontent.com/vin8003/buyeasy_retailer_scanner/feature/wiki-content-update-2c2e/ordereasy-help-wiki/fetch-apply-from-scanner.sh | bash -s -- ./RetailerCustomerPlatform
+```
+
+That fetches scanner branch [`rcp-wiki-applied`](https://github.com/vin8003/buyeasy_retailer_scanner/tree/rcp-wiki-applied/wiki) (five commits on `e9420db`), fast-forwards, then **tries `git push` + `gh pr create`**. If this machine has RCP write access, that is the lasting edit.
+
+Git bundle (same commits, no scanner branch required): `./ordereasy-help-wiki/curl-apply-bundle.sh ./RetailerCustomerPlatform` — also tries push + PR. Copy-tree zip: [`rcp-wiki-applied.zip`](https://github.com/vin8003/buyeasy_retailer_scanner/releases/download/wiki-sep-2026-2c2e/rcp-wiki-applied.zip).
+
+## Fastest land path (GitHub Action)
+
+1. In this scanner repo, add secret **`RCP_PUSH_TOKEN`**: a PAT with `contents` + `pull requests` on `vin8003/RetailerCustomerPlatform` ([issue 3](https://github.com/vin8003/buyeasy_retailer_scanner/issues/3)).
+2. Actions → **Apply OrderEasy help wiki to RCP** → Run workflow (branch **`master`**), or `repository_dispatch` event `apply-ordereasy-wiki` (cursor[bot] can send that). Patches come from Release `wiki-sep-2026-2c2e`.
+
+The Action now `git am`s onto public `origin/main` **before** requiring the secret, and uploads artifact `rcp-wiki-applied` (applied `wiki/` + git bundle). If the secret is present it then pushes `feature/wiki-content-update-2c2e` and opens the PR into `main`.
+
+## Fastest land path (no scanner clone)
+
+On a machine with push access to `RetailerCustomerPlatform`:
+
+```bash
+git clone git@github.com:vin8003/RetailerCustomerPlatform.git
+./curl-apply-from-release.sh ./RetailerCustomerPlatform
+# or, from this folder after clone:
+#   ./ordereasy-help-wiki/curl-apply-from-release.sh /path/to/RetailerCustomerPlatform
+cd RetailerCustomerPlatform
+git push -u origin feature/wiki-content-update-2c2e
+```
+
+If you do not have this script, copy the curl commands from GitHub issue 134.
+
+## How to land this on the canonical repo (local)
+
+On a machine with push access to `RetailerCustomerPlatform`:
+
+```bash
+git clone git@github.com:vin8003/RetailerCustomerPlatform.git
+cd RetailerCustomerPlatform
+git checkout -b feature/wiki-content-update-2c2e origin/main
+cp -a ../buyeasy_retailer_scanner/ordereasy-help-wiki/wiki/. wiki/
+cp ../buyeasy_retailer_scanner/ordereasy-help-wiki/docs/*.md docs/
+cp ../buyeasy_retailer_scanner/ordereasy-help-wiki/docs/visuals/README.md docs/visuals/README.md
+git add wiki docs
+git commit -m "docs(wiki): refresh help centre for Sep 2026 product"
+git push -u origin feature/wiki-content-update-2c2e
+```
+
+Open a PR into `main`. Do **not** treat Confluence or this scanner copy as the lasting edit (`docs/DOCUMENTATION.md`).
+
+## Local RCP commits (cannot push)
+
+These already exist on the agent checkout of `RetailerCustomerPlatform` `feature/wiki-content-update-2c2e`:
+
+- `docs(wiki): refresh help centre for Sep 2026 product`
+- `docs: point knowledge-base index at wiki what’s-new and labels`
+- `docs(wiki): add API map, Unmet Demand, and remaining Sep 2026 pages`
+- `docs: add Django API surface and correct scanner capture path`
+
+
+## Apply with the helper script (preferred)
+
+```bash
+git clone git@github.com:vin8003/RetailerCustomerPlatform.git
+./ordereasy-help-wiki/apply-to-rcp.sh ./RetailerCustomerPlatform
+# then, from that clone:
+git push -u origin feature/wiki-content-update-2c2e
+```
+
+Or `git am patches/*.patch` on `origin/main`, or `git fetch patches/wiki-content-update-2c2e.bundle HEAD && git checkout -b feature/wiki-content-update-2c2e FETCH_HEAD`.
+
+Then open a PR into `main`. That is the lasting edit. Confluence and this scanner folder are copies.
+
+Local RCP commits on this agent (cannot push):
+
+- docs(wiki): refresh help centre for Sep 2026 product
+- docs: point knowledge-base index at wiki what’s-new and labels
+- docs(wiki): add API map, Unmet Demand, and remaining Sep 2026 pages
+- docs: add Django API surface and correct scanner capture path
+- docs(wiki): document display-label layouts and city/state picker
